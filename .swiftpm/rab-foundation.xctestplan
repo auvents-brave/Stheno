@@ -1,0 +1,47 @@
+{
+  "configurations" : [
+    {
+      "id" : "F92C8646-9230-4BDA-B2EA-785B23F45234",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "language" : "en",
+    "locationScenario" : {
+      "identifier" : "London, England",
+      "referenceType" : "built-in"
+    },
+    "performanceAntipatternCheckerEnabled" : true,
+    "region" : "GB",
+    "testExecutionOrdering" : "random",
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "RabFoundationTests",
+        "name" : "RabFoundationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "AppleOnlyTests",
+        "name" : "AppleOnlyTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "RabFoundationUITests",
+        "name" : "RabFoundationUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

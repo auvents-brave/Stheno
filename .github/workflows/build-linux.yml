@@ -1,0 +1,52 @@
+name: Build Linux
+permissions:
+  contents: read
+on:
+  workflow_dispatch:
+  #push:
+  #  branches:
+  #pull_request:
+  #  branches:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+
+  build-linux:
+    name: Linux
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Swift Version
+        run: swift --version
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get -y install libcurl4-openssl-dev
+
+      - name: Install Swiftly
+        run: |
+          curl -O https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz
+          tar zxf swiftly-$(uname -m).tar.gz
+          ./swiftly init --quiet-shell-followup
+          #
+          # Get Swift binary path and persist it for future steps
+          source "${SWIFTLY_HOME_DIR:-$HOME/.local/share/swiftly}/env.sh"
+          echo "${SWIFTLY_HOME_DIR:-$HOME/.local/share/swiftly}/bin" >> $GITHUB_PATH
+
+      - name: Check Swift Version
+        run: swift --version
+
+      - name: Set system timezone to Europe/London
+        run: |
+          sudo ln -sf /usr/share/zoneinfo/Europe/London /etc/localtime
+          sudo dpkg-reconfigure -f noninteractive tzdata
+
+      - name: Set locale to en_GB.UTF-8
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y locales
+          sudo locale-gen en_GB.UTF-8
+          sudo update-locale LANG=en_GB.UTF-8
+          export LANG=en_GB.UTF-8

@@ -1,0 +1,37 @@
+name: Build Mac
+permissions:
+  contents: read
+on:
+  workflow_dispatch:
+  #push:
+  #  branches:
+  #pull_request:
+  #  branches:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+
+  build-mac:
+    name: Mac
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Swift Version
+        run: swift --version
+
+      - name: Install Swiftly
+        run: |
+          curl -O https://download.swift.org/swiftly/darwin/swiftly.pkg
+          installer -pkg swiftly.pkg -target CurrentUserHomeDirectory
+          ~/.swiftly/bin/swiftly init --quiet-shell-followup
+          . "${SWIFTLY_HOME_DIR:-$HOME/.swiftly}/env.sh"
+          hash -r
+          #
+          # Get Swift binary path and persist it for future steps
+          echo "${SWIFTLY_HOME_DIR:-$HOME/.swiftly}/bin" >> $GITHUB_PATH
+
+      - name: Check Swift Version
+        run: swift --version
+

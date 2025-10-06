@@ -1,0 +1,67 @@
+name: Generate and Deploy Swift Documentation
+
+on:
+  workflow_dispatch:
+  #push:
+  #  branches:
+  #    - main
+
+permissions:
+  contents: write
+
+env:
+  SWIFT_VERSION: "6.1"
+  DOC_OUTPUT: "docs"
+  HOSTING_BASE_PATH: "RABFoundation"
+
+jobs:
+  generate-docs:
+    name: Generate and Push Docs to Wiki and Pages
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@v2.3.0
+        with:
+          swift-version: ${{ env.SWIFT_VERSION }}
+
+      - name: Generate Swift documentation with DocC
+        run: |
+          swift package \
+            --allow-writing-to-directory ${{ env.DOC_OUTPUT }} \
+            generate-documentation \
+            --target RabFoundation \
+            --output-path ${{ env.DOC_OUTPUT }} \
+            --transform-for-static-hosting \
+            --hosting-base-path ${{ env.HOSTING_BASE_PATH }}
+
+      - name: Push to GitHub Wiki
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git clone https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.wiki.git wiki
+          rm -rf wiki/docs
+          mkdir -p wiki/docs
+          cp -r ${{ env.DOC_OUTPUT }}/* wiki/docs/
+          cd wiki
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Update documentation (Wiki)" || echo "No changes to commit"
+          git push
+
+      - name: Deploy to GitHub Pages (gh-pages branch)
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git clone --branch gh-pages https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages
+          rm -rf gh-pages/*
+          cp -r ${{ env.DOC_OUTPUT }}/* gh-pages/
+          cd gh-pages
+          touch .nojekyll
+          git add .
+          git commit -m "Update documentation (GitHub Pages)" || echo "No changes to commit"
+          git push
