@@ -68,19 +68,9 @@ targs.append(
     dependencies: [
       "AppleOnly",
       .product(name: "SwiftLogTesting", package: "swift-log-testing"),
-    ]
+    ],
+    resources: [.process("Resources")],
   )
-)
-#endif
-
-#if os(macOS)
-targs.append(
-.testTarget(
-  name: "RabFoundationUITests",
-  dependencies: [
-    "RabFoundation"
-  ]
-)
 )
 #endif
 

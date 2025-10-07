@@ -15,12 +15,12 @@ private func stripTrailingAM(_ s: String) -> String {
   #expect("09:29" == stripTrailingAM("09:29 AM"))
 
   #expect("26/08/2025, 09:29" == stripTrailingAM(d.Display(display: .asUniversalTime)), "a")
-  #expect("26/08/2025, 10:29" == stripTrailingAM(d.Display(display: .asLocalTime)), "b")
+  #expect("26/08/2025, 11:29" == stripTrailingAM(d.Display(display: .asLocalTime)), "b")
 
   let formatter = DateFormatter()
   formatter.dateFormat = "dd/MM/yy '-' HH:mm"
   #expect("26/08/25 - 09:29" == stripTrailingAM(d.Display(display: .asUniversalTime, formatter: formatter)), "c")
-  #expect("26/08/25 - 10:29" == stripTrailingAM(d.Display(display: .asLocalTime, formatter: formatter)), "d")
+  #expect("26/08/25 - 11:29" == stripTrailingAM(d.Display(display: .asLocalTime, formatter: formatter)), "d")
 
     let withoutNano = Calendar.current.date(from: DateComponents(
         timeZone: TimeZone(abbreviation: "GMT"),

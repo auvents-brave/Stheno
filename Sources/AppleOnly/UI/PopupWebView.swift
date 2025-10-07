@@ -49,6 +49,7 @@ struct PopupWebView: View {
     }
 }
 
+#if XCODE
 #Preview("No title") {
     PopupWebView(url: URL(string: "https://example.com")!)
 }
@@ -71,3 +72,4 @@ struct PopupWebView: View {
         }
     }
 }
+#endif

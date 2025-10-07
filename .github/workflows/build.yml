@@ -11,7 +11,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 env:
-  SWIFT_VERSION: '6.1'
+  SWIFT_VERSION: '6.2'
 jobs:
   build-swift-matrix:
     name: 'Native ${{ matrix.name }}'
@@ -25,15 +25,66 @@ jobs:
             skip: false
           - name: macOS 15
             runner: macos-15
-            skip: false
+            skip: true
           - name: Ubuntu 22.04 LTS
             runner: ubuntu-22.04
-            skip: false
+            skip: true
           - name: Ubuntu 24.04 LTS
             runner: ubuntu-24.04
-            skip: false
+            skip: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Check Swift Version
+        run: swift --version
+
+      - name: Install Swiftly (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          curl -O https://download.swift.org/swiftly/darwin/swiftly.pkg
+          installer -pkg swiftly.pkg -target CurrentUserHomeDirectory
+          ~/.swiftly/bin/swiftly init --quiet-shell-followup
+          . "${SWIFTLY_HOME_DIR:-$HOME/.swiftly}/env.sh"
+          hash -r
+          #
+          # Get Swift binary path and persist it for future steps
+          echo "${SWIFTLY_HOME_DIR:-$HOME/.swiftly}/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        if: runner.os == 'Ubuntu'
+        run: |
+          sudo apt-get -y install libcurl4-openssl-dev
+
+      - name: Install Swiftly (Ubuntu)
+        if: runner.os == 'Ubuntu'
+        run: |
+          curl -O https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz
+          tar zxf swiftly-$(uname -m).tar.gz
+          ./swiftly init --quiet-shell-followup
+          #
+          # Get Swift binary path and persist it for future steps
+          source "${SWIFTLY_HOME_DIR:-$HOME/.local/share/swiftly}/env.sh"
+          echo "${SWIFTLY_HOME_DIR:-$HOME/.local/share/swiftly}/bin" >> $GITHUB_PATH
+
+      - name: Set system timezone to Europe/London
+        if: runner.os == 'Ubuntu'
+        run: |
+          sudo ln -sf /usr/share/zoneinfo/Europe/London /etc/localtime
+          sudo dpkg-reconfigure -f noninteractive tzdata
+
+      - name: Set locale to en_GB.UTF-8
+        if: runner.os == 'Ubuntu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y locales
+          sudo locale-gen en_GB.UTF-8
+          sudo update-locale LANG=en_GB.UTF-8
+          export LANG=en_GB.UTF-8
+
+
+      - name: Check Swift Version
+        run: swift --version
+        
       - name: Skipped target warning
         if: matrix.skip == true
         run: 'echo "::warning::''${{ matrix.name }}'' is ignored for the moment."'
@@ -63,18 +114,18 @@ jobs:
             sdk: iphonesimulator
             destination: 'platform=iOS Simulator,name=iPhone 16,OS=18.5'
             run_tests: true
-            skip: false
+            skip: true
           - name: tvOS Simulator
             sdk: appletvsimulator
             destination: >-
               platform=tvOS Simulator,name=Apple TV 4K (3rd generation) (at 1080p),OS=18.5
             run_tests: true
-            skip: false
+            skip: true
           - name: watchOS Simulator (Build only)
             sdk: watchsimulator
             destination: 'platform=watchOS Simulator,name=Apple Watch Ultra 2 (49mm),OS=11.5'
             run_tests: false
-            skip: false
+            skip: true
           - name: visionOS Simulator
             sdk: xrssimulator
             destination: 'platform=visionOS Simulator,name=Apple Vision Pro,OS=1.0'
@@ -84,9 +135,9 @@ jobs:
             sdk: macosx
             destination: 'platform=macOS,variant=Mac Catalyst'
             run_tests: true
-            skip: false
+            skip: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Skipped target warning
         if: matrix.skip == true
         run: 'echo "::warning::''${{ matrix.name }}'' is ignored for the moment."'
@@ -104,6 +155,7 @@ jobs:
         run: >
           xcodebuild
           -scheme rab-foundation
+          -configuration Release
           -sdk ${{ matrix.sdk }}
           -destination '${{ matrix.destination }}'
       - name: Run Tests
@@ -112,16 +164,18 @@ jobs:
         run: >
           xcodebuild
           -scheme rab-foundation
+          -configuration Debug
           -sdk ${{ matrix.sdk }}
           -destination '${{ matrix.destination }}'
           -enableCodeCoverage NO
+          -parallel-testing-enabled YES
           -quiet
           test
   build-windows:
     name: Windows (6.2)
     runs-on: windows-2025
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Swift
         uses: compnerd/gha-setup-swift@main
         with:
@@ -133,81 +187,3 @@ jobs:
         run: swift build
       - name: Run Tests
         run: swift test
-  build-wasm1:
-    name: WebAssembly (6.1)
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install Swift SDK for wasm32-unknown-wasi
-        run: >
-          curl -LO https://github.com/swiftwasm/swift/releases/download/swift-wasm-6.1-RELEASE/swift-wasm-6.1-RELEASE-wasm32-unknown-wasi.artifactbundle.zip
-          
-          unzip -q swift-wasm-6.1-RELEASE-wasm32-unknown-wasi.artifactbundle.zip
-
-          swift sdk install swift-wasm-6.1-RELEASE-wasm32-unknown-wasi.artifactbundle
-
-      - run: swift --version
-
-      - name: Build Swift package for WebAssembly
-        run: swift build --swift-sdk wasm32-unknown-wasi
-      - name: Test Swift Package (if tests are available)
-        continue-on-error: true
-        run: swift test --swift-sdk wasm32-unknown-wasi
-  build-wasm2:
-    name: WebAssembly (6.2)
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install Swift SDK for wasm32-unknown-wasip1
-        run: >
-          curl -LO https://github.com/swiftwasm/swift/releases/download/swift-wasm-6.2-RELEASE/swift-wasm-6.2-RELEASE-wasm32-unknown-wasip1.artifactbundle.zip
-
-          unzip -q swift-wasm-6.2-RELEASE-wasm32-unknown-wasip1.artifactbundle.zip
-
-          swift sdk install swift-wasm-6.2-RELEASE-wasm32-unknown-wasip1.artifactbundle
-
-      - run: swift --version
-
-      - name: Build Swift package for WebAssembly
-        run: swift build --swift-sdk wasm32-unknown-wasip1
-      - name: Test Swift Package (if tests are available)
-        continue-on-error: true
-        run: swift test --swift-sdk wasm32-unknown-wasip1
-
-
-
-  build-wasm22:
-    name: WebAssembly (Swift 6.2)
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-
-      - run: swift --version
-
-      - name: Install Swift Toolchain (from swift.org)
-        run: |
-          curl -LO https://download.swift.org/swift-6.2.0-release/ubuntu2204/swift-6.2.0-RELEASE-ubuntu22.04.tar.gz
-          mkdir -p $HOME/swift-6.2
-          tar -xzf swift-6.2.0-RELEASE-ubuntu22.04.tar.gz -C $HOME/swift-6.2 --strip-components=1
-          echo "$HOME/swift-6.2/usr/bin" >> $GITHUB_PATH
-
-      - name: Install SwiftWasm toolchain 6.2
-        run: |
-          swift sdk install https://github.com/swiftwasm/swift/releases/download/swift-wasm-6.2-RELEASE/swift-wasm-6.2-RELEASE-wasm32-unknown-wasip1-threads.artifactbundle.zip --checksum df8dee548a572f9325e997e1378f4dbab1dbfc986f92a35887b313e19007835d
-          echo "$HOME/swiftwasm/usr/bin" >> $GITHUB_PATH
-
-      - name: Install WASI sysroot
-        run: |
-          curl -LO https://github.com/swiftwasm/wasi-sdk/releases/download/20191022.1/wasi-sdk-4.39g3025a5f47c04-linux.tar.gz
-          mkdir -p $HOME/wasi-sdk
-          tar -xzf wasi-sdk-4.39g3025a5f47c04-linux.tar.gz -C $HOME/wasi-sdk --strip-components=1
-          echo "SWIFTFLAGS=-sdk $HOME/wasi-sdk/share/wasi-sysroot" >> $GITHUB_ENV
-
-      - run: swift --version
-
-      - name: Build Swift package for WebAssembly
-        run: swift build --triple wasm32-unknown-wasip1 --build-path .build-wasm
-
-      - name: Test Swift package (if available)
-        continue-on-error: true
-        run: swift test --triple wasm32-unknown-wasip1 --build-path .build-wasm

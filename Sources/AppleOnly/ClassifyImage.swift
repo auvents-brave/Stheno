@@ -1,41 +1,43 @@
 import CoreGraphics
 import Foundation
 import ImageIO
-import Vision
 
-public func classifyImage(url: URL) async throws -> [String: Double] {
-    if #available(macOS 15, iOS 18, tvOS 18, watchOS 11, visionOS 2, *) {
-        // Use the modern Vision concurrency API when available.
-        let request = ClassifyImageRequest()
-        let results = try await request.perform(on: url)
-            // Use `hasMinimumPrecision` for a high-recall filter.
-            .filter { $0.hasMinimumPrecision(0.1, forRecall: 0.8) }
-        // Alternatively, for high-precision filter:
-        // .filter { $0.hasMinimumRecall(0.01, forPrecision: 0.9) }
+#if !os(watchOS)
+    import Vision
+    public func classifyImage(url: URL) async throws -> [String: Double] {
+        if #available(macOS 15, iOS 18, tvOS 18, visionOS 2, *) {
+            // Use the modern Vision concurrency API when available.
+            let request = ClassifyImageRequest()
+            let results = try await request.perform(on: url)
+                // Use `hasMinimumPrecision` for a high-recall filter.
+                .filter { $0.hasMinimumPrecision(0.1, forRecall: 0.8) }
+            // Alternatively, for high-precision filter:
+            // .filter { $0.hasMinimumRecall(0.01, forPrecision: 0.9) }
 
-        var observations: [String: Double] = [:]
-        for classification in results {
-            observations[classification.identifier] = Double(classification.confidence)
+            var observations: [String: Double] = [:]
+            for classification in results {
+                observations[classification.identifier] = Double(classification.confidence)
+            }
+            return observations
+        } else {
+            // Fallback using VNClassifyImageRequest and a CGImage loaded from the URL.
+            let cgImage = try await loadCGImage(from: url)
+            let request = VNClassifyImageRequest()
+            let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+            try handler.perform([request])
+
+            guard let results = request.results else {
+                return [:]
+            }
+
+            var observations: [String: Double] = [:]
+            for classification in results {
+                observations[classification.identifier] = Double(classification.confidence)
+            }
+            return observations
         }
-        return observations
-    } else {
-        // Fallback using VNClassifyImageRequest and a CGImage loaded from the URL.
-        let cgImage = try await loadCGImage(from: url)
-        let request = VNClassifyImageRequest()
-        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-        try handler.perform([request])
-
-        guard let results = request.results else {
-            return [:]
-        }
-
-        var observations: [String: Double] = [:]
-        for classification in results {
-            observations[classification.identifier] = Double(classification.confidence)
-        }
-        return observations
     }
-}
+#endif
 
 /// Errors that can occur while loading an image from a URL.
 public enum ImageLoadingError: Error {
@@ -69,26 +71,3 @@ public func loadCGImage(from url: URL) async throws -> CGImage {
         return image
     }
 }
-
-/*
- func classifyImage(url: URL) async throws -> ImageFile {
-     var image = ImageFile(url: url)
-
-     // Vision request to classify an image.
-     let request = ClassifyImageRequest()
-
-     // Perform the request on the image, and return an array of `ClassificationObservation` objects.
-     let results = try await request.perform(on: url)
-         // Use `hasMinimumPrecision` for a high-recall filter.
-         .filter { $0.hasMinimumPrecision(0.1, forRecall: 0.8) }
-         // Use `hasMinimumRecall` for a high-precision filter.
-         // .filter { $0.hasMinimumRecall(0.01, forPrecision: 0.9) }
-
-     // Add each classification identifier and its respective confidence level into the observations dictionary.
-     for classification in results {
-         image.observations[classification.identifier] = classification.confidence
-     }
-
-     return image
- }
- */

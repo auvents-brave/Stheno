@@ -42,6 +42,7 @@ import SwiftUI
     }
 }
 
+#if XCODE
 @available(macOS 12, iOS 15, *)
 #Preview {
     VStack {
@@ -64,3 +65,4 @@ import SwiftUI
     }
     .background(Color(.lightGray))
 }
+#endif

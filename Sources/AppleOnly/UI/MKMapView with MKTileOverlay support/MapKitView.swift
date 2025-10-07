@@ -66,6 +66,7 @@ import SwiftUI
     }
 #endif
 
+#if XCODE
 /// Preview showing a plain MapKitView without any overlays.
 #Preview("Plain") {
     MapKitView()
@@ -100,3 +101,4 @@ import SwiftUI
     ]
     MapKitView(overlays: overlays)
 }
+#endif
