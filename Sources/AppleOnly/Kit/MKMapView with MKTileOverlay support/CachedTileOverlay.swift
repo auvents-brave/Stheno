@@ -1,6 +1,10 @@
 import MapKit
 
 #if !os(watchOS)
+    fileprivate var isRunningInPreviews: Bool {
+        ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+    }
+
     final class CachedTileOverlay: MKTileOverlay {
         let parentDirectory: String
         let maximumCacheAge: TimeInterval = 30.0 * 24.0 * 60.0 * 60.0
@@ -32,8 +36,6 @@ import MapKit
             let tileFilePathURL = parentXFolderURL.appendingPathComponent(fileNameForTile(path))
             let tileFilePath = tileFilePathURL.path
 
-assert(myPath(path) == tileFilePath)
-
             var useCachedVersion = false
             if FileManager.default.fileExists(atPath: tileFilePath) {
                 if let fileAttributes = try? FileManager.default.attributesOfItem(atPath: tileFilePath),
@@ -49,31 +51,37 @@ assert(myPath(path) == tileFilePath)
             } else {
                 let request = URLRequest(url: url(forTilePath: path))
                 let task = urlSession!.dataTask(with: request, completionHandler: { data, response, error in
-                    if response != nil {
-                        if let httpResponse = response as? HTTPURLResponse {
-                            if httpResponse.statusCode == 200 {
-                                do {
-                                    try FileManager.default.createDirectory(at: parentXFolderURL,
-                                                                            withIntermediateDirectories: true, attributes: nil)
-                                } catch {
-                                }
-                                if !((try? data!.write(to: URL(fileURLWithPath: tileFilePath), options: [.atomic])) != nil) {
-                                }
-                                result(data, error)
-                            }
-                        }
+                    guard let httpResponse = response as? HTTPURLResponse else {
+                        result(nil, error)
+                        return
                     }
+                    guard httpResponse.statusCode == 200 else {
+                        result(nil, error)
+                        return
+                    }
+                    guard let data = data else {
+                        result(nil, error)
+                        return
+                    }
+                    do {
+                        try FileManager.default.createDirectory(
+                            at: parentXFolderURL,
+                            withIntermediateDirectories: true,
+                            attributes: nil)
+                        try data.write(to: URL(fileURLWithPath: tileFilePath), options: [.atomic])
+                    } catch {
+                        // Ignore write errors in this context
+                    }
+                    result(data, error)
                 })
                 task.resume()
             }
         }
 
-
-      // path to X folder, starting from URLForTilecacheFolder
-      fileprivate func myPath(_ path: MKTileOverlayPath) -> String {
-        return "\(path.contentScaleFactor)/\(path.z)/\(path.x)/\(path.y).png"
-      }
-
+        // path to X folder, starting from URLForTilecacheFolder
+        fileprivate func myPath(_ path: MKTileOverlayPath) -> String {
+            return "\(path.contentScaleFactor)/\(path.z)/\(path.x)/\(path.y).png"
+        }
 
         // filename for y.png, used within the cacheXFolderNameForPath
         fileprivate func fileNameForTile(_ path: MKTileOverlayPath) -> String {
@@ -87,28 +95,36 @@ assert(myPath(path) == tileFilePath)
 
         // folder within app's Library/Caches to use for this particular overlay
         fileprivate func URLForTilecacheFolder() -> URL {
-            // app specific: ▿ file:///Users/me/Library/Developer/CoreSimulator/Devices/14EAD5A2-F46B-41B1-BB3A-645BD93F0DA0/data/Containers/Data/Application/434E4E80-AD43-42CB-A111-E683938B0C40/Library/Caches/
-            let usr = try! FileManager.default.url(
-                for: FileManager.SearchPathDirectory.cachesDirectory,
-                in: FileManager.SearchPathDomainMask.userDomainMask,
-                appropriateFor: nil,
-                create: true
-            )
-
-            // app neutral: file:///Library/Caches/
-            let _ = try! FileManager.default
-                .url(
-                    for: FileManager.SearchPathDirectory.cachesDirectory,
-                    in: FileManager.SearchPathDomainMask.localDomainMask,
+            do {
+                let usr = try FileManager.default.url(
+                    for: .cachesDirectory,
+                    in: .userDomainMask,
                     appropriateFor: nil,
                     create: true
                 )
+                return usr.appendingPathComponent(parentDirectory, isDirectory: true)
+            } catch {
+                print("catch URLForTilecacheFolder")
 
-            return usr.appendingPathComponent(parentDirectory, isDirectory: true)
+                // In previews, gracefully fall back to a temp directory to avoid crashing.
+                let tmp = FileManager.default.temporaryDirectory
+                return tmp.appendingPathComponent(parentDirectory, isDirectory: true)
+            }
         }
-/*
-        fileprivate func URLForXFolder(_ path: MKTileOverlayPath) -> URL {
-            return URLForTilecacheFolder().appendingPathComponent(cacheXFolderNameForPath(path), isDirectory: true)
-        }*/
+        /*
+         // app neutral: file:///Library/Caches/
+         let _ = try! FileManager.default
+             .url(
+                 for: FileManager.SearchPathDirectory.cachesDirectory,
+                 in: FileManager.SearchPathDomainMask.localDomainMask,
+                 appropriateFor: nil,
+                 create: true
+             )
+         */
+
+        /*
+         fileprivate func URLForXFolder(_ path: MKTileOverlayPath) -> URL {
+             return URLForTilecacheFolder().appendingPathComponent(cacheXFolderNameForPath(path), isDirectory: true)
+         }*/
     }
 #endif

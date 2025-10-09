@@ -49,7 +49,6 @@ struct PopupWebView: View {
     }
 }
 
-#if XCODE
 #Preview("No title") {
     PopupWebView(url: URL(string: "https://example.com")!)
 }
@@ -58,18 +57,9 @@ struct PopupWebView: View {
     PopupWebView(url: URL(string: "https://example.com")!, title: "Example")
 }
 
-#Preview("In List (works only on macOS, not simulators)") {
+#Preview("In List") {
     List {
-        HStack {
-            PopupWebView(url: URL(string: "https://apple.com")!, title: "Apple")
-        }
-        HStack {
-            PopupWebView(url: URL(string: "https://example.com")!, title: "Example")
-        }
-        HStack {
-            PopupWebView(url: URL(string: "https://apple.com")!, title: "Apple")
-            PopupWebView(url: URL(string: "https://example.com")!, title: "Example")
-        }
+		PopupWebView(url: URL(string: "https://apple.com")!, title: "Apple")
+        PopupWebView(url: URL(string: "https://example.com")!, title: "Example")
     }
 }
-#endif

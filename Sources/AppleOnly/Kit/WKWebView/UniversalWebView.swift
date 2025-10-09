@@ -49,8 +49,6 @@ import SwiftUI
     }
 #endif
 
-#if XCODE
 #Preview {
     UniversalWebView(url: URL(string: "https://example.com")!)
 }
-#endif

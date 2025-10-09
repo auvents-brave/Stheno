@@ -58,15 +58,22 @@ import SwiftUI
             }
         }
 
+        public func setRegion2(_ region: MKCoordinateRegion, animated: Bool = false) {
+            map.setRegion(region, animated: animated)
+        }
+
+        public mutating func setRegion(_ region: MKCoordinateRegion, animated: Bool = false) {
+            map.setRegion(region, animated: animated)
+        }
+
         /// The SwiftUI view that wraps the MKMapView and ignores safe area edges.
         public var body: some View {
-            WrapperView(view: map).edgesIgnoringSafeArea(.all)
+            WrapperView(view: map).ignoresSafeArea()
                 .accessibilityIdentifier("MapKitView.map")
         }
     }
 #endif
 
-#if XCODE
 /// Preview showing a plain MapKitView without any overlays.
 #Preview("Plain") {
     MapKitView()
@@ -74,23 +81,38 @@ import SwiftUI
 
 /// Preview showing a MapKitView with OpenStreetMap tile overlay.
 #Preview("OpenStreetMap") {
-    MapKitView(cacheDirectory: "openstreetmapcache", urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png")
+    var v = MapKitView(cacheDirectory: "openstreetmapcache", urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png")
+    v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 20.0, longitude: 0.0), span: MKCoordinateSpan(latitudeDelta: 80.0, longitudeDelta: 120.0)))
+    return v
 }
 
 /// Preview showing a MapKitView with OpenTopoMap tile overlay.
 #Preview("OpenTopoMap") {
-    MapKitView(cacheDirectory: "opentopomapcache", urlTemplate: "https://a.tile.opentopomap.org/{z}/{x}/{y}.png")
+    var v = MapKitView(cacheDirectory: "opentopomapcache", urlTemplate: "https://a.tile.opentopomap.org/{z}/{x}/{y}.png")
+    v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 44.9224, longitude: 6.3608), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)))
+    return v
 }
 
 /// Preview showing a MapKitView with IGN (France) WMTS tile overlay.
 /// See: https://geoservices.ign.fr/services-web-essentiels
 #Preview("IGN (France)") {
-    MapKitView(cacheDirectory: "igncache", urlTemplate: "https://data.geopf.fr/wmts?layer=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y})")
+    var v = MapKitView(cacheDirectory: "igncache", urlTemplate: "https://data.geopf.fr/wmts?layer=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y})")
+    v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 44.9224, longitude: 6.3608), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)))
+    return v
 }
 
 /// Preview showing a MapKitView with Carte de Cassini (France XVIII) WMTS tile overlay.
 #Preview("Carte de Cassini (France XVIII)") {
-    MapKitView(cacheDirectory: "cassinicache", urlTemplate: "https://data.geopf.fr/wmts?layer=BNF-IGNF_GEOGRAPHICALGRIDSYSTEMS.CASSINI&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y})")
+    var v = MapKitView(cacheDirectory: "cassinicache", urlTemplate: "https://data.geopf.fr/wmts?layer=BNF-IGNF_GEOGRAPHICALGRIDSYSTEMS.CASSINI&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y})")
+    v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 44.9224, longitude: 6.3608), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)))
+    return v
+}
+
+/// Preview showing a MapKitView with several overlays including OpenTopoMap and OpenSeaMap.
+#Preview("OpenSeaMap") {
+    var v = MapKitView(cacheDirectory: "openseamapcache", urlTemplate: "https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png")
+    v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 20.0, longitude: 0.0), span: MKCoordinateSpan(latitudeDelta: 80.0, longitudeDelta: 120.0)))
+    return v
 }
 
 /// Preview showing a MapKitView with several overlays including OpenTopoMap and OpenSeaMap.
@@ -99,6 +121,7 @@ import SwiftUI
         (cacheDirectory: "opentopomapcache", urlTemplate: "https://a.tile.opentopomap.org/{z}/{x}/{y}.png"),
         (cacheDirectory: "openseamapcache", urlTemplate: "https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png"),
     ]
-    MapKitView(overlays: overlays)
+    var v = MapKitView(overlays: overlays)
+    v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 20.0, longitude: 0.0), span: MKCoordinateSpan(latitudeDelta: 80.0, longitudeDelta: 120.0)))
+    return v
 }
-#endif

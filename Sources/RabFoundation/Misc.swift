@@ -1,5 +1,5 @@
+import Foundation
 import Logging
-import SwiftUI
 
 func downloadURLAsString(from url: URL, completion: @escaping @Sendable (Result<String, Error>) -> Void) {
     let task = URLSession.shared.dataTask(with: url) { data, _, error in

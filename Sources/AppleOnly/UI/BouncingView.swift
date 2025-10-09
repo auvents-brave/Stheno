@@ -25,7 +25,6 @@ public struct BouncingView<T: View>: View {
     }
 }
 
-#if XCODE
 @available(tvOS 16, *)
 #Preview("Button") {
     BouncingView {
@@ -43,4 +42,3 @@ public struct BouncingView<T: View>: View {
         .aspectRatio(contentMode: .fit)
     }
 }
-#endif

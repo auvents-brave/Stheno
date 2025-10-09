@@ -1,6 +1,6 @@
 import SwiftUI
 
-@available(macOS 12, iOS 15, *)
+@available(iOS 15, *)
 @ViewBuilder func HtmlView(_ value: String) -> some View {
     @Environment(\.colorScheme) var colorScheme
 
@@ -42,8 +42,7 @@ import SwiftUI
     }
 }
 
-#if XCODE
-@available(macOS 12, iOS 15, *)
+@available(iOS 15, *)
 #Preview {
     VStack {
         HtmlView("not html text")
@@ -65,4 +64,3 @@ import SwiftUI
     }
     .background(Color(.lightGray))
 }
-#endif

@@ -39,6 +39,9 @@ var targs: [Target] = [
         condition: .when(platforms: [.macOS, .macCatalyst, .iOS, .tvOS, .watchOS, .visionOS])
       )
     ],
+	resources: [
+		.process("Resources")
+	],
   ),
 
   .target(
@@ -47,6 +50,9 @@ var targs: [Target] = [
       .product(name: "Logging", package: "swift-log"),
     ],
     path: "Sources/AppleOnly",
+	resources: [
+		.process("Resources")
+	],
   ),
 
   .testTarget(
@@ -76,6 +82,7 @@ targs.append(
 
 let package = Package(
     name: "rab-foundation",
+	defaultLocalization: "en",
     platforms: [
         .macOS(.v14),
         .macCatalyst(.v14),

@@ -55,8 +55,6 @@ import SwiftUI
     }
 #endif
 
-#if XCODE
 #Preview {
     WebKitView(url: URL(string: "https://example.com")!)
 }
-#endif
