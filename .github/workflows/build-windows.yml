@@ -20,9 +20,7 @@ jobs:
 
       - name: Install Swift 6.2 silently
         shell: pwsh
-        run: |
-          shell: pwsh
-          run: >
+        run: >
             curl -LO https://aka.ms/vs/17/release/vs_buildtools.exe
             ./vs_buildtools.exe `
               --quiet `
