@@ -67,7 +67,7 @@ extension Color {
                 let red = color.redComponent, green = color.greenComponent, blue = color.blueComponent
             #endif
         #endif
-        return RabFoundation.toHTMLHex(
+        return Stheno.toHTMLHex(
             red: red,
             green: green,
             blue: blue,
@@ -95,7 +95,7 @@ extension Color {
         public func toHTMLHex(includeHash: Bool = true) -> String? {
             var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
             guard getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return nil }
-            return RabFoundation.toHTMLHex(
+            return Stheno.toHTMLHex(
                 red: red,
                 green: green,
                 blue: blue,

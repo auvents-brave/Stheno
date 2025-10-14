@@ -5,8 +5,8 @@ import Foundation
 
 var prods: [Product] = [
     .library(
-        name: "RABFoundation",
-        targets: ["RabFoundation"]
+        name: "Stheno",
+        targets: ["Stheno"]
     ),
 ]
 
@@ -31,7 +31,7 @@ var deps: [Package.Dependency] = [
 
 var targs: [Target] = [
   .target(
-    name: "RabFoundation",
+    name: "Stheno",
     dependencies: [
       .product(name: "Logging", package: "swift-log"),
       .target(
@@ -56,9 +56,9 @@ var targs: [Target] = [
   ),
 
   .testTarget(
-    name: "RabFoundationTests",
+    name: "SthenoTests",
     dependencies: [
-      "RabFoundation",
+      "Stheno",
       .product(name: "SwiftLogTesting", package: "swift-log-testing"),
     ],
     resources: [
@@ -81,7 +81,7 @@ targs.append(
 #endif
 
 let package = Package(
-    name: "rab-foundation",
+    name: "Stheno",
 	defaultLocalization: "en",
     platforms: [
         .macOS(.v14),

@@ -1,10 +1,21 @@
-# rab-foundation // RabFoundation
+# Sthenô
 
-A small pure and cross-platform Swift library (usable on Windows or WebAssembly for example). Without any specific context, it just includes reusable code, covering very different topics.
+Sthenô is a small, cross-platform Swift package that consolidates reusable, context-independent components. It focuses on well-scoped building blocks with clear APIs, thorough DocC documentation, and solid unit test coverage, designed to be adopted piecemeal across apps, frameworks, and tools.
 
-[![latforms](https://img.shields.io/badge/platforms-macOS%20%7C%20macCatalyst%20%7C%20iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20visionOS%20%7C%20Linux%20%7C%20Windows%20%7C%20WebAssembly-lightgrey)
-[![CI](https://github.com/auvents-brave/RABFoundation/actions/workflows/build.yml/badge.svg)](https://github.com/auvents-brave/RABFoundation/actions/workflows/build.yml) [![CodeQL](https://github.com/auvents-brave/RABFoundation/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/auvents-brave/RABFoundation/actions/workflows/github-code-scanning/codeql) [![DocC](https://img.shields.io/badge/docs-available-brightgreen)](https://auvents-brave.github.io/RABFoundation/)
+Sthenô depends only on swift-log for structured logging, ensuring consistent and configurable diagnostics across platforms while keeping the overall dependency footprint minimal.
 
->  One day I created a folder on my HD to move various documents to organise or destroy at a later time. I called it ["rubrique à brac"](https://fr.wikipedia.org/wiki/rubrique-à-brac), from the name of a French comic book series. Years later, when I was thinking about creating my first library to store code that could be used in different applications, the name RabLib just popped into my head!
+Continuous Integration (CI) is handled through GitHub Actions, which automatically builds, tests, and analyzes the codebase using CodeQL to ensure quality, consistency, and cross-platform reliability.
 
-I try to document the code as well as possible, and have a good coverage of unit tests, without being perfect either.
+[![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20macCatalyst%20%7C%20iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20visionOS%20%7C%20Linux%20%7C%20Windows%20%7C%20WebAssembly-lightgrey)]()
+![Swift](https://img.shields.io/badge/Swift-6.2-orange?logo=swift)
+[![CI](https://github.com/auvents-brave/Stheno/actions/workflows/build.yml/badge.svg)](https://github.com/auvents-brave/Stheno/actions/workflows/build.yml)
+[![CodeQL](https://github.com/auvents-brave/Stheno/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/auvents-brave/Stheno/actions/workflows/github-code-scanning/codeql)
+[![DocC](https://img.shields.io/badge/docs-available-brightgreen)](https://auvents-brave.github.io/Stheno/)
+
+## Library Contents
+
+Sthenô brings together a set of focused components spanning system utilities, user interface helpers, and geospatial tools. It includes support for cloud-synced preferences, HTML and date processing.
+The library also offers lightweight WebKit and MapKit abstractions, geometry and coordinate types with great-circle distance calculations for accurate geodesic measurements, and convenience views for embedding web content. Its geospatial capabilities include WMTS Tile Overlay support with local caching for efficient and offline-ready visualization and reverse geocoding utilities to convert coordinates into meaningful human-readable locations.
+In addition, Sthenô integrates lightweight image classification tools for context-aware visual recognition tasks.
+
+All modules are written in pure Swift, designed for reuse across Apple platforms, Linux, Windows, and WebAssembly.
