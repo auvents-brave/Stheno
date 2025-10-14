@@ -4,17 +4,17 @@ import Foundation
  Removes all known HTML tags from a string and decodes common HTML entities to their Unicode equivalents.
 
  This function is intended to sanitize and clean up raw HTML content by:
-  - Removing an extensive list of known HTML tags (including inline, block, form, and media tags),
-  - Decoding a wide range of HTML entities (such as &amp;, &lt;, &gt;, &copy;, &euro;, and many more) into displayable characters.
+ - Removing an extensive list of known HTML tags (including inline, block, form, and media tags),
+ - Decoding a wide range of HTML entities (such as &amp;, &lt;, &gt;, &copy;, &euro;, and many more) into displayable characters.
 
  - Parameter text: The input string containing HTML content to be sanitized. This can be either a raw HTML source or a text fragment with embedded HTML.
  - Returns: A plain, human-readable string with all recognized HTML tags removed and all supported HTML entities decoded. If the input contains only safe, non-HTML content, the original string is returned.
 
  ## Example
  ```swift
-    let html = "<p>Copyright &copy; 2025</p>"
-    let plain = CleanHTML(from: html)
-    // plain == "Copyright © 2025"
+ let html = "<p>Copyright &copy; 2025</p>"
+ let plain = CleanHTML(from: html)
+ // plain == "Copyright © 2025"
  ```
  */
 public func CleanHTML(from text: String) -> String {
@@ -48,7 +48,7 @@ public func CleanHTML(from text: String) -> String {
     return decodeHTMLEntities(in: tagStripped)
 }
 
-internal func isHTML(_ text: String) -> Bool {
+@inlinable public func containsHTML(_ text: String) -> Bool {
     return text != CleanHTML(from: text)
 }
 

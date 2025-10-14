@@ -5,30 +5,23 @@
 import SwiftUI
 
 #if os(tvOS) || os(watchOS)
-    /// A SwiftUI view that embeds a WKWebView for displaying web content.
-    ///
     /// On tvOS and watchOS, this view displays a placeholder indicating lack of WebKit support.
     public struct WebKitView: View {
-        let url: URL
-        @State private var content: String = ""
-
         /// Creates a non-functional WebKitView for unsupported platforms.
         ///
         /// - Parameter url: The URL that would have been loaded, ignored on unsupported platforms.
         public init(url: URL) {
-            self.url = url
         }
 
         /// The content and behavior of the view.
         public var body: some View {
             Text("Not supported")
+                .accessibilityIdentifier("WebKitView.webView")
         }
     }
 #else
     import WebKit
 
-    /// A SwiftUI view that embeds a WKWebView for displaying web content.
-    ///
     /// On iOS, macOS, and compatible platforms, this view loads a URL or string into a WKWebView.
     public struct WebKitView: View {
         var web = WKWebView()

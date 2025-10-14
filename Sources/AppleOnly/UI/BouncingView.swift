@@ -38,7 +38,7 @@ public struct BouncingView<T: View>: View {
         Image(
             systemName: "square.and.arrow.up.trianglebadge.exclamationmark.fill"
         )
-        .resizable()
-        .aspectRatio(contentMode: .fit)
+		.resizable()
+		.aspectRatio(contentMode: .fit)
     }
 }

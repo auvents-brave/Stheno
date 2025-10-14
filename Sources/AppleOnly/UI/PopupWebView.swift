@@ -59,7 +59,7 @@ struct PopupWebView: View {
 
 #Preview("In List") {
     List {
-		PopupWebView(url: URL(string: "https://apple.com")!, title: "Apple")
+        PopupWebView(url: URL(string: "https://apple.com")!, title: "Apple")
         PopupWebView(url: URL(string: "https://example.com")!, title: "Example")
     }
 }

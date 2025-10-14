@@ -7,7 +7,7 @@ import SwiftUI
 #if os(macOS)
     /// Alias to unify controller references across platforms.
     typealias ViewController = NSViewController
-    
+
     /// A SwiftUI wrapper that embeds an `NSView` in SwiftUI views on macOS.
     /// - Parameter V: The type of `NSView` to be wrapped.
     struct WrapperView<V: NSView>: NSViewRepresentable {
@@ -30,10 +30,11 @@ import SwiftUI
         /// Updates the wrapped NSView (no-op here).
         public func updateNSView(_ webView: V, context: NSViewRepresentableContext<WrapperView>) {}
     }
+
 #elseif !os(watchOS)
     /// Alias to unify controller references across platforms.
     typealias ViewController = UIViewController
-    
+
     /// A SwiftUI wrapper that embeds a `UIView` in SwiftUI views on iOS and other supported platforms.
     /// - Parameter V: The type of `UIView` to be wrapped.
     struct WrapperView<V: UIView>: UIViewRepresentable {
@@ -55,4 +56,3 @@ import SwiftUI
         func updateUIView(_ uiView: V, context: Context) {}
     }
 #endif
-

@@ -28,7 +28,7 @@ import Foundation
     public init(wrappedValue: Value, timeInterval: TimeInterval = 1) {
         value = wrappedValue
         interval = timeInterval
-        lastSet = Date()
+        lastSet = .distantPast
     }
 
     /// Accesses the wrapped value. Assignments only succeed if the minimum interval has elapsed since the last update.

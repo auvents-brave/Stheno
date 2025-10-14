@@ -2,37 +2,66 @@ import MapKit
 import SwiftUI
 
 #if os(watchOS)
-    /// A SwiftUI view that represents a map using MapKit.
-    ///
-    /// On watchOS, this view currently displays a placeholder text as map rendering is not supported.
+    @available(watchOS 10, *)
+    @Observable class MapViewModel {
+        var position: MapCameraPosition
+        var span: MKCoordinateSpan
+
+        init(initialRegion: MKCoordinateRegion) {
+            position = MapCameraPosition.region(initialRegion)
+            span = initialRegion.span
+        }
+
+        public func setRegion(_ newRegion: MKCoordinateRegion) {
+            position = MapCameraPosition.region(newRegion)
+            span = newRegion.span
+        }
+    }
+
+    @available(watchOS 10, *)
     public struct MapKitView: View {
-        /// Creates a basic MapKitView for watchOS.
-        public init() {}
+        @State var viewModel: MapViewModel
 
-        /// Creates a MapKitView for watchOS with a single tile overlay cache directory and URL template.
-        ///
-        /// - Parameters:
-        ///   - cacheDirectory: The directory to cache map tiles.
-        ///   - urlTemplate: The URL template string for the tile overlay.
-        public init(cacheDirectory: String, urlTemplate: String) {}
+        public init() {
+            self.init(overlays: [])
+        }
 
-        /// Creates a MapKitView for watchOS with multiple tile overlay cache directories and URL templates.
-        ///
-        /// - Parameter overlays: An array of tuples where each contains a cache directory and URL template.
-        public init(overlays: [(cacheDirectory: String, urlTemplate: String)]) {}
+        public init(cacheDirectory: String, urlTemplate: String) {
+            self.init(overlays: [(cacheDirectory: cacheDirectory, urlTemplate: urlTemplate)])
+        }
 
-        /// The body of the view, displaying a placeholder text on watchOS.
+        public init(overlays: [(cacheDirectory: String, urlTemplate: String)]) {
+            let region = MKCoordinateRegion(
+                center: CLLocationCoordinate2D(
+                    latitude: 20,
+                    longitude: 0
+                ),
+                span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+            )
+            viewModel = MapViewModel(initialRegion: region)
+        }
+
+        public func setRegion(_ newRegion: MKCoordinateRegion) {
+            viewModel.setRegion(newRegion)
+        }
+
         public var body: some View {
-            Text("Not supported")
+            if #available(watchOS 12, *) {
+                Map(position: $viewModel.position)
+                    .accessibilityIdentifier("MapKitView.map")
+            } else {
+                Text("Not supported")
+                    .accessibilityIdentifier("MapKitView.map")
+            }
         }
     }
 #else
     /// A SwiftUI view that wraps an MKMapView and supports multiple cached tile overlays.
     public struct MapKitView: View {
         /// The delegate handling MKMapView rendering and events.
-        var delegate = MapDelegate()
+        let delegate = MapDelegate()
         /// The underlying MKMapView instance displayed by this view.
-        var map = MKMapView()
+        let map = MKMapView()
 
         /// Creates a MapKitView instance without any tile overlays.
         public init() {
@@ -58,12 +87,8 @@ import SwiftUI
             }
         }
 
-        public func setRegion2(_ region: MKCoordinateRegion, animated: Bool = false) {
-            map.setRegion(region, animated: animated)
-        }
-
-        public mutating func setRegion(_ region: MKCoordinateRegion, animated: Bool = false) {
-            map.setRegion(region, animated: animated)
+        public func setRegion(_ region: MKCoordinateRegion) {
+            map.setRegion(region, animated: false)
         }
 
         /// The SwiftUI view that wraps the MKMapView and ignores safe area edges.
@@ -75,18 +100,21 @@ import SwiftUI
 #endif
 
 /// Preview showing a plain MapKitView without any overlays.
+@available(watchOS 12, *)
 #Preview("Plain") {
     MapKitView()
 }
 
 /// Preview showing a MapKitView with OpenStreetMap tile overlay.
+@available(watchOS 12, *)
 #Preview("OpenStreetMap") {
     var v = MapKitView(cacheDirectory: "openstreetmapcache", urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png")
-    v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 20.0, longitude: 0.0), span: MKCoordinateSpan(latitudeDelta: 80.0, longitudeDelta: 120.0)))
+    v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 43.7384, longitude: 7.4246), span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)))
     return v
 }
 
 /// Preview showing a MapKitView with OpenTopoMap tile overlay.
+@available(watchOS 12, *)
 #Preview("OpenTopoMap") {
     var v = MapKitView(cacheDirectory: "opentopomapcache", urlTemplate: "https://a.tile.opentopomap.org/{z}/{x}/{y}.png")
     v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 44.9224, longitude: 6.3608), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)))
@@ -95,6 +123,7 @@ import SwiftUI
 
 /// Preview showing a MapKitView with IGN (France) WMTS tile overlay.
 /// See: https://geoservices.ign.fr/services-web-essentiels
+@available(watchOS 12, *)
 #Preview("IGN (France)") {
     var v = MapKitView(cacheDirectory: "igncache", urlTemplate: "https://data.geopf.fr/wmts?layer=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y})")
     v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 44.9224, longitude: 6.3608), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)))
@@ -102,26 +131,29 @@ import SwiftUI
 }
 
 /// Preview showing a MapKitView with Carte de Cassini (France XVIII) WMTS tile overlay.
+@available(watchOS 12, *)
 #Preview("Carte de Cassini (France XVIII)") {
     var v = MapKitView(cacheDirectory: "cassinicache", urlTemplate: "https://data.geopf.fr/wmts?layer=BNF-IGNF_GEOGRAPHICALGRIDSYSTEMS.CASSINI&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&TileMatrix={z}&TileCol={x}&TileRow={y})")
-    v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 44.9224, longitude: 6.3608), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)))
+    v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 45.0050, longitude: 6.5180), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)))
     return v
 }
 
 /// Preview showing a MapKitView with several overlays including OpenTopoMap and OpenSeaMap.
+@available(watchOS 12, *)
 #Preview("OpenSeaMap") {
     var v = MapKitView(cacheDirectory: "openseamapcache", urlTemplate: "https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png")
-    v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 20.0, longitude: 0.0), span: MKCoordinateSpan(latitudeDelta: 80.0, longitudeDelta: 120.0)))
+    v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 43.6956, longitude: 7.2906), span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)))
     return v
 }
 
 /// Preview showing a MapKitView with several overlays including OpenTopoMap and OpenSeaMap.
+@available(watchOS 12, *)
 #Preview("Several overlays") {
     let overlays = [
         (cacheDirectory: "opentopomapcache", urlTemplate: "https://a.tile.opentopomap.org/{z}/{x}/{y}.png"),
         (cacheDirectory: "openseamapcache", urlTemplate: "https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png"),
     ]
     var v = MapKitView(overlays: overlays)
-    v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 20.0, longitude: 0.0), span: MKCoordinateSpan(latitudeDelta: 80.0, longitudeDelta: 120.0)))
+    v.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 43.7396, longitude: 7.4276), span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)))
     return v
 }

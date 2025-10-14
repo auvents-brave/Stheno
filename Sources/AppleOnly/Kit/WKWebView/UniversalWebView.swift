@@ -26,7 +26,11 @@ import SwiftUI
                 visionOS 26,
                 *
             ) {
-                webView = WebView(url: url)
+                #if XCODE_BUILD
+                    webView = WebView(url: url)
+                #else
+                    webView = nil
+                #endif
             } else {
                 webView = WebKitView(url: url)
             }
@@ -41,7 +45,11 @@ import SwiftUI
                 visionOS 26,
                 *
             ) {
-                webView as! WebView
+                #if XCODE_BUILD
+                    webView as! WebView
+                #else
+                    Text("")
+                #endif
             } else {
                 webView as! WebKitView
             }
