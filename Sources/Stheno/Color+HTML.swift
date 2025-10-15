@@ -122,7 +122,7 @@ extension Color {
         /// - Returns: A string in the format "#RRGGBB" or "RRGGBB". Returns `nil` if the color components cannot be extracted.
         public func toHTMLHex(includeHash: Bool = true) -> String? {
             guard let cgColor = cgColor.copy(alpha: 1.0), let components = cgColor.components, components.count >= 3 else { return nil }
-            return RabFoundation.toHTMLHex(
+			return Stheno.toHTMLHex(
                 red: components[0],
                 green: components[1],
                 blue: components[2],

@@ -2,7 +2,7 @@
 
 Sthenô is a small, cross-platform Swift package that consolidates reusable, context-independent components. It focuses on well-scoped building blocks with clear APIs, thorough DocC documentation, and solid unit test coverage, designed to be adopted piecemeal across apps, frameworks, and tools.
 
-Sthenô depends only on swift-log for structured logging, ensuring consistent and configurable diagnostics across platforms while keeping the overall dependency footprint minimal.
+Sthenô depends only on [swift-log](https://github.com/apple/swift-log) for structured logging, ensuring consistent and configurable diagnostics across platforms while keeping the overall dependency footprint minimal.
 
 Continuous Integration (CI) is handled through GitHub Actions, which automatically builds, tests, and analyzes the codebase using CodeQL to ensure quality, consistency, and cross-platform reliability.
 
@@ -15,7 +15,7 @@ Continuous Integration (CI) is handled through GitHub Actions, which automatical
 ## Library Contents
 
 Sthenô brings together a set of focused components spanning system utilities, user interface helpers, and geospatial tools. It includes support for cloud-synced preferences, HTML and date processing.
-The library also offers lightweight WebKit and MapKit abstractions, geometry and coordinate types with great-circle distance calculations for accurate geodesic measurements, and convenience views for embedding web content. Its geospatial capabilities include WMTS Tile Overlay support with local caching for efficient and offline-ready visualization and reverse geocoding utilities to convert coordinates into meaningful human-readable locations.
+The library also offers lightweight WebKit and MapKit abstractions, and convenience views for embedding web content. Geometry and coordinate types with bearing and great-circle distance calculations for accurate geodesic measurements. Its geospatial capabilities include WMTS Tile Overlay support with local caching for efficient and offline-ready visualization and reverse geocoding utilities to convert coordinates into meaningful human-readable locations.
 In addition, Sthenô integrates lightweight image classification tools for context-aware visual recognition tasks.
 
 All modules are written in pure Swift, designed for reuse across Apple platforms, Linux, Windows, and WebAssembly.
