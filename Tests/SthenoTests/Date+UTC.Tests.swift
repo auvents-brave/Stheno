@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 
-@testable import RabFoundation
+@testable import Stheno
 
 // DateFormatter() is locale-dependent and platform-dependent. For some locales (like "en_GB"), the default time format on Darwin is 18:00 but Linux's Foundation implementation or ICU data includes the AM/PM (6:00 PM).
 private func stripTrailingAM(_ s: String) -> String {

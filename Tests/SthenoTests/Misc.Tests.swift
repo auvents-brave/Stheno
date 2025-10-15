@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 
-@testable import RabFoundation
+@testable import Stheno
 
 @Suite("Misc Utility")
 struct MiscTests {

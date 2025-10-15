@@ -1,6 +1,6 @@
 import Testing
 
-@testable import RabFoundation
+@testable import Stheno
 
 @Suite("Geo Utility Functions")
 struct GeoTests {

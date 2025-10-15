@@ -1,7 +1,7 @@
 #if !(os(Windows) || os(WASI))
     import Testing
 
-    @testable import RabFoundation
+    @testable import Stheno
 
     @Test("Intercepting StdOut") func Log() async throws {
         var output: any TextOutputStream = ""

@@ -1,6 +1,6 @@
 import Testing
 
-@testable import RabFoundation
+@testable import Stheno
 
 @Suite("Throttling Property Wrapper") struct ThrottledTests {
     @Test("Value is throttled (does not update immediately)")

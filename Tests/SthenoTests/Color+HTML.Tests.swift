@@ -3,7 +3,7 @@
 #endif
 import Testing
 
-@testable import RabFoundation
+@testable import Stheno
 
 @Suite("Color <-> HTML Hex Conversion")
 struct ColorHTMLHexTests {

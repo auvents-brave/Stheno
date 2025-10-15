@@ -1,6 +1,6 @@
 import Testing
 
-@testable import RabFoundation
+@testable import Stheno
 
 @Test("Strip HTML tags, decode HTML entities", arguments: [
     ("I told my computer I needed a break, and now it won’t stop sending me KitKat ads.", false, ""),
