@@ -1,0 +1,14 @@
+FROM swift:latest AS builder
+
+WORKDIR /package
+COPY . .
+
+RUN swift build -c release
+
+
+FROM debian:12-slim AS runtime
+WORKDIR /package
+
+RUN mkdir -p /package/dist
+
+COPY --from=builder /package/.build/release/*.a /package/dist/

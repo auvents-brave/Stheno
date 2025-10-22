@@ -1,7 +1,14 @@
-// swift-tools-version: 6.1
+// swift-tools-version: 6.2
 
 import PackageDescription
 import Foundation
+
+#if canImport(XcodeProject)
+let isXcode = true
+#else
+let isXcode = false
+#endif
+// or let isXcode = ProcessInfo.processInfo.environment["XCODE_VERSION_ACTUAL"] != nil
 
 var prods: [Product] = [
     .library(
@@ -21,38 +28,18 @@ var deps: [Package.Dependency] = [
     ),
 ]
 
-#if false
-    deps.append(
-        .package(
-            url: "https://github.com/apple/swift-docc-plugin",
-            from: "1.4.0"
-        ))
-#endif
-
 var targs: [Target] = [
   .target(
     name: "Stheno",
     dependencies: [
       .product(name: "Logging", package: "swift-log"),
-      .target(
-        name: "AppleOnly",
-        condition: .when(platforms: [.macOS, .macCatalyst, .iOS, .tvOS, .watchOS, .visionOS])
-      )
     ],
 	resources: [
 		.process("Resources")
 	],
-  ),
-
-  .target(
-    name: "AppleOnly",
-    dependencies: [
-      .product(name: "Logging", package: "swift-log"),
-    ],
-    path: "Sources/AppleOnly",
-	resources: [
-		.process("Resources")
-	],
+	swiftSettings: isXcode ? [
+		.define("XCODE")
+	] : []
   ),
 
   .testTarget(
@@ -67,28 +54,15 @@ var targs: [Target] = [
   ),
 ]
 
-#if canImport(Darwin)
-targs.append(
-  .testTarget(
-    name: "AppleOnlyTests",
-    dependencies: [
-      "AppleOnly",
-      .product(name: "SwiftLogTesting", package: "swift-log-testing"),
-    ],
-    resources: [.process("Resources")],
-  )
-)
-#endif
-
 let package = Package(
     name: "Stheno",
 	defaultLocalization: "en",
     platforms: [
-        .macOS(.v14),
+        .macOS(.v11),
         .macCatalyst(.v14),
         .iOS(.v14),
-        .tvOS(.v15),
-        .watchOS(.v9),
+        .tvOS(.v14),
+        .watchOS(.v7),
         .visionOS(.v1),
     ],
 
