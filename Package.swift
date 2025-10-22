@@ -1,76 +1,73 @@
 // swift-tools-version: 6.2
 
-import PackageDescription
 import Foundation
+import PackageDescription
 
-#if canImport(XcodeProject)
-let isXcode = true
-#else
-let isXcode = false
-#endif
-// or let isXcode = ProcessInfo.processInfo.environment["XCODE_VERSION_ACTUAL"] != nil
+let swiftSettings: [SwiftSetting] =
+	ProcessInfo.processInfo.environment["RUNNER"] == "VSCode" ? [.define("VSCode")] :
+	(ProcessInfo.processInfo.environment["XCODE_VERSION_ACTUAL"] != nil ? [.define("Xcode")] : [])
 
 var prods: [Product] = [
-    .library(
-        name: "Stheno",
-        targets: ["Stheno"]
-    ),
+	.library(
+		name: "Stheno",
+		targets: ["Stheno"]
+	),
 ]
 
 var deps: [Package.Dependency] = [
-    .package(
-        url: "https://github.com/apple/swift-log",
-        from: "1.6.0"
-    ),
-    .package(
-        url: "https://github.com/neallester/swift-log-testing",
-        from: "0.0.1"
-    ),
+	.package(
+		url: "https://github.com/apple/swift-log",
+		from: "1.6.0"
+	),
+	.package(
+		url: "https://github.com/neallester/swift-log-testing",
+		from: "0.0.1"
+	),
 ]
 
 var targs: [Target] = [
-  .target(
-    name: "Stheno",
-    dependencies: [
-      .product(name: "Logging", package: "swift-log"),
-    ],
-	resources: [
-		.process("Resources")
-	],
-	swiftSettings: isXcode ? [
-		.define("XCODE")
-	] : []
-  ),
+	.target(
+		name: "Stheno",
+		dependencies: [
+			.product(name: "Logging", package: "swift-log"),
+		],
+		resources: [
+			.process("Resources"),
+		],
+		swiftSettings: swiftSettings,
+	),
 
-  .testTarget(
-    name: "SthenoTests",
-    dependencies: [
-      "Stheno",
-      .product(name: "SwiftLogTesting", package: "swift-log-testing"),
-    ],
-    resources: [
-      .process("TestInfo.plist"),
-    ]
-  ),
+	.testTarget(
+		name: "SthenoTests",
+		dependencies: [
+			"Stheno",
+			.product(name: "SwiftLogTesting", package: "swift-log-testing"),
+		],
+		resources: [
+			.process("TestInfo.plist"),
+		],
+		swiftSettings: swiftSettings,
+	),
 ]
 
 let package = Package(
-    name: "Stheno",
+	name: "Stheno",
 	defaultLocalization: "en",
-    platforms: [
-        .macOS(.v11),
-        .macCatalyst(.v14),
-        .iOS(.v14),
-        .tvOS(.v14),
-        .watchOS(.v7),
-        .visionOS(.v1),
-    ],
+	platforms: [
+		.macOS(.v13),
+		.macCatalyst(.v14),
+		.iOS(.v12),
+		.tvOS(.v14),
+		.watchOS(.v7),
+		.visionOS(.v1),
+	],
 
-    products: prods,
+	products: prods,
 
-    dependencies: deps,
+	dependencies: deps,
 
-    targets: targs,
-    
-    swiftLanguageModes: [ .v6 ],
+	targets: targs,
+
+	swiftLanguageModes: [.v6],
 )
+

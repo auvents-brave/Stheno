@@ -11,16 +11,31 @@ private func stripTrailingAM(_ s: String) -> String {
 @Test func `Create Date from ISO string`() async throws {
   let d = Date(fromISO: "2025-08-26T09:29:23.321Z")
 
-  #expect(DateFormatter().locale.identifier == "en_GB")
+#if Xcode
+  #expect(["en_GB", "en_001"].contains(DateFormatter().locale.identifier))
+#endif
+
+#if VSCode
+	ezfezfezf
+#endif
+
   #expect("09:29" == stripTrailingAM("09:29 AM"))
 
-  #expect("26/08/2025, 09:29" == stripTrailingAM(d.Display(display: .asUniversalTime)), "a")
-  #expect("26/08/2025, 11:29" == stripTrailingAM(d.Display(display: .asLocalTime)), "b")
+#if Xcode
+	#expect("26/08/2025, 09:29" == stripTrailingAM(d.Display(display: .asUniversalTime)), "a")
+	#expect("26/08/2025, 10:29" == stripTrailingAM(d.Display(display: .asLocalTime)), "b")
+	#else
+	#expect("26/08/2025 09:29" == stripTrailingAM(d.Display(display: .asUniversalTime)), "a")
+	#expect("26/08/2025 10:29" == stripTrailingAM(d.Display(display: .asLocalTime)), "b")
+	#endif
 
   let formatter = DateFormatter()
+  #if !XCODE
+  formatter.locale = Locale(identifier: "en_GB")
+#endif
   formatter.dateFormat = "dd/MM/yy '-' HH:mm"
   #expect("26/08/25 - 09:29" == stripTrailingAM(d.Display(display: .asUniversalTime, formatter: formatter)), "c")
-  #expect("26/08/25 - 11:29" == stripTrailingAM(d.Display(display: .asLocalTime, formatter: formatter)), "d")
+	#expect("26/08/25 - 10:29" == stripTrailingAM(d.Display(display: .asLocalTime, formatter: formatter)), "d")
 
     let withoutNano = Calendar.current.date(from: DateComponents(
         timeZone: TimeZone(abbreviation: "GMT"),

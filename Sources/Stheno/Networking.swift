@@ -1,11 +1,9 @@
+import Foundation
 import Logging
 
-#if canImport(Darwin)
-   import Foundation
-#else
+#if !canImport(Darwin)
    import FoundationNetworking
 #endif
-
 
 fileprivate func session() -> URLSession {
     #if canImport(Darwin)
@@ -14,8 +12,6 @@ fileprivate func session() -> URLSession {
         return URLSession(configuration: URLSessionConfiguration.default)
     #endif
 }
-
-#if false
 
 func downloadURLasString(from url: URL, completion: @escaping @Sendable (Result<String, Error>) -> Void) {
     let task = session().dataTask(with: url) { data, response, error in
@@ -44,5 +40,3 @@ func downloadURLasString(from url: URL, completion: @escaping @Sendable (Result<
     }
     task.resume()
 }
-
-#endif

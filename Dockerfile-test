@@ -1,4 +1,3 @@
-# Dockerfile permettant d'exécuter les tests Swift Package
 FROM swift:latest
 
 # Set environment variables for all future commands and containers
@@ -12,9 +11,12 @@ RUN apt-get update && \
 ENV LANG=en_GB.UTF-8
 ENV LANGUAGE=en_GB:en
 ENV LC_ALL=en_GB.UTF-8
+ENV LC_IDENTIFICATION=en_GB.UTF-8
 
 WORKDIR /package
 COPY . .
 
+RUN swift -e 'import Foundation; print(Locale.current.identifier)'
+
 RUN swift test --enable-swift-testing
-# --parallel        
+# --parallel

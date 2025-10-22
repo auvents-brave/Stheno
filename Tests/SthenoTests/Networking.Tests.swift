@@ -3,8 +3,7 @@ import Testing
 
 @testable import Stheno
 
-#if false
-
+#if !os(Linux)
 @Suite("Networking")
 struct NetworkingTests {
     @Test func `example.com contains 'Example Domain'`() async throws {
@@ -34,5 +33,4 @@ struct NetworkingTests {
         }
     }
 }
-
 #endif
