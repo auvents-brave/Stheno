@@ -43,6 +43,7 @@ jobs:
           TOOLCHAIN_ROOT="/usr/local/swift-6.2-RELEASE-wasm-wasi"
           TOOLCHAIN_PATH="$TOOLCHAIN_ROOT/usr/bin"
           TOOLCHAIN_LIB="$TOOLCHAIN_ROOT/usr/lib/swift/linux"
+          TOOLCHAIN_LIB_STATIC="$TOOLCHAIN_ROOT/usr/lib/swift_static/wasi"
 
           if [ ! -x "$TOOLCHAIN_PATH/swift" ]; then
             echo "Expected Swift binary not found at $TOOLCHAIN_PATH/swift" >&2
@@ -50,11 +51,45 @@ jobs:
           fi
 
           echo "$TOOLCHAIN_PATH" >> "$GITHUB_PATH"
-          if [ -n "${LD_LIBRARY_PATH:-}" ]; then
-            echo "LD_LIBRARY_PATH=$TOOLCHAIN_LIB:${LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
-          else
-            echo "LD_LIBRARY_PATH=$TOOLCHAIN_LIB" >> "$GITHUB_ENV"
+          COMBINED_LD_LIBRARY_PATH="$TOOLCHAIN_LIB"
+          if [ -d "$TOOLCHAIN_LIB_STATIC" ]; then
+            COMBINED_LD_LIBRARY_PATH="$TOOLCHAIN_LIB_STATIC:$COMBINED_LD_LIBRARY_PATH"
           fi
+          if [ -n "${LD_LIBRARY_PATH:-}" ]; then
+            COMBINED_LD_LIBRARY_PATH="$COMBINED_LD_LIBRARY_PATH:${LD_LIBRARY_PATH}"
+          fi
+          echo "LD_LIBRARY_PATH=$COMBINED_LD_LIBRARY_PATH" >> "$GITHUB_ENV"
+
+          SYSROOT_CANDIDATES=(
+            "$TOOLCHAIN_ROOT/share/wasi-sysroot"
+            "$TOOLCHAIN_ROOT/usr/share/wasi-sysroot"
+            "$TOOLCHAIN_ROOT/share/wasi-sdk/share/wasi-sysroot"
+            "$TOOLCHAIN_ROOT/usr/share/wasi-sdk/share/wasi-sysroot"
+          )
+          WASI_SYSROOT=""
+          for candidate in "${SYSROOT_CANDIDATES[@]}"; do
+            if [ -d "$candidate" ]; then
+              WASI_SYSROOT="$candidate"
+              break
+            fi
+          done
+          if [ -z "$WASI_SYSROOT" ]; then
+            echo "Unable to locate WASI sysroot within toolchain." >&2
+            find "$TOOLCHAIN_ROOT" -maxdepth 4 -type d -name "wasi-sysroot" >&2 || true
+            exit 1
+          fi
+          echo "WASI_SYSROOT=$WASI_SYSROOT" >> "$GITHUB_ENV"
+
+          DESTINATION_FILE="$RUNNER_TEMP/wasi-destination.json"
+          cat > "$DESTINATION_FILE" <<EOF
+{
+  "version": 1,
+  "target": "wasm32-unknown-wasi",
+  "toolchain-bin-dir": "$TOOLCHAIN_PATH",
+  "sdk": "$WASI_SYSROOT"
+}
+EOF
+          echo "WASI_DESTINATION=$DESTINATION_FILE" >> "$GITHUB_ENV"
 
       - name: Verify Swift 6.2
         shell: bash
@@ -63,12 +98,18 @@ jobs:
           TOOLCHAIN_ROOT="/usr/local/swift-6.2-RELEASE-wasm-wasi"
           TOOLCHAIN_PATH="$TOOLCHAIN_ROOT/usr/bin"
           TOOLCHAIN_LIB="$TOOLCHAIN_ROOT/usr/lib/swift/linux"
+          TOOLCHAIN_LIB_STATIC="$TOOLCHAIN_ROOT/usr/lib/swift_static/wasi"
           if [ -d "$TOOLCHAIN_PATH" ]; then
             export PATH="$TOOLCHAIN_PATH:$PATH"
           fi
-          if [ -d "$TOOLCHAIN_LIB" ]; then
-            export LD_LIBRARY_PATH="$TOOLCHAIN_LIB:${LD_LIBRARY_PATH:-}"
+          COMBINED_LD_LIBRARY_PATH="$TOOLCHAIN_LIB"
+          if [ -d "$TOOLCHAIN_LIB_STATIC" ]; then
+            COMBINED_LD_LIBRARY_PATH="$TOOLCHAIN_LIB_STATIC:$COMBINED_LD_LIBRARY_PATH"
           fi
+          if [ -n "${LD_LIBRARY_PATH:-}" ]; then
+            COMBINED_LD_LIBRARY_PATH="$COMBINED_LD_LIBRARY_PATH:${LD_LIBRARY_PATH}"
+          fi
+          export LD_LIBRARY_PATH="$COMBINED_LD_LIBRARY_PATH"
           swift --version
           swift --version | grep -q "6\.2"
 
@@ -79,10 +120,20 @@ jobs:
           TOOLCHAIN_ROOT="/usr/local/swift-6.2-RELEASE-wasm-wasi"
           TOOLCHAIN_PATH="$TOOLCHAIN_ROOT/usr/bin"
           TOOLCHAIN_LIB="$TOOLCHAIN_ROOT/usr/lib/swift/linux"
+          TOOLCHAIN_LIB_STATIC="$TOOLCHAIN_ROOT/usr/lib/swift_static/wasi"
           if [ -d "$TOOLCHAIN_PATH" ]; then
             export PATH="$TOOLCHAIN_PATH:$PATH"
           fi
-          if [ -d "$TOOLCHAIN_LIB" ]; then
-            export LD_LIBRARY_PATH="$TOOLCHAIN_LIB:${LD_LIBRARY_PATH:-}"
+          COMBINED_LD_LIBRARY_PATH="$TOOLCHAIN_LIB"
+          if [ -d "$TOOLCHAIN_LIB_STATIC" ]; then
+            COMBINED_LD_LIBRARY_PATH="$TOOLCHAIN_LIB_STATIC:$COMBINED_LD_LIBRARY_PATH"
           fi
-          swift build --triple wasm32-unknown-wasi
+          if [ -n "${LD_LIBRARY_PATH:-}" ]; then
+            COMBINED_LD_LIBRARY_PATH="$COMBINED_LD_LIBRARY_PATH:${LD_LIBRARY_PATH}"
+          fi
+          export LD_LIBRARY_PATH="$COMBINED_LD_LIBRARY_PATH"
+          if [ -z "${WASI_DESTINATION:-}" ]; then
+            echo "WASI_DESTINATION env var missing." >&2
+            exit 1
+          fi
+          swift build --destination "$WASI_DESTINATION"

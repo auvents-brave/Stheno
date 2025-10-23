@@ -22,7 +22,9 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $installPath = "C:\Program Files\Swift\bin"
+          $toolchainRoot = "C:\Library\Developer\Toolchains\swift-6.2-RELEASE-windows10.xctoolchain"
+          $installPath = Join-Path $toolchainRoot "usr\bin"
+          $sdkRoot = "C:\Library\Developer\Platforms\Windows.platform\Developer\SDKs\Windows.sdk"
           $toolchainVersionMatches = $false
           $swiftCommand = Get-Command swift -ErrorAction SilentlyContinue
           if ($swiftCommand) {
@@ -58,14 +60,22 @@ jobs:
           }
 
           $installPath | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          if (Test-Path $sdkRoot) {
+            "SDKROOT=$sdkRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          }
 
       - name: Verify Swift 6.2
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $installPath = "C:\Program Files\Swift\bin"
+          $toolchainRoot = "C:\Library\Developer\Toolchains\swift-6.2-RELEASE-windows10.xctoolchain"
+          $installPath = Join-Path $toolchainRoot "usr\bin"
+          $sdkRoot = "C:\Library\Developer\Platforms\Windows.platform\Developer\SDKs\Windows.sdk"
           if (Test-Path $installPath) {
             $env:Path = "$installPath;$($env:Path)"
+          }
+          if (Test-Path $sdkRoot) {
+            $env:SDKROOT = $sdkRoot
           }
           $swiftVersion = swift --version
           $swiftVersion
@@ -77,8 +87,13 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $installPath = "C:\Program Files\Swift\bin"
+          $toolchainRoot = "C:\Library\Developer\Toolchains\swift-6.2-RELEASE-windows10.xctoolchain"
+          $installPath = Join-Path $toolchainRoot "usr\bin"
+          $sdkRoot = "C:\Library\Developer\Platforms\Windows.platform\Developer\SDKs\Windows.sdk"
           if (Test-Path $installPath) {
             $env:Path = "$installPath;$($env:Path)"
+          }
+          if (Test-Path $sdkRoot) {
+            $env:SDKROOT = $sdkRoot
           }
           swift test

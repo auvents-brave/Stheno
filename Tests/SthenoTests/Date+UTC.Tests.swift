@@ -21,8 +21,9 @@ import Testing
 			)
 	)
   #else
+	let londonTimeZone = TimeZone(identifier: "Europe/London") ?? TimeZone(secondsFromGMT: 0)!
 	#expect("26/08/2025 09:29" == d.Display(display: .asUniversalTime))
-	#expect("26/08/2025 10:29" == d.Display(display: .asLocalTime(TimeZone(identifier: "Europe/London"))!))
+	#expect("26/08/2025 10:29" == d.Display(display: .asLocalTime(londonTimeZone)))
 #endif
 #else
 	#expect("26/08/2025, 9:29 AM" == d.Display(display: .asUniversalTime))
@@ -32,11 +33,12 @@ import Testing
   let formatter = DateFormatter()
   formatter.dateFormat = "dd/MM/yy '-' HH:mm"
   #expect("26/08/25 - 09:29" == d.Display(display: .asUniversalTime, formatter: formatter))
-  #if canImport(Darwin)
+#if canImport(Darwin)
+  let londonTimeZone = TimeZone(identifier: "Europe/London") ?? TimeZone(secondsFromGMT: 0)!
+  #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime(londonTimeZone), formatter: formatter))
+#else
   #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime(TimeZone(identifier: "Europe/London")!), formatter: formatter))
-  #else
-  #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime(TimeZone(identifier: "Europe/London")!), formatter: formatter))
-  #endif
+#endif
 
     let withoutNano = Calendar.current.date(from: DateComponents(
         timeZone: TimeZone(abbreviation: "GMT"),
