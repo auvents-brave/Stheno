@@ -79,16 +79,22 @@ jobs:
             exit 1
           fi
           echo "WASI_SYSROOT=$WASI_SYSROOT" >> "$GITHUB_ENV"
-
           DESTINATION_FILE="$RUNNER_TEMP/wasi-destination.json"
-          cat > "$DESTINATION_FILE" <<EOF
-{
-  "version": 1,
-  "target": "wasm32-unknown-wasi",
-  "toolchain-bin-dir": "$TOOLCHAIN_PATH",
-  "sdk": "$WASI_SYSROOT"
+          export DESTINATION_FILE TOOLCHAIN_PATH WASI_SYSROOT
+          python3 - <<'PY'
+import json
+import os
+
+dest = os.environ["DESTINATION_FILE"]
+data = {
+    "version": 1,
+    "target": "wasm32-unknown-wasi",
+    "toolchain-bin-dir": os.environ["TOOLCHAIN_PATH"],
+    "sdk": os.environ["WASI_SYSROOT"],
 }
-EOF
+with open(dest, "w", encoding="utf-8") as handle:
+    json.dump(data, handle)
+PY
           echo "WASI_DESTINATION=$DESTINATION_FILE" >> "$GITHUB_ENV"
 
       - name: Verify Swift 6.2

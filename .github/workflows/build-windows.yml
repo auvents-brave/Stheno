@@ -22,12 +22,131 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $toolchainRoot = "C:\Library\Developer\Toolchains\swift-6.2-RELEASE-windows10.xctoolchain"
-          $installPath = Join-Path $toolchainRoot "usr\bin"
-          $sdkRoot = "C:\Library\Developer\Platforms\Windows.platform\Developer\SDKs\Windows.sdk"
+          function Get-ToolchainInfoFromBin {
+            param (
+              [string] $BinPath
+            )
+
+            if (-not $BinPath) { return $null }
+            $root = if ($BinPath -match "\\usr\\bin$") {
+              Split-Path (Split-Path $BinPath -Parent) -Parent
+            } else {
+              Split-Path $BinPath -Parent
+            }
+
+            return @{
+              Root = $root
+              Bin = $BinPath
+            }
+          }
+
+          function Get-ToolchainInfoFromSwiftExe {
+            param (
+              [string] $SwiftExePath
+            )
+
+            if (-not $SwiftExePath) { return $null }
+            $binDir = Split-Path $SwiftExePath -Parent
+            return Get-ToolchainInfoFromBin -BinPath $binDir
+          }
+
+          function Resolve-SwiftToolchain {
+            param (
+              [string] $VersionHint = "6.2"
+            )
+
+            $candidateRoots = @()
+            if (Test-Path "C:\Library\Developer\Toolchains") {
+              $candidateRoots += Get-ChildItem -Path "C:\Library\Developer\Toolchains" -Directory -ErrorAction SilentlyContinue
+            }
+            if (Test-Path "C:\Program Files\Swift\toolchains") {
+              $candidateRoots += Get-ChildItem -Path "C:\Program Files\Swift\toolchains" -Directory -ErrorAction SilentlyContinue
+            }
+
+            $orderedRoots = $candidateRoots | Sort-Object -Property @{Expression={ if ($_.Name -like "*$VersionHint*") { 0 } else { 1 } }}
+            foreach ($dir in $orderedRoots) {
+              $swiftExePath = Join-Path $dir.FullName "usr\bin\swift.exe"
+              if (Test-Path $swiftExePath) {
+                return @{
+                  Root = $dir.FullName
+                  Bin = Split-Path $swiftExePath -Parent
+                }
+              }
+            }
+
+            $fallbackBinCandidates = @(
+              "C:\Library\Developer\Toolchains\swift-6.2-RELEASE-windows10.xctoolchain\usr\bin",
+              "C:\Library\Developer\Toolchains\swift-6.2-RELEASE-windows11.xctoolchain\usr\bin",
+              "C:\Program Files\Swift\bin"
+            )
+
+            foreach ($candidate in $fallbackBinCandidates) {
+              if (Test-Path (Join-Path $candidate "swift.exe")) {
+                return Get-ToolchainInfoFromBin -BinPath $candidate
+              }
+            }
+
+            $searchRoots = @(
+              "C:\Library\Developer\Toolchains",
+              "C:\Program Files\Swift",
+              "C:\Program Files"
+            )
+
+            foreach ($root in $searchRoots) {
+              if (-not (Test-Path $root)) { continue }
+              $swiftExecutables = Get-ChildItem -Path $root -Recurse -Filter swift.exe -File -ErrorAction SilentlyContinue
+              if (-not $swiftExecutables) { continue }
+              $orderedExecutables = $swiftExecutables | Sort-Object -Property @{
+                Expression = { if ($_.FullName -like "*$VersionHint*") { 0 } else { 1 } }
+              }, @{
+                Expression = { $_.FullName }
+              }
+              $swiftExe = $orderedExecutables | Select-Object -First 1
+              if ($swiftExe) {
+                return Get-ToolchainInfoFromSwiftExe -SwiftExePath $swiftExe.FullName
+              }
+            }
+            return $null
+          }
+
+          function Resolve-SdkRoot {
+            param (
+              [string] $ToolchainRoot
+            )
+
+            $candidates = @()
+            if ($ToolchainRoot) {
+              $parent = Split-Path $ToolchainRoot -Parent
+              if ($parent) {
+                $candidates += Join-Path $parent "Platforms\Windows.platform\Developer\SDKs\Windows.sdk"
+              }
+            }
+            $candidates += "C:\Library\Developer\Platforms\Windows.platform\Developer\SDKs\Windows.sdk"
+            foreach ($candidate in $candidates) {
+              if ($candidate -and (Test-Path $candidate)) {
+                return $candidate
+              }
+            }
+            return $null
+          }
+
+          $toolchainInfo = Resolve-SwiftToolchain
+          $installPath = $null
+          $sdkRoot = $null
+          if ($toolchainInfo) {
+            $installPath = $toolchainInfo.Bin
+            $sdkRoot = Resolve-SdkRoot -ToolchainRoot $toolchainInfo.Root
+          }
           $toolchainVersionMatches = $false
           $swiftCommand = Get-Command swift -ErrorAction SilentlyContinue
           if ($swiftCommand) {
+            if (-not $installPath) {
+              $toolchainInfo = Get-ToolchainInfoFromSwiftExe -SwiftExePath $swiftCommand.Source
+              if ($toolchainInfo) {
+                $installPath = $toolchainInfo.Bin
+                $sdkRoot = Resolve-SdkRoot -ToolchainRoot $toolchainInfo.Root
+              }
+            }
             $swiftVersion = swift --version
             if ($swiftVersion | Select-String -Pattern "6\.2") {
               Write-Host "Swift 6.2 already installed."
@@ -53,28 +172,49 @@ jobs:
             Start-Process -FilePath .\swift-installer.exe -ArgumentList "/quiet" -Wait
 
             Remove-Item -Force vs_buildtools.exe, swift-installer.exe -ErrorAction SilentlyContinue
+
+            $toolchainInfo = Resolve-SwiftToolchain
+            if ($toolchainInfo) {
+              $installPath = $toolchainInfo.Bin
+              $sdkRoot = Resolve-SdkRoot -ToolchainRoot $toolchainInfo.Root
+            }
           }
 
           if (-not (Test-Path $installPath)) {
+            Write-Host "swift.exe not located at expected path. Searching for diagnostics..."
+            $searchRoots = @("C:\Library\Developer", "C:\Program Files\Swift", "C:\Program Files")
+            foreach ($root in $searchRoots) {
+              if (Test-Path $root) {
+                Get-ChildItem -Path $root -Recurse -Filter swift.exe -File -ErrorAction SilentlyContinue |
+                  Select-Object -First 5 |
+                  ForEach-Object { Write-Host "Found candidate: $($_.FullName)" }
+              }
+            }
             throw "Expected Swift installation path not found: $installPath"
           }
 
           $installPath | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          if (Test-Path $sdkRoot) {
-            "SDKROOT=$sdkRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "SWIFT_BIN_DIR=$installPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          if ($sdkRoot) {
+            "SWIFT_SDKROOT=$sdkRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           }
 
       - name: Verify Swift 6.2
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $toolchainRoot = "C:\Library\Developer\Toolchains\swift-6.2-RELEASE-windows10.xctoolchain"
-          $installPath = Join-Path $toolchainRoot "usr\bin"
-          $sdkRoot = "C:\Library\Developer\Platforms\Windows.platform\Developer\SDKs\Windows.sdk"
-          if (Test-Path $installPath) {
-            $env:Path = "$installPath;$($env:Path)"
+          $installPath = $env:SWIFT_BIN_DIR
+          $sdkRoot = $env:SWIFT_SDKROOT
+          if (-not $installPath) {
+            throw "SWIFT_BIN_DIR environment variable missing."
           }
-          if (Test-Path $sdkRoot) {
+          if ($installPath) {
+            $env:Path = "$installPath;$($env:Path)"
+            if (-not (Test-Path (Join-Path $installPath "swift.exe"))) {
+              throw "swift.exe not found under $installPath"
+            }
+          }
+          if ($sdkRoot -and (Test-Path $sdkRoot)) {
             $env:SDKROOT = $sdkRoot
           }
           $swiftVersion = swift --version
@@ -87,13 +227,18 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $toolchainRoot = "C:\Library\Developer\Toolchains\swift-6.2-RELEASE-windows10.xctoolchain"
-          $installPath = Join-Path $toolchainRoot "usr\bin"
-          $sdkRoot = "C:\Library\Developer\Platforms\Windows.platform\Developer\SDKs\Windows.sdk"
-          if (Test-Path $installPath) {
-            $env:Path = "$installPath;$($env:Path)"
+          $installPath = $env:SWIFT_BIN_DIR
+          $sdkRoot = $env:SWIFT_SDKROOT
+          if (-not $installPath) {
+            throw "SWIFT_BIN_DIR environment variable missing."
           }
-          if (Test-Path $sdkRoot) {
+          if ($installPath) {
+            $env:Path = "$installPath;$($env:Path)"
+            if (-not (Test-Path (Join-Path $installPath "swift.exe"))) {
+              throw "swift.exe not found under $installPath"
+            }
+          }
+          if ($sdkRoot -and (Test-Path $sdkRoot)) {
             $env:SDKROOT = $sdkRoot
           }
           swift test

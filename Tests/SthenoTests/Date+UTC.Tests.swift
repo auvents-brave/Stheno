@@ -6,6 +6,7 @@ import Testing
 // DateFormatter() is locale-dependent and platform-dependent. For some locales (like "en_GB"), the default time format on Darwin is 18:00 but Linux's Foundation implementation or ICU data includes the AM/PM (6:00 PM).
 @Test func `Create Date from ISO string`() async throws {
   let d = Date(fromISO: "2025-08-26T09:29:23.321Z")
+	let londonTimeZone = TimeZone(identifier: "Europe/London")!
 
 #if Xcode
   #expect(["en_GB", "en_001"].contains(DateFormatter().locale.identifier))
@@ -17,27 +18,25 @@ import Testing
 	#expect(
 		"26/08/2025, 10:29" == d
 			.Display(
-				display: .asLocalTime(TimeZone(identifier: "Europe/London")!)
+				display: .asLocalTime(londonTimeZone)
 			)
 	)
   #else
-	let londonTimeZone = TimeZone(identifier: "Europe/London") ?? TimeZone(secondsFromGMT: 0)!
 	#expect("26/08/2025 09:29" == d.Display(display: .asUniversalTime))
 	#expect("26/08/2025 10:29" == d.Display(display: .asLocalTime(londonTimeZone)))
 #endif
 #else
 	#expect("26/08/2025, 9:29 AM" == d.Display(display: .asUniversalTime))
-	#expect("26/08/2025, 10:29 AM" == d.Display(display: .asLocalTime(TimeZone(identifier: "Europe/London")!)))
+	#expect("26/08/2025, 10:29 AM" == d.Display(display: .asLocalTime(londonTimeZone)))
   #endif
 
   let formatter = DateFormatter()
   formatter.dateFormat = "dd/MM/yy '-' HH:mm"
   #expect("26/08/25 - 09:29" == d.Display(display: .asUniversalTime, formatter: formatter))
 #if canImport(Darwin)
-  let londonTimeZone = TimeZone(identifier: "Europe/London") ?? TimeZone(secondsFromGMT: 0)!
   #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime(londonTimeZone), formatter: formatter))
 #else
-  #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime(TimeZone(identifier: "Europe/London")!), formatter: formatter))
+  #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime(londonTimeZone, formatter: formatter))
 #endif
 
     let withoutNano = Calendar.current.date(from: DateComponents(
