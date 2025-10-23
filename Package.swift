@@ -55,11 +55,11 @@ let package = Package(
 	name: "Stheno",
 	defaultLocalization: "en",
 	platforms: [
-		.macOS(.v13),
-		.macCatalyst(.v14),
+		.macOS(.v10_13),
+		.macCatalyst(.v13),
 		.iOS(.v12),
-		.tvOS(.v14),
-		.watchOS(.v7),
+		.tvOS(.v12),
+		.watchOS(.v5),
 		.visionOS(.v1),
 	],
 

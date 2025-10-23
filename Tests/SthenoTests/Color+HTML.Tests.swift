@@ -7,6 +7,7 @@ import Testing
 
 @Suite("Color <-> HTML Hex Conversion")
 struct ColorHTMLHexTests {
+	@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
     @Test("Round-trip .red <-> #FF0000")
     func redHTMLHex() async throws {
         let color = Color(red: 1, green: 0, blue: 0)
@@ -16,6 +17,7 @@ struct ColorHTMLHexTests {
         #expect(color2 != nil)
     }
 
+	@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
     @Test("Round-trip .green <-> #00FF00")
     func greenHTMLHex() async throws {
         let color = Color(red: 0, green: 1, blue: 0)
@@ -25,6 +27,7 @@ struct ColorHTMLHexTests {
         #expect(color2 != nil)
     }
 
+	@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
     @Test("Round-trip .blue <-> #0000FF")
     func blueHTMLHex() async throws {
         let color = Color(red: 0, green: 0, blue: 1)
@@ -34,12 +37,14 @@ struct ColorHTMLHexTests {
         #expect(color2 != nil)
     }
 
+	@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
     @Test("Shorthand #F00")
     func shorthandRed() async throws {
         let color = Color(htmlHex: "#F00")
         #expect(color != nil)
     }
 
+	@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
     @Test("Invalid hex string returns nil")
     func invalidHex() async throws {
         let color = Color(htmlHex: "invalid")

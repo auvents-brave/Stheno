@@ -21,13 +21,6 @@
     {
       "target" : {
         "containerPath" : "container:",
-        "identifier" : "AppleOnlyTests",
-        "name" : "AppleOnlyTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:",
         "identifier" : "SthenoTests",
         "name" : "SthenoTests"
       }

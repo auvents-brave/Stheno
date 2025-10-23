@@ -19,6 +19,7 @@
     }
 #endif
 
+@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 extension Color {
     /// Initializes a Color from an HTML hex string, strictly parsing #RGB, #RRGGBB, or with no hash.
     ///
@@ -54,6 +55,7 @@ extension Color {
     /// Extracts the sRGB components of the color and returns a hex string.
     /// The `includeHash` parameter controls whether the returned string includes a leading `#`.
     /// Returns `nil` if components cannot be extracted.
+    @available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
     public func toHTMLHex(includeHash: Bool = true) -> String {
         #if canImport(SwiftUI)
             #if canImport(UIKit)
@@ -78,6 +80,7 @@ extension Color {
 
 #if canImport(UIKit)
     /// Extensions to `UIColor` for convenient bridging to and from HTML hex strings.
+    @available(iOS 14, tvOS 14, watchOS 7, *)
     extension UIColor {
         /// Initializes a `UIColor` from an HTML hex string.
         ///
@@ -106,6 +109,7 @@ extension Color {
 
 #elseif canImport(AppKit)
     /// Extensions to `NSColor` for convenient bridging to and from HTML hex strings.
+    @available(macOS 11, *)
     extension NSColor {
         /// Initializes an `NSColor` from an HTML hex string.
         ///
@@ -122,7 +126,7 @@ extension Color {
         /// - Returns: A string in the format "#RRGGBB" or "RRGGBB". Returns `nil` if the color components cannot be extracted.
         public func toHTMLHex(includeHash: Bool = true) -> String? {
             guard let cgColor = cgColor.copy(alpha: 1.0), let components = cgColor.components, components.count >= 3 else { return nil }
-			return Stheno.toHTMLHex(
+            return Stheno.toHTMLHex(
                 red: components[0],
                 green: components[1],
                 blue: components[2],

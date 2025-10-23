@@ -14,23 +14,28 @@ import Testing
 #if canImport(Darwin)
 #if Xcode
 	#expect("26/08/2025, 09:29" == d.Display(display: .asUniversalTime))
-	#expect("26/08/2025, 10:29" == d.Display(display: .asLocalTime))
+	#expect(
+		"26/08/2025, 10:29" == d
+			.Display(
+				display: .asLocalTime(TimeZone(identifier: "Europe/London")!)
+			)
+	)
   #else
 	#expect("26/08/2025 09:29" == d.Display(display: .asUniversalTime))
-	#expect("26/08/2025 10:29" == d.Display(display: .asLocalTime))
+	#expect("26/08/2025 10:29" == d.Display(display: .asLocalTime(TimeZone(identifier: "Europe/London"))!))
 #endif
 #else
 	#expect("26/08/2025, 9:29 AM" == d.Display(display: .asUniversalTime))
-	#expect("26/08/2025, 10:29 AM" == d.Display(display: .asLocalTime))
+	#expect("26/08/2025, 10:29 AM" == d.Display(display: .asLocalTime(TimeZone(identifier: "Europe/London")!)))
   #endif
 
   let formatter = DateFormatter()
   formatter.dateFormat = "dd/MM/yy '-' HH:mm"
   #expect("26/08/25 - 09:29" == d.Display(display: .asUniversalTime, formatter: formatter))
   #if canImport(Darwin)
-  #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime, formatter: formatter))
+  #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime(TimeZone(identifier: "Europe/London")!), formatter: formatter))
   #else
-  #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime, formatter: formatter))
+  #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime(TimeZone(identifier: "Europe/London")!), formatter: formatter))
   #endif
 
     let withoutNano = Calendar.current.date(from: DateComponents(
