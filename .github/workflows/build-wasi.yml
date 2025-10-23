@@ -1,4 +1,4 @@
-name: Build Linux
+name: Build WASI
 permissions:
   contents: read
 on:
@@ -12,8 +12,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
 
-  build-linux:
-    name: Linux
+  build-wasi:
+    name: WebAssembly
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -21,9 +21,9 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev
+          sudo apt-get install -y libcurl4-openssl-dev pkg-config
 
-      - name: Ensure Swift 6.2 Toolchain
+      - name: Ensure Swift 6.2 Toolchain (WASI)
         shell: bash
         run: |
           set -euo pipefail
@@ -32,15 +32,15 @@ jobs:
             exit 0
           fi
 
-          echo "Swift 6.2 not found. Installing Swift toolchain..."
-          SWIFT_TARBALL_URL="https://download.swift.org/swift-6.2-release/ubuntu2404/swift-6.2-RELEASE/swift-6.2-RELEASE-ubuntu24.04.tar.gz"
+          echo "Swift 6.2 not found. Installing Swift WASI toolchain..."
+          SWIFT_TARBALL_URL="https://download.swift.org/swift-6.2-release/wasm-wasi/swift-6.2-RELEASE/swift-6.2-RELEASE-wasm-wasi.tar.gz"
           curl -L "$SWIFT_TARBALL_URL" -o swift-toolchain.tar.gz
           tar -xzf swift-toolchain.tar.gz
-          sudo rm -rf /usr/local/swift-6.2-RELEASE-ubuntu24.04
-          sudo mv swift-6.2-RELEASE-ubuntu24.04 /usr/local/swift-6.2-RELEASE-ubuntu24.04
+          sudo rm -rf /usr/local/swift-6.2-RELEASE-wasm-wasi
+          sudo mv swift-6.2-RELEASE-wasm-wasi /usr/local/swift-6.2-RELEASE-wasm-wasi
           rm -f swift-toolchain.tar.gz
 
-          TOOLCHAIN_ROOT="/usr/local/swift-6.2-RELEASE-ubuntu24.04"
+          TOOLCHAIN_ROOT="/usr/local/swift-6.2-RELEASE-wasm-wasi"
           TOOLCHAIN_PATH="$TOOLCHAIN_ROOT/usr/bin"
           TOOLCHAIN_LIB="$TOOLCHAIN_ROOT/usr/lib/swift/linux"
 
@@ -60,7 +60,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TOOLCHAIN_ROOT="/usr/local/swift-6.2-RELEASE-ubuntu24.04"
+          TOOLCHAIN_ROOT="/usr/local/swift-6.2-RELEASE-wasm-wasi"
           TOOLCHAIN_PATH="$TOOLCHAIN_ROOT/usr/bin"
           TOOLCHAIN_LIB="$TOOLCHAIN_ROOT/usr/lib/swift/linux"
           if [ -d "$TOOLCHAIN_PATH" ]; then
@@ -72,24 +72,11 @@ jobs:
           swift --version
           swift --version | grep -q "6\.2"
 
-      - name: Set system timezone to Europe/London
-        run: |
-          sudo ln -sf /usr/share/zoneinfo/Europe/London /etc/localtime
-          sudo dpkg-reconfigure -f noninteractive tzdata
-
-      - name: Set locale to en_GB.UTF-8
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y locales
-          sudo locale-gen en_GB.UTF-8
-          sudo update-locale LANG=en_GB.UTF-8
-          export LANG=en_GB.UTF-8
-
-      - name: Run Tests
+      - name: Build (WASI target)
         shell: bash
         run: |
           set -euo pipefail
-          TOOLCHAIN_ROOT="/usr/local/swift-6.2-RELEASE-ubuntu24.04"
+          TOOLCHAIN_ROOT="/usr/local/swift-6.2-RELEASE-wasm-wasi"
           TOOLCHAIN_PATH="$TOOLCHAIN_ROOT/usr/bin"
           TOOLCHAIN_LIB="$TOOLCHAIN_ROOT/usr/lib/swift/linux"
           if [ -d "$TOOLCHAIN_PATH" ]; then
@@ -98,4 +85,4 @@ jobs:
           if [ -d "$TOOLCHAIN_LIB" ]; then
             export LD_LIBRARY_PATH="$TOOLCHAIN_LIB:${LD_LIBRARY_PATH:-}"
           fi
-          swift test
+          swift build --triple wasm32-unknown-wasi
