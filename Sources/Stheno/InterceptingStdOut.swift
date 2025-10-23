@@ -1,10 +1,10 @@
-#if !(os(Windows) || os(WASI))
+#if canImport(Darwin)
     import Foundation
 
     /// Additionally writes any data written to standard output into the given
     /// output stream.
     ///
-    /// - Parameters:
+    /// - Parameters:j
     ///   - output: An output stream to receive the standard output text
     ///   - encoding: The encoding to use when converting standard output into text.
     ///   - body: A closure that is executed immediately.

@@ -10,6 +10,7 @@ let swiftSettings: [SwiftSetting] =
 var prods: [Product] = [
 	.library(
 		name: "Stheno",
+		type: .static,
 		targets: ["Stheno"]
 	),
 ]

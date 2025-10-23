@@ -1,4 +1,4 @@
-#if !(os(Windows) || os(WASI))
+#if canImport(Darwin)
     import Testing
 
     @testable import Stheno

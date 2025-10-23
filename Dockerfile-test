@@ -2,7 +2,10 @@ FROM swift:latest
 
 # Set environment variables for all future commands and containers
 RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y locales && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y locales tzdata && \
+    ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime && \
+    echo "Europe/London" > /etc/timezone && \
+    dpkg-reconfigure --frontend noninteractive tzdata && \
     sed -i 's/^# *\(en_GB.UTF-8 UTF-8\)/\1/' /etc/locale.gen && \
     locale-gen en_GB.UTF-8 && \
     update-locale LANG=en_GB.UTF-8 && \
@@ -12,11 +15,11 @@ ENV LANG=en_GB.UTF-8
 ENV LANGUAGE=en_GB:en
 ENV LC_ALL=en_GB.UTF-8
 ENV LC_IDENTIFICATION=en_GB.UTF-8
+ENV TZ=Europe/London
 
 WORKDIR /package
 COPY . .
 
 RUN swift -e 'import Foundation; print(Locale.current.identifier)'
 
-RUN swift test --enable-swift-testing
-# --parallel
+RUN swift test --enable-swift-testing --parallel

@@ -4,10 +4,6 @@ import Testing
 @testable import Stheno
 
 // DateFormatter() is locale-dependent and platform-dependent. For some locales (like "en_GB"), the default time format on Darwin is 18:00 but Linux's Foundation implementation or ICU data includes the AM/PM (6:00 PM).
-private func stripTrailingAM(_ s: String) -> String {
-    s.hasSuffix(" AM") ? String(s.dropLast(3)) : s
-}
-
 @Test func `Create Date from ISO string`() async throws {
   let d = Date(fromISO: "2025-08-26T09:29:23.321Z")
 
@@ -15,27 +11,27 @@ private func stripTrailingAM(_ s: String) -> String {
   #expect(["en_GB", "en_001"].contains(DateFormatter().locale.identifier))
 #endif
 
-#if VSCode
-	ezfezfezf
-#endif
-
-  #expect("09:29" == stripTrailingAM("09:29 AM"))
-
+#if canImport(Darwin)
 #if Xcode
-	#expect("26/08/2025, 09:29" == stripTrailingAM(d.Display(display: .asUniversalTime)), "a")
-	#expect("26/08/2025, 10:29" == stripTrailingAM(d.Display(display: .asLocalTime)), "b")
-	#else
-	#expect("26/08/2025 09:29" == stripTrailingAM(d.Display(display: .asUniversalTime)), "a")
-	#expect("26/08/2025 10:29" == stripTrailingAM(d.Display(display: .asLocalTime)), "b")
-	#endif
+	#expect("26/08/2025, 09:29" == d.Display(display: .asUniversalTime))
+	#expect("26/08/2025, 10:29" == d.Display(display: .asLocalTime))
+  #else
+	#expect("26/08/2025 09:29" == d.Display(display: .asUniversalTime))
+	#expect("26/08/2025 10:29" == d.Display(display: .asLocalTime))
+#endif
+#else
+	#expect("26/08/2025, 9:29 AM" == d.Display(display: .asUniversalTime))
+	#expect("26/08/2025, 10:29 AM" == d.Display(display: .asLocalTime))
+  #endif
 
   let formatter = DateFormatter()
-  #if !XCODE
-  formatter.locale = Locale(identifier: "en_GB")
-#endif
   formatter.dateFormat = "dd/MM/yy '-' HH:mm"
-  #expect("26/08/25 - 09:29" == stripTrailingAM(d.Display(display: .asUniversalTime, formatter: formatter)), "c")
-	#expect("26/08/25 - 10:29" == stripTrailingAM(d.Display(display: .asLocalTime, formatter: formatter)), "d")
+  #expect("26/08/25 - 09:29" == d.Display(display: .asUniversalTime, formatter: formatter))
+  #if canImport(Darwin)
+  #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime, formatter: formatter))
+  #else
+  #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime, formatter: formatter))
+  #endif
 
     let withoutNano = Calendar.current.date(from: DateComponents(
         timeZone: TimeZone(abbreviation: "GMT"),
@@ -61,6 +57,6 @@ private func stripTrailingAM(_ s: String) -> String {
 
     #expect(round(Double(nano) / 1000000.0) == round(Double(Calendar.current.component(.nanosecond, from: withNano!)) / 1000000.0))
 
-    #expect(withoutNano == ISO8601DateFormatter().date(from: "2025-08-26T12:29:23+02:00"), "e")
-    #expect(withoutNano == ISO8601DateFormatter().date(from: "2025-08-26T10:29:23Z"), "f")
+    #expect(withoutNano == ISO8601DateFormatter().date(from: "2025-08-26T12:29:23+02:00"))
+    #expect(withoutNano == ISO8601DateFormatter().date(from: "2025-08-26T10:29:23Z"))
 }
