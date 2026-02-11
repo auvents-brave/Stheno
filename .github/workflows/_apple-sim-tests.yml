@@ -133,9 +133,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          xcodebuild -resolvePackageDependencies -scheme "${{ inputs.scheme }}"
+          xcodebuild -resolvePackageDependencies -scheme "${{ inputs.scheme }}" -toolchain swift IDEPackageSupportToolchainOverrideForManifestLoading=swift
           xcodebuild test \
             -scheme "${{ inputs.scheme }}" \
+            -toolchain swift \
+            IDEPackageSupportToolchainOverrideForManifestLoading=swift \
             -destination "${{ steps.sim.outputs.destination }}" \
             -skipPackagePluginValidation \
             -skipMacroValidation

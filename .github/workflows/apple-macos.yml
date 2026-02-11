@@ -24,5 +24,5 @@ jobs:
         with:
           xcode-version: ${{ matrix.xcode }}
       - uses: ./.github/actions/ensure-swift
-      - run: xcodebuild -resolvePackageDependencies -scheme "Stheno"
-      - run: xcodebuild test -scheme "Stheno" -destination "platform=macOS" MACOSX_DEPLOYMENT_TARGET=${{ matrix.deployment }}
+      - run: xcodebuild -resolvePackageDependencies -scheme "Stheno" -toolchain swift IDEPackageSupportToolchainOverrideForManifestLoading=swift
+      - run: xcodebuild test -scheme "Stheno" -toolchain swift IDEPackageSupportToolchainOverrideForManifestLoading=swift -destination "platform=macOS" MACOSX_DEPLOYMENT_TARGET=${{ matrix.deployment }}
