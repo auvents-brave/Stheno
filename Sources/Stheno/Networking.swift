@@ -10,12 +10,12 @@
     #endif
 
     /// Returns a `URLSession` appropriate for the current platform.
-    /// - Note: Uses `URLSession.shared` on Darwin platforms and a default-configured session elsewhere.
+    /// - Note: Uses `URLSession.shared` on Darwin platforms and an ephemeral session elsewhere.
     fileprivate func session() -> URLSession {
         #if canImport(Darwin)
             return URLSession.shared
         #elseif canImport(FoundationNetworking)
-            return URLSession(configuration: URLSessionConfiguration.default)
+            return URLSession(configuration: URLSessionConfiguration.ephemeral)
         #endif
     }
 
@@ -31,7 +31,12 @@
     /// - Important: The response body is assumed to be UTF-8 encoded. If the server returns a different encoding,
     ///   decoding may fail.
     func downloadURLasString(from url: URL, completion: @escaping @Sendable (Result<String, Error>) -> Void) {
-        let task = session().dataTask(with: url) { data, response, error in
+        let requestSession = session()
+        let task = requestSession.dataTask(with: url) { data, response, error in
+            #if canImport(FoundationNetworking) && !canImport(Darwin)
+                defer { requestSession.finishTasksAndInvalidate() }
+            #endif
+
             if let error = error {
                 Logger(label: "Networking").error("Request failed with transport error.", metadata: ["error": "\(error)"])
                 completion(.failure(error))
