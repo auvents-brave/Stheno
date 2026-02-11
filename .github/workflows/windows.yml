@@ -14,11 +14,20 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/ensure-swift
+
+      # setup-swift@v2 currently has no usable Windows entry for Swift 6.1/6.2.
+      # Use SwiftyLab fallback to get a Windows toolchain compatible with tools-version 6.1.
+      - name: Setup Swift (Windows fallback)
+        uses: SwiftyLab/setup-swift@v1
         with:
-          min-version: "6.1.2"
-          target-version: "6.2"
+          swift-version: "6.2"
+          development: true
+
+      - shell: pwsh
+        run: swift --version
+
       - shell: pwsh
         run: swift build -c release -v
+
       - shell: pwsh
         run: swift test -v
