@@ -17,7 +17,7 @@ jobs:
       - uses: ./.github/actions/ensure-swift
         with:
           min-version: "6.1.2"
-          target-version: "6.2.3"
+          target-version: "6.2"
       - shell: pwsh
         run: swift build -c release -v
       - shell: pwsh
