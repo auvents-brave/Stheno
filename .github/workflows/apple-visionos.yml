@@ -15,5 +15,5 @@ jobs:
       device-name-regex: "Vision|Apple Vision"
       oldest-os: "1.0"
       latest-os: "26.2"
-      xcode-old: "16.1"
+      xcode-old: "16.2"
       xcode-new: "latest-stable"

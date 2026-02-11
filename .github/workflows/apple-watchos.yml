@@ -15,5 +15,5 @@ jobs:
       device-name-regex: "Apple Watch"
       oldest-os: "5.0"
       latest-os: "26.2"
-      xcode-old: "16.1"
+      xcode-old: "16.2"
       xcode-new: "latest-stable"

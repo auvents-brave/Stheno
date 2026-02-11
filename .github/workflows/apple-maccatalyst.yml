@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        xcode: ["16.1", "latest-stable"]
+        xcode: ["16.2", "latest-stable"]
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
