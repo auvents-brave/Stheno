@@ -47,7 +47,7 @@ jobs:
         uses: ./.github/actions/ensure-swift
         with:
           min-version: "6.1.2"
-          target-version: "6.2.3"
+          target-version: "6.1.2"
 
       - name: Build Swift package (manual)
         if: matrix.language == 'swift'

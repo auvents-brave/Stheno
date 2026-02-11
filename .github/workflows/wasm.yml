@@ -18,8 +18,19 @@ jobs:
       - name: Setup Swift + Wasm SDK
         uses: SwiftyLab/setup-swift@v1
         with:
-          swift-version: "6.2"
+          swift-version: "6.1.2"
           sdks: wasm
+
+      - name: Assert stable Swift toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          swift --version
+          if swift --version | grep -q "DEVELOPMENT-SNAPSHOT"; then
+            echo "Unexpected development snapshot toolchain"
+            exit 1
+          fi
+
 
       - name: Resolve Wasm SDK ID
         id: wasm

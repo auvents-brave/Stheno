@@ -30,7 +30,7 @@ Continuous Integration (CI) is handled through GitHub Actions, which automatical
 | ![visionOS](https://img.shields.io/badge/platform-visionOS-5E5CE6?logo=apple) (`1.0` -> `26.2`) | [![Apple visionOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-visionos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-visionos.yml) |
 | ![Linux](https://img.shields.io/badge/platform-Linux_(WASI)-FCC624?logo=linux&logoColor=black) (`ubuntu 24.04`) | [![Linux](https://github.com/auvents-brave/Stheno/actions/workflows/linux.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/linux.yml) |
 | ![Windows](https://img.shields.io/badge/platform-Windows-0078D6?logo=windows) (`2025`) | [![Windows](https://github.com/auvents-brave/Stheno/actions/workflows/windows.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/windows.yml) |
-| ![WebAssembly](https://img.shields.io/badge/platform-WebAssembly-654FF0?logo=webassembly) (`wasm32` on Ubuntu latest) | [![WebAssembly](https://github.com/auvents-brave/Stheno/actions/workflows/wasm.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/wasm.yml) |
+| ![WebAssembly](https://img.shields.io/badge/platform-WebAssembly-654FF0?logo=webassembly) (`wasm 6.2.3` on Ubuntu 24.04) | [![WebAssembly](https://github.com/auvents-brave/Stheno/actions/workflows/wasm.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/wasm.yml) |
 
 ## Library Contents
 

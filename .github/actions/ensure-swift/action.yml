@@ -6,7 +6,8 @@ inputs:
     default: "6.1.2"
   target-version:
     required: true
-    default: "6.2.3"
+    default: "6.1.2"
+
 runs:
   using: composite
   steps:
@@ -15,26 +16,38 @@ runs:
       with:
         script: |
           const { execSync } = require('child_process');
-          const min = core.getInput('min-version');
+          const os = process.env.RUNNER_OS || '';
+          const min = '${{ inputs.min-version }}';
+
+          // On Windows, force setup to avoid false negatives from shell/path probing.
+          if (os === 'Windows') {
+            core.setOutput('needs-setup', 'true');
+            return;
+          }
+
           let current = '0.0.0';
           try {
             const out = execSync('swift --version', { encoding: 'utf8' });
             const m = out.match(/Swift version (\d+\.\d+(?:\.\d+)?)/);
             if (m) current = m[1];
           } catch {}
-          const toArr = (v) => v.split('.').map(n => parseInt(n, 10));
-          const cmp = (a,b) => {
+
+          const toArr = (v) => v.split('.').map((n) => parseInt(n, 10));
+          const cmp = (a, b) => {
             const aa = toArr(a), bb = toArr(b), n = Math.max(aa.length, bb.length);
-            for (let i=0;i<n;i++) {
+            for (let i = 0; i < n; i++) {
               const x = aa[i] ?? 0, y = bb[i] ?? 0;
               if (x !== y) return x - y;
             }
             return 0;
           };
+
           core.setOutput('needs-setup', cmp(current, min) < 0 ? 'true' : 'false');
+
     - if: steps.gate.outputs.needs-setup == 'true'
       uses: swift-actions/setup-swift@v2
       with:
         swift-version: ${{ inputs.target-version }}
+
     - shell: bash
       run: swift --version
