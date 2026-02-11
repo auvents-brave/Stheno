@@ -1,0 +1,29 @@
+FROM swift:latest
+
+# Set environment variables for locale
+ENV LANG=fr_FR.UTF-8 \
+    LANGUAGE=fr_FR:fr \
+    LC_ALL=fr_FR.UTF-8 \
+    LC_CTYPE=fr_FR.UTF-8 \
+    TZ=Europe/Paris
+
+# Install required packages and configure locale
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y locales tzdata && \
+    rm -rf /var/lib/apt/lists/* && \
+    echo "fr_FR.UTF-8 UTF-8" >> /etc/locale.gen && \
+    locale-gen fr_FR.UTF-8 && \
+    update-locale LANG=fr_FR.UTF-8 LANGUAGE=fr_FR:fr && \
+    ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime && \
+    dpkg-reconfigure --frontend noninteractive tzdata
+
+# Copy source code
+COPY . /app
+WORKDIR /app
+
+# Build and test
+RUN swift build
+RUN swift test
+
+# Verify locale settings
+RUN swift -e 'import Foundation; print("Current locale: \(Locale.current.identifier)"); print("Preferred languages: \(Locale.preferredLanguages)"); print("Environment LANG: \(ProcessInfo.processInfo.environment["LANG"] ?? "not set")"); print("Environment LC_ALL: \(ProcessInfo.processInfo.environment["LC_ALL"] ?? "not set")"); print("Environment LANGUAGE: \(ProcessInfo.processInfo.environment["LANGUAGE"] ?? "not set")")'

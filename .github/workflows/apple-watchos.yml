@@ -1,0 +1,15 @@
+name: Apple watchOS
+on: { push: { branches: [main] }, pull_request: {}, workflow_dispatch: {} }
+
+jobs:
+  test:
+    uses: ./.github/workflows/_apple-sim-tests.yml
+    with:
+      workflow-name: "watchOS"
+      scheme: "Stheno"
+      sim-runtime-prefix: "com.apple.CoreSimulator.SimRuntime.watchOS"
+      device-name-regex: "Apple Watch"
+      oldest-os: "5.0"
+      latest-os: "26.2"
+      xcode-old: "15.4"
+      xcode-new: "latest-stable"

@@ -1,5 +1,3 @@
-import Foundation
-
 /// Represents the four cardinal points (N, S, E, W).
 enum CardinalPoint: String {
     case north = "N"
@@ -45,6 +43,15 @@ public struct Coordinate {
         return longitude * .pi / 180
     }
 
+    /// Calculates the great-circle distance to another point using the Haversine formula.
+    ///
+    /// - Parameters:
+    ///   - to: The destination coordinates.
+    /// - Returns: The distance in kilometers between the two points.
+    public func distance(to: Coordinate) -> Double {
+        Geo.distance(from: self, to: to)
+    }
+
     /// Returns true if latitude and longitude values are within valid ranges.
     public func isValid() -> Bool {
         return latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180
@@ -61,5 +68,16 @@ public struct Coordinate {
                 longitude: fix.longitude
             )
         }
+    }
+#endif
+
+// MARK: - Examples (Playground)
+
+#if canImport(Playgrounds)
+    import Playgrounds
+
+    #Playground {
+        let Monaco = CLLocationCoordinate2D(Coordinate(latitude: 43.739, longitude: 7.425))
+        _ = Monaco // to remove warning
     }
 #endif

@@ -1,0 +1,24 @@
+FROM swift:latest
+
+# Set base environment variables for locale and timezone
+ENV TZ="Europe/Paris"
+
+# Install required packages and configure system locale
+RUN apt-get update && \
+    DEBIAN_FRONTEND="noninteractive" apt-get install -y locales tzdata && \
+    rm -rf /var/lib/apt/lists/* && \
+    echo "fr_FR.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen && \
+    update-locale LANG=fr_FR.UTF-8 LANGUAGE=fr_FR:fr && \
+    ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime && \
+    dpkg-reconfigure --frontend noninteractive tzdata
+
+# Copy the application code
+COPY . /app
+WORKDIR /app
+
+# Build the application
+RUN swift build
+
+# Configure and verify locale settings using LocalizedEnvironment
+RUN .build/debug/SthenoTool locale-test

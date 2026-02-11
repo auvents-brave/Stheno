@@ -36,7 +36,7 @@ import Testing
 #if canImport(Darwin)
   #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime(londonTimeZone), formatter: formatter))
 #else
-  #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime(londonTimeZone, formatter: formatter))
+  #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime(londonTimeZone), formatter: formatter))
 #endif
 
     let withoutNano = Calendar.current.date(from: DateComponents(

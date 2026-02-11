@@ -1,0 +1,21 @@
+name: Apple Mac Catalyst
+on: { push: { branches: [main] }, pull_request: {}, workflow_dispatch: {} }
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        xcode: ["15.4", "latest-stable"]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ matrix.xcode }}
+      - uses: ./.github/actions/ensure-swift
+        with:
+          min-version: "6.2"
+          target-version: "6.2"
+      - run: xcodebuild -resolvePackageDependencies -scheme "Stheno"
+      - run: xcodebuild test -scheme "Stheno" -destination "platform=macOS,variant=Mac Catalyst"

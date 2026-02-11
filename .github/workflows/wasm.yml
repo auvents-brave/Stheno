@@ -1,0 +1,39 @@
+name: WebAssembly
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Swift + Wasm SDK
+        uses: SwiftyLab/setup-swift@v1
+        with:
+          swift-version: "6.2"
+          sdks: wasm
+
+      - name: Resolve Wasm SDK ID
+        id: wasm
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK_ID="$(swift sdk list | awk '$1 ~ /_wasm$/ { print $1; exit }')"
+          if [ -z "${SDK_ID}" ]; then
+            echo "No Wasm SDK found in 'swift sdk list'"
+            swift sdk list
+            exit 1
+          fi
+          echo "sdk_id=${SDK_ID}" >> "$GITHUB_OUTPUT"
+          swift --version
+          swift sdk list
+
+      - name: Build (Wasm)
+        run: swift build --swift-sdk "${{ steps.wasm.outputs.sdk_id }}" -v
+
+      - name: Test (Wasm)
+        run: swift test --swift-sdk "${{ steps.wasm.outputs.sdk_id }}" -v

@@ -1,0 +1,15 @@
+name: Apple tvOS
+on: { push: { branches: [main] }, pull_request: {}, workflow_dispatch: {} }
+
+jobs:
+  test:
+    uses: ./.github/workflows/_apple-sim-tests.yml
+    with:
+      workflow-name: "tvOS"
+      scheme: "Stheno"
+      sim-runtime-prefix: "com.apple.CoreSimulator.SimRuntime.tvOS"
+      device-name-regex: "Apple TV"
+      oldest-os: "12.0"
+      latest-os: "26.2"
+      xcode-old: "15.4"
+      xcode-new: "latest-stable"
