@@ -3,7 +3,7 @@ import Testing
 
 @testable import Stheno
 
-#if !os(Linux)
+#if canImport(Darwin) || canImport(FoundationNetworking) // not for os(WASI)
 @Suite("Networking")
 struct NetworkingTests {
     @Test func `example.com contains 'Example Domain'`() async throws {
