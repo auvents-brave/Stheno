@@ -16,7 +16,7 @@ concurrency:
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
 
     permissions:
       actions: read
@@ -29,8 +29,10 @@ jobs:
         include:
           - language: actions
             build-mode: none
+            runner: ubuntu-latest
           - language: swift
             build-mode: manual
+            runner: macos-latest
 
     steps:
       - name: Checkout repository
