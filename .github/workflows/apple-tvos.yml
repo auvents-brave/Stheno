@@ -15,5 +15,5 @@ jobs:
       device-name-regex: "Apple TV"
       oldest-os: "12.0"
       latest-os: "26.2"
-      xcode-old: "16.0"
+      xcode-old: "16.1"
       xcode-new: "latest-stable"

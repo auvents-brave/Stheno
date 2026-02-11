@@ -12,7 +12,7 @@ jobs:
       matrix:
         include:
           - lane: oldest
-            xcode: "16.0"
+            xcode: "16.1"
             deployment: "10.13"
           - lane: latest
             xcode: "latest-stable"
