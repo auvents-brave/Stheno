@@ -15,6 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/ensure-swift
+        with:
+          min-version: "6.1.2"
+          target-version: "6.2.3"
       - shell: pwsh
         run: swift build -c release -v
       - shell: pwsh
