@@ -11,9 +11,10 @@ Sthenô depends only on [swift-log](https://github.com/apple/swift-log) for stru
 
 Continuous Integration (CI) is handled through GitHub Actions, which automatically builds, tests, and analyzes the codebase using CodeQL to ensure quality, consistency, and cross-platform reliability.
 
-![Swift](https://img.shields.io/badge/Swift-6.2-orange?logo=swift)
+![Swift](https://img.shields.io/badge/Swift-6.1-orange?logo=swift)
 
-[![CodeQL](https://github.com/auvents-brave/Stheno/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/auvents-brave/Stheno/actions/workflows/github-code-scanning/codeql)
+[![CodeQL](https://github.com/auvents-brave/Stheno/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/codeql.yml)
+
 
 [![DocC](https://img.shields.io/badge/docs-available-brightgreen)](https://auvents-brave.github.io/Stheno/)
 
@@ -24,7 +25,7 @@ Continuous Integration (CI) is handled through GitHub Actions, which automatical
 | ![macOS](https://img.shields.io/badge/platform-macOS-000000?logo=apple) (`10.13` -> `26.2`) | [![Apple macOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-macos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-macos.yml) |
 | ![Mac Catalyst](https://img.shields.io/badge/platform-Mac_Catalyst-1C1C1E?logo=apple) (`13.0` -> `26.2`) | [![Apple Mac Catalyst](https://github.com/auvents-brave/Stheno/actions/workflows/apple-maccatalyst.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-maccatalyst.yml) |
 | ![iOS](https://img.shields.io/badge/platform-iOS-0A84FF?logo=apple) (`12.0` -> `26.2`) | [![Apple iOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ios.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ios.yml) |
-| ![iPadOS](https://img.shields.io/badge/platform-iPadOS-0A84FF?logo=apple) (`12.0` -> `26.2`) | [![Apple iPad](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ipad.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ipad.yml) |
+| ![iPadOS](https://img.shields.io/badge/platform-iPadOS-0A84FF?logo=apple) (`12.0` -> `26.2`) | [![Apple iOS (iPad)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ipados.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ipados.yml) |
 | ![tvOS](https://img.shields.io/badge/platform-tvOS-1C1C1E?logo=apple) (`12.0` -> `26.2`) | [![Apple tvOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-tvos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-tvos.yml) |
 | ![watchOS](https://img.shields.io/badge/platform-watchOS-1C1C1E?logo=apple) (`5.0` -> `26.2`) | [![Apple watchOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-watchos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-watchos.yml) |
 | ![visionOS](https://img.shields.io/badge/platform-visionOS-5E5CE6?logo=apple) (`1.0` -> `26.2`) | [![Apple visionOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-visionos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-visionos.yml) |
