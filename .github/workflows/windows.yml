@@ -1,10 +1,6 @@
 name: Windows
 on: { push: { branches: [main] }, pull_request: {}, workflow_dispatch: {} }
 
-env:
-  SWIFT_MIN_VERSION: "6.2"
-  SWIFT_TARGET_VERSION: "6.2"
-
 jobs:
   test:
     strategy:
@@ -15,9 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/ensure-swift
-        with:
-          min-version: ${{ env.SWIFT_MIN_VERSION }}
-          target-version: ${{ env.SWIFT_TARGET_VERSION }}
       - shell: pwsh
         run: swift build -c release -v
       - shell: pwsh

@@ -52,9 +52,6 @@ jobs:
           xcode-version: ${{ matrix.xcode }}
 
       - uses: ./.github/actions/ensure-swift
-        with:
-          min-version: "6.2"
-          target-version: "6.2"
 
       - name: Resolve simulator destination
         id: sim

@@ -3,10 +3,10 @@ description: Validate minimum Swift version and install target if needed
 inputs:
   min-version:
     required: true
-    default: "6.2"
+    default: "6.1.2"
   target-version:
     required: true
-    default: "6.2"
+    default: "6.2.3"
 runs:
   using: composite
   steps:

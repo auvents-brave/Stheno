@@ -8,7 +8,7 @@ jobs:
       matrix:
         include:
           - lane: oldest
-            xcode: "15.4"
+            xcode: "16.0"
             deployment: "10.13"
           - lane: latest
             xcode: "latest-stable"
@@ -20,8 +20,5 @@ jobs:
         with:
           xcode-version: ${{ matrix.xcode }}
       - uses: ./.github/actions/ensure-swift
-        with:
-          min-version: "6.2"
-          target-version: "6.2"
       - run: xcodebuild -resolvePackageDependencies -scheme "Stheno"
       - run: xcodebuild test -scheme "Stheno" -destination "platform=macOS" MACOSX_DEPLOYMENT_TARGET=${{ matrix.deployment }}

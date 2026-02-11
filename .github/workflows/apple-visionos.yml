@@ -6,10 +6,10 @@ jobs:
     uses: ./.github/workflows/_apple-sim-tests.yml
     with:
       workflow-name: "visionOS"
-      scheme: "Stheno-Package"
+      scheme: "Stheno"
       sim-runtime-prefix: "com.apple.CoreSimulator.SimRuntime.xrOS"
       device-name-regex: "Vision|Apple Vision"
       oldest-os: "1.0"
       latest-os: "26.2"
-      xcode-old: "15.4"
+      xcode-old: "16.0"
       xcode-new: "latest-stable"
