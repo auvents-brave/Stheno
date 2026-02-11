@@ -49,6 +49,15 @@ jobs:
           min-version: "6.1.2"
           target-version: "6.1.2"
 
+      - name: Assert stable Swift toolchain
+        if: matrix.language == 'swift'
+        run: |
+          swift --version
+          if swift --version | grep -q 'DEVELOPMENT-SNAPSHOT'; then
+            echo 'Unexpected development snapshot toolchain'
+            exit 1
+          fi
+
       - name: Build Swift package (manual)
         if: matrix.language == 'swift'
         run: swift build -v
