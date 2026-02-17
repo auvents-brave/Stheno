@@ -77,7 +77,6 @@ public struct Coordinate {
     import Playgrounds
 
     #Playground {
-        let Monaco = CLLocationCoordinate2D(Coordinate(latitude: 43.739, longitude: 7.425))
-        _ = Monaco // to remove warning
+        _ = CLLocationCoordinate2D(Coordinate(latitude: 43.739, longitude: 7.425))
     }
 #endif
