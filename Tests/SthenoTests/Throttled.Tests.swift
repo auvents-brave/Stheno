@@ -27,6 +27,10 @@ import Testing
         // Wait slightly longer than the throttling interval; value should still be unchanged.
         try await Task.sleep(nanoseconds: 60_000_000)
         #expect(v == "Hello")
+
+		// Now value updates immediately
+		v = "World!"
+		#expect(v == "World!")
     }
 }
 

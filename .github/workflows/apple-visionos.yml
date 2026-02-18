@@ -1,0 +1,19 @@
+name: Apple visionOS
+on: { push: { branches: [main] }, pull_request: {}, workflow_dispatch: {} }
+
+concurrency:
+  group: ci-${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    uses: ./.github/workflows/_apple-sim-tests.yml
+    with:
+      workflow-name: "visionOS"
+      scheme: "Stheno"
+      sim-runtime-prefix: "com.apple.CoreSimulator.SimRuntime.xrOS"
+      device-name-regex: "Vision|Apple Vision"
+      oldest-os: "1.0"
+      latest-os: "26.2"
+      xcode-old: "16.2"
+      xcode-new: "latest-stable"

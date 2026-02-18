@@ -1,0 +1,33 @@
+name: Windows
+on: { push: { branches: [main] }, pull_request: {}, workflow_dispatch: {} }
+
+concurrency:
+  group: ci-${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-2022]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # setup-swift@v2 currently has no usable Windows entry for Swift 6.1/6.2.
+      # Use SwiftyLab fallback to get a Windows toolchain compatible with tools-version 6.1.
+      - name: Setup Swift (Windows fallback)
+        uses: SwiftyLab/setup-swift@v1
+        with:
+          swift-version: "6.2"
+          development: true
+
+      - shell: pwsh
+        run: swift --version
+
+      - shell: pwsh
+        run: swift build -c release -v
+
+      - shell: pwsh
+        run: swift test -v

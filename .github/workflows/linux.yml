@@ -1,0 +1,19 @@
+name: Linux
+on: { push: { branches: [main] }, pull_request: {}, workflow_dispatch: {} }
+
+concurrency:
+  group: ci-${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/ensure-swift
+      - run: swift build -c release -v
+      - run: swift test -v
