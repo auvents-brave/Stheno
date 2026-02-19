@@ -1,17 +1,21 @@
+/// Supported temperature units.
 enum TemperatureUnit: String, CaseIterable {
     case celsius = "°C"
     case fahrenheit = "°F"
 }
 
+/// Represents a temperature value with conversion and formatting helpers.
 struct Temperature {
     let value: Double
     let unit: TemperatureUnit
 
+    /// Creates a temperature with a value and unit.
     init(value: Double, unit: TemperatureUnit) {
         self.value = value
         self.unit = unit
     }
 
+    /// Converts the temperature to the target unit.
     func converted(to targetUnit: TemperatureUnit) -> Double {
         switch (unit, targetUnit) {
         case (.celsius, .fahrenheit):
@@ -23,6 +27,7 @@ struct Temperature {
         }
     }
 
+    /// Formats the temperature in the target unit.
     func formatted(in targetUnit: TemperatureUnit) -> (value: Double, unit: String) {
         return (converted(to: targetUnit), targetUnit.rawValue)
     }
@@ -35,15 +40,15 @@ struct Temperature {
 
     #Playground {
         let temp = Temperature(value: 22.5, unit: .celsius)
-        let valueInF = temp.converted(to: .fahrenheit)
-        let formattedInF = temp.formatted(in: .fahrenheit)
+        _ = temp.converted(to: .fahrenheit)
+        _ = temp.formatted(in: .fahrenheit)
         let another = Temperature(value: 72, unit: .fahrenheit)
-        let valueInC = another.converted(to: .celsius)
-        let formattedInC = another.formatted(in: .celsius)
+        _ = another.converted(to: .celsius)
+        _ = another.formatted(in: .celsius)
 
-        // Température
+        // Temperature
         let tempCelsius = Temperature(value: 20, unit: .celsius)
-        let tempFahrenheit = tempCelsius.converted(to: .fahrenheit)
-        let tempFormatted = tempCelsius.formatted(in: .fahrenheit)
+        _  = tempCelsius.converted(to: .fahrenheit)
+        _ = tempCelsius.formatted(in: .fahrenheit)
     }
 #endif

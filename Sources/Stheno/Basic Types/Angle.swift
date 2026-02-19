@@ -104,7 +104,6 @@ struct Angle {
 	/// Formats the angle using a direction format type.
 	func formatted<F: DirectionFormat>(as _: F.Type) -> F.Output {
 		F.format(self)
-
 	}
 }
 

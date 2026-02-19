@@ -22,34 +22,32 @@ on:
       latest-os:
         required: true
         type: string
-      xcode-old:
+      xcode-version:
         required: true
         type: string
-      xcode-new:
+      macos-runner:
         required: true
         type: string
 
 jobs:
   test:
-    name: "${{ inputs.workflow-name }} | ${{ matrix.lane }} | Xcode ${{ matrix.xcode }}"
-    runs-on: macos-latest
+    name: "${{ inputs.workflow-name }} | ${{ matrix.lane }} | Xcode ${{ inputs.xcode-version }}"
+    runs-on: ${{ inputs.macos-runner }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - lane: oldest
             requested_os: ${{ inputs.oldest-os }}
-            xcode: ${{ inputs.xcode-old }}
           - lane: latest
             requested_os: ${{ inputs.latest-os }}
-            xcode: ${{ inputs.xcode-new }}
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: ${{ matrix.xcode }}
+          xcode-version: ${{ inputs.xcode-version }}
 
       - uses: ./.github/actions/ensure-swift
 

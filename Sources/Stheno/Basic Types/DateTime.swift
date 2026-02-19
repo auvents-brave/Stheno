@@ -1,23 +1,26 @@
-#if os(Darwin)
+#if canImport(Darwin)
     import Foundation
     import SwiftDate
 
+    /// Defines how a date should be displayed.
     enum DateTimeType: String {
         case utc = " UT"
         case local = " LT"
         case relative = ""
     }
 
+    /// Represents a date with helpers for parsing and formatting.
     struct DateTime {
         let date: Date
         let type: DateTimeType
 
+        /// Creates a date-time with the provided date and display type.
         init(date: Date, type: DateTimeType) {
             self.date = date
             self.type = type
         }
 
-        // Initialisation depuis une chaîne ISO8601 (gère les fractions avec "," ou "." et les indicateurs de fuseau horaire)
+        /// Initializes from an ISO 8601 string, accepting fractional seconds and time zone indicators.
         init?(iso8601String: String) {
             // Normaliser la virgule en point pour les fractions de seconde
             let normalized = iso8601String.replacingOccurrences(of: ",", with: ".")
@@ -106,10 +109,12 @@
             return nil
         }
 
+        /// Returns the stored date for the requested display type.
         func converted(to targetType: DateTimeType) -> Date {
             return date
         }
 
+        /// Formats the date using the given format string and display type.
         func formatted(in targetType: DateTimeType, format: String = "yyyy-MM-dd HH:mm:ss") -> (value: String, unit: String) {
             switch targetType {
             case .relative:
@@ -159,7 +164,7 @@
             return (string, targetType.rawValue)
         }
 
-        // Formatage en ISO8601
+        /// Formats the date using ISO 8601 with optional fractional seconds.
         func formattedISO(in targetType: DateTimeType) -> (value: String, unit: String) {
             let formatter = ISO8601DateFormatter()
             formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
