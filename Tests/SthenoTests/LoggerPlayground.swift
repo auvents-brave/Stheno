@@ -1,3 +1,4 @@
+#if canImport(SwiftLogTesting)
 import Foundation
 import Logging
 import SwiftLogTesting
@@ -53,3 +54,4 @@ import Testing
         logger.trace("Test ended")
     }
 }
+#endif

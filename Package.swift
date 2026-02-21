@@ -60,7 +60,24 @@ var targs: [Target] = [
 		name: "SthenoTests",
 		dependencies: [
 			"Stheno",
-			.product(name: "SwiftLogTesting", package: "swift-log-testing"),
+			.product(
+				name: "SwiftLogTesting",
+				package: "swift-log-testing",
+				condition: .when(
+					platforms: [
+						// Intentionally exclude `.wasi` because `swift-log-testing` relies on Dispatch.
+						.macOS,
+						.iOS,
+						.tvOS,
+						.watchOS,
+						.macCatalyst,
+						.visionOS,
+						.linux,
+						.windows,
+						.android
+					]
+				)
+			),
 		],
 		resources: [
 			.process("TestInfo.plist"),
@@ -89,4 +106,3 @@ let package = Package(
 
 	swiftLanguageModes: [.v6],
 )
-
