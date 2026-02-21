@@ -12,7 +12,7 @@ jobs:
       matrix:
         include:
           - lane: oldest
-            deployment: "10.13"
+            deployment: "10.15"
           - lane: latest
             deployment: "26.2"
     runs-on: macos-26

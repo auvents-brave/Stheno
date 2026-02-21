@@ -3,6 +3,7 @@ import Testing
 
 @testable import Stheno
 
+#if !os(WASI)
 // Date formatting defaults are locale-/platform-dependent.
 // Accept both 24-hour and AM/PM variants for default Display() output.
 @Test func `Create Date from ISO string`() async throws {
@@ -69,3 +70,4 @@ import Testing
     #expect(withoutNano == ISO8601DateFormatter().date(from: "2025-08-26T12:29:23+02:00"))
     #expect(withoutNano == ISO8601DateFormatter().date(from: "2025-08-26T10:29:23Z"))
 }
+#endif
