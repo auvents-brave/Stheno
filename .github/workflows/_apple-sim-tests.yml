@@ -104,18 +104,27 @@ jobs:
 
           req_tuple = parse_ver(requested)
           exact = [c for c in candidates if c[0][:2] == req_tuple[:2]]
+          candidates.sort(key=lambda x: x[0])
 
           chosen = None
-          if exact:
+          reason = ""
+          if lane == "oldest":
+            # Always use the oldest runtime actually available on the runner.
+            chosen = candidates[0]
+            reason = "oldest-available"
+          elif exact:
             exact.sort(key=lambda x: x[0])
-            chosen = exact[0] if lane == "oldest" else exact[-1]
+            chosen = exact[-1]
+            reason = f"requested-exact-{requested}"
           else:
-            # fallback to oldest/newest available for that platform
-            candidates.sort(key=lambda x: x[0])
-            chosen = candidates[0] if lane == "oldest" else candidates[-1]
+            chosen = candidates[-1]
+            reason = "latest-available-fallback"
 
           rv, runtime_key, udid, name = chosen
-          print(f"Using simulator: {name} | runtime={runtime_key} | udid={udid}")
+          print(
+              f"Using simulator: {name} | runtime={runtime_key} | udid={udid} "
+              f"| lane={lane} | requested_os={requested} | reason={reason}"
+          )
 
           out = open(os.environ["GITHUB_OUTPUT"], "a")
           out.write(f"destination=id={udid}\n")
