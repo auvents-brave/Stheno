@@ -10,41 +10,22 @@ Continuous Integration (CI) is handled through GitHub Actions, which automatical
 
 ![Swift](https://img.shields.io/badge/Swift-6.1-orange?logo=swift) [![CodeQL](https://github.com/auvents-brave/Stheno/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/codeql.yml)
 
-Documentation is available directly in Xcode and VS Code (via Swift symbol/documentation support), and online as DocC: [![DocC](https://img.shields.io/badge/docs-available-brightgreen)](https://auvents-brave.github.io/Stheno/).
+Documentation is available directly in Xcode and VS Code, and online as DocC: [![DocC](https://img.shields.io/badge/docs-available-brightgreen)](https://auvents-brave.github.io/Stheno/).
 
-## Supported Platforms
+## Platforms and CI
 
-Minimum Apple platform versions declared by the package:
-
-- macOS 10.13+
-- Mac Catalyst 13.0+
-- iOS 12.0+
-- iPadOS 12.0+
-- tvOS 12.0+
-- watchOS 5.0+
-- visionOS 1.0+
-
-Additional supported non-Apple platforms:
-
-- Linux
-- Windows
-- WebAssembly (WASI)
-- Android
-
-## CI Status
-
-| Platform | Status |
+| Platform | CI Status |
 |---|---|
-| ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple) | [![macOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-macos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-macos.yml) |
-| ![Mac Catalyst](https://img.shields.io/badge/Mac_Catalyst-1C1C1E?logo=apple) | [![Mac Catalyst](https://github.com/auvents-brave/Stheno/actions/workflows/apple-maccatalyst.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-maccatalyst.yml) |
-| ![iOS](https://img.shields.io/badge/iOS-0A84FF?logo=apple) | [![iOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ios.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ios.yml) |
-| ![iPadOS](https://img.shields.io/badge/iPadOS-0A84FF?logo=apple) | [![iPadOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ipados.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ipados.yml) |
-| ![tvOS](https://img.shields.io/badge/tvOS-1C1C1E?logo=apple) | [![tvOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-tvos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-tvos.yml) |
-| ![watchOS](https://img.shields.io/badge/watchOS-1C1C1E?logo=apple) | [![watchOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-watchos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-watchos.yml) |
-| ![visionOS](https://img.shields.io/badge/visionOS-5E5CE6?logo=apple) | [![visionOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-visionos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-visionos.yml) |
+| ![macOS](https://img.shields.io/badge/macOS-111111?logo=apple&logoColor=white) ![min OS 10.13+](https://img.shields.io/badge/min%20OS-10.13%2B-444444) | [![macOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-macos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-macos.yml) |
+| ![Mac Catalyst](https://img.shields.io/badge/Mac_Catalyst-111111?logo=apple&logoColor=white) ![min OS 13.0+](https://img.shields.io/badge/min%20OS-13.0%2B-444444) | [![Mac Catalyst](https://github.com/auvents-brave/Stheno/actions/workflows/apple-maccatalyst.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-maccatalyst.yml) |
+| ![iOS](https://img.shields.io/badge/iOS-111111?logo=apple&logoColor=white) ![min OS 12.0+](https://img.shields.io/badge/min%20OS-12.0%2B-444444) | [![iOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ios.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ios.yml) |
+| ![iPadOS](https://img.shields.io/badge/iPadOS-111111?logo=apple&logoColor=white) ![min OS 12.0+](https://img.shields.io/badge/min%20OS-12.0%2B-444444) | [![iPadOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ipados.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ipados.yml) |
+| ![tvOS](https://img.shields.io/badge/tvOS-111111?logo=apple&logoColor=white) ![min OS 12.0+](https://img.shields.io/badge/min%20OS-12.0%2B-444444) | [![tvOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-tvos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-tvos.yml) |
+| ![watchOS](https://img.shields.io/badge/watchOS-111111?logo=apple&logoColor=white) ![min OS 5.0+](https://img.shields.io/badge/min%20OS-5.0%2B-444444) | [![watchOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-watchos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-watchos.yml) |
+| ![visionOS](https://img.shields.io/badge/visionOS-111111?logo=apple&logoColor=white) ![min OS 1.0+](https://img.shields.io/badge/min%20OS-1.0%2B-444444) | [![visionOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-visionos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-visionos.yml) |
 | ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black) | [![Linux](https://github.com/auvents-brave/Stheno/actions/workflows/linux.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/linux.yml) |
-| ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white) | [![Windows](https://github.com/auvents-brave/Stheno/actions/workflows/windows.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/windows.yml) |
-| ![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?logo=webassembly) | [![WebAssembly](https://github.com/auvents-brave/Stheno/actions/workflows/wasm.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/wasm.yml) |
+| ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=microsoft&logoColor=white) | [![Windows](https://github.com/auvents-brave/Stheno/actions/workflows/windows.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/windows.yml) |
+| ![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?logo=webassembly&logoColor=white) | [![WebAssembly](https://github.com/auvents-brave/Stheno/actions/workflows/wasm.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/wasm.yml) |
 | ![Android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white) | [![Android](https://github.com/auvents-brave/Stheno/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/android.yml) |
 
 ## Public API Documentation
@@ -63,7 +44,6 @@ These types support practical conversion workflows across common units (for exam
 ### Geolocation
 
 - [`Geo`](https://auvents-brave.github.io/Stheno/documentation/stheno/geo/) - Utility functions for geographic calculations (distance, bearings, etc.).
-- `CLLocationCoordinate2D.init(_ fix: Coordinate)` - Convenience interop for converting a `Coordinate` into CoreLocation coordinates.
 
 ### Colors and UI Interop
 
@@ -75,8 +55,7 @@ These types support practical conversion workflows across common units (for exam
 - `CleanHTML(from:)` - Removes all known HTML tags from a string and decodes common HTML entities to their Unicode equivalents.
 - `containsHTML(_:)` - Returns true when the input contains HTML tags/entities that `CleanHTML(from:)` would transform.
 - `downloadURLasString(from:completion:)` - Downloads the contents of the given URL and decodes it as a UTF-8 `String`.
-- `InterceptingStdOut(to:encoding:body:)` (Darwin, async) - Additionally writes any data written to standard output into the given output stream.
-- `isRunningInPreviews` - Indicates whether code is running under Xcode previews (`XCODE_RUNNING_FOR_PREVIEWS == "1"`).
+- `isRunningInPreviews` - Indicates whether code is running under Xcode previews .
 
 ### Bundle Version APIs
 

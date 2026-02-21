@@ -1,6 +1,6 @@
 import Foundation
 
-/// Utility functions for geographic calculations (distance, bearings, etc.)
+/// Utility functions for geographic calculations (great-circle distance, bearings, etc.)
 public struct Geo {
     static let earthRadiusKm = 6371.0
 
