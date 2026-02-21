@@ -3,6 +3,7 @@ import Testing
 
 @testable import Stheno
 
+#if !os(WASI)
 @Test("Bundle+Version")
 func BundleVersionTest() async throws {
     // Missing or bad CFBundle info in our app's Info.plist.
@@ -23,3 +24,4 @@ func BundleVersionTest() async throws {
     _ = Bundle.module.buildNumber
     _ = Bundle.module.displayedVersion
 }
+#endif

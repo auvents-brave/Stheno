@@ -46,9 +46,10 @@ jobs:
 
       - name: Setup Swift
         if: matrix.language == 'swift'
-        uses: swift-actions/setup-swift@v2
+        uses: SwiftyLab/setup-swift@v1
         with:
           swift-version: "6.2.3"
+          development: true
 
       - name: Assert stable Swift toolchain
         if: matrix.language == 'swift'
