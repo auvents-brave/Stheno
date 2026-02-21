@@ -41,7 +41,15 @@ jobs:
           fi
           xcrun docc process-archive transform-for-static-hosting "$ARCHIVE_PATH" \
             --output-path "$PWD/docs" \
-            --hosting-base-path "Stheno"
+            --hosting-base-path "/Stheno"
+
+      - name: Validate hosting base path
+        run: |
+          if ! grep -q 'var baseUrl = "/Stheno/"' "$PWD/docs/index.html"; then
+            echo "DocC output baseUrl is not /Stheno/"
+            sed -n '1,40p' "$PWD/docs/index.html"
+            exit 1
+          fi
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
