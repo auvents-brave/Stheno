@@ -1,7 +1,7 @@
 import Foundation
 
 /// Supported distance units.
-enum DistanceUnit: String, CaseIterable {
+public enum DistanceUnit: String, CaseIterable {
     case meters = "m"
     case feet = "ft"
     case kilometers = "km"
@@ -9,7 +9,7 @@ enum DistanceUnit: String, CaseIterable {
     case nauticalMiles = "nm"
 
     /// Localized unit label.
-    var localized: String {
+    public var localized: String {
         #if os(WASI)
         rawValue
         #else
@@ -19,15 +19,15 @@ enum DistanceUnit: String, CaseIterable {
 }
 
 /// Indicates whether a distance should be treated as short or long.
-enum DistanceType {
+public enum DistanceType {
     case short
     case long
 }
 
 /// Represents a distance value with unit conversions and formatting helpers.
-struct Distance {
-    let value: Double
-    let unit: DistanceUnit
+public struct Distance {
+    public let value: Double
+    public let unit: DistanceUnit
 
     // Forces Xcode to include keys for Localizable.strings
     private func noName() {
@@ -39,13 +39,13 @@ struct Distance {
     }
 
     /// Creates a distance with a value and unit.
-    init(value: Double, unit: DistanceUnit) {
+    public init(value: Double, unit: DistanceUnit) {
         self.value = value
         self.unit = unit
     }
 
     /// Returns `.short` for distances under 300 meters, otherwise `.long`.
-    var type: DistanceType {
+    public var type: DistanceType {
         convertedToMeters() < 300 ? .short : .long
     }
 
@@ -66,7 +66,7 @@ struct Distance {
     }
 
     /// Converts the distance to the target unit.
-    func converted(to targetUnit: DistanceUnit) -> Double {
+    public func converted(to targetUnit: DistanceUnit) -> Double {
         if unit == targetUnit {
             return value
         }
@@ -88,7 +88,7 @@ struct Distance {
     }
 
     /// Formats the distance and optionally adapts long units for short ranges.
-    func formatted(in targetUnit: DistanceUnit, decimals: Int = 2, adaptForShortDistances: Bool = false) -> (value: Double, unit: String) {
+    public func formatted(in targetUnit: DistanceUnit, decimals: Int = 2, adaptForShortDistances: Bool = false) -> (value: Double, unit: String) {
         var cvt = converted(to: targetUnit)
         var adaptedUnit = targetUnit
         let isShort = type == .short
@@ -117,12 +117,12 @@ struct Distance {
     }
 
     /// Units best suited for short ranges.
-    var appropriateUnitsForShort: [DistanceUnit] {
+    public var appropriateUnitsForShort: [DistanceUnit] {
         [.meters, .feet]
     }
 
     /// Units best suited for long ranges.
-    var appropriateUnitsForLong: [DistanceUnit] {
+    public var appropriateUnitsForLong: [DistanceUnit] {
         [.kilometers, .miles, .nauticalMiles]
     }
 }

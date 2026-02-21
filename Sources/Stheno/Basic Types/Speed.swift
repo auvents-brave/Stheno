@@ -1,13 +1,13 @@
 import Foundation
 
 /// Supported speed units.
-enum SpeedUnit: String, CaseIterable {
+public enum SpeedUnit: String, CaseIterable {
     case kilometersPerHour = "km/h"
     case milesPerHour = "mph"
     case knots = "kn"
 
     /// Localized unit label.
-    var localized: String {
+    public var localized: String {
         #if os(WASI)
         rawValue
         #else
@@ -17,7 +17,7 @@ enum SpeedUnit: String, CaseIterable {
 }
 
 /// Beaufort wind force scale (0 to 12) based on km/h thresholds.
-enum BeaufortScale: Int, CaseIterable {
+public enum BeaufortScale: Int, CaseIterable {
     case calm = 0
     case lightAir = 1
     case lightBreeze = 2
@@ -33,7 +33,7 @@ enum BeaufortScale: Int, CaseIterable {
     case hurricane = 12
 
     /// Creates a Beaufort scale value from a km/h speed.
-    init(kilometersPerHour: Double) {
+    public init(kilometersPerHour: Double) {
         switch kilometersPerHour {
         case ..<1: self = .calm
         case 1..<6: self = .lightAir
@@ -53,9 +53,9 @@ enum BeaufortScale: Int, CaseIterable {
 }
 
 /// Represents a speed value with conversion and formatting helpers.
-struct Speed {
-    let value: Double
-    let unit: SpeedUnit
+public struct Speed {
+    public let value: Double
+    public let unit: SpeedUnit
 
     // Forces Xcode to include keys for Localizable.strings
     private func noName() {
@@ -65,13 +65,13 @@ struct Speed {
     }
 
     /// Creates a speed with a value and unit.
-    init(value: Double, unit: SpeedUnit) {
+    public init(value: Double, unit: SpeedUnit) {
         self.value = value
         self.unit = unit
     }
 
     /// Converts the speed to the target unit.
-    func converted(to targetUnit: SpeedUnit) -> Double {
+    public func converted(to targetUnit: SpeedUnit) -> Double {
         if unit == targetUnit {
             return value
         }
@@ -99,12 +99,12 @@ struct Speed {
     }
 
     /// Formats the speed in the target unit.
-    func formatted(in targetUnit: SpeedUnit) -> (value: Double, unit: String) {
+    public func formatted(in targetUnit: SpeedUnit) -> (value: Double, unit: String) {
         return (converted(to: targetUnit), targetUnit.localized)
     }
 
     /// Beaufort wind force derived from the speed.
-    var beaufort: BeaufortScale {
+    public var beaufort: BeaufortScale {
         let kmh = converted(to: .kilometersPerHour)
         return BeaufortScale(kilometersPerHour: kmh)
     }

@@ -30,7 +30,7 @@
     ///   and decoding issues (`URLError(.cannotDecodeRawData)`).
     /// - Important: The response body is assumed to be UTF-8 encoded. If the server returns a different encoding,
     ///   decoding may fail.
-    func downloadURLasString(from url: URL, completion: @escaping @Sendable (Result<String, Error>) -> Void) {
+    public func downloadURLasString(from url: URL, completion: @escaping @Sendable (Result<String, Error>) -> Void) {
         let requestSession = session()
         let task = requestSession.dataTask(with: url) { data, response, error in
             #if canImport(FoundationNetworking) && !canImport(Darwin)

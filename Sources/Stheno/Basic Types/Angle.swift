@@ -1,12 +1,12 @@
 /// Compass directions for 16-point cardinal and intercardinal headings.
-enum CardinalDirection: String, CaseIterable {
+public enum CardinalDirection: String, CaseIterable {
 	case N, NNE, NE, ENE
 	case E, ESE, SE, SSE
 	case S, SSW, SW, WSW
 	case W, WNW, NW, NNW
 
 	/// The heading angle in degrees for this direction.
-	var degrees: Double {
+	public var degrees: Double {
 		switch self {
 		case .N: return 0
 		case .NNE: return 22.5
@@ -28,7 +28,7 @@ enum CardinalDirection: String, CaseIterable {
 	}
 
 	/// Creates an 8-point cardinal direction from a degree value.
-	init(degrees: Double) {
+	public init(degrees: Double) {
 		switch Angle(degrees: degrees).value {
 		case 337.5 ..< 360, 0 ..< 22.5: self = .N
 		case 22.5 ..< 67.5: self = .NE
@@ -43,7 +43,7 @@ enum CardinalDirection: String, CaseIterable {
 	}
 
 	/// Creates a direction from a string like "N" or "SW".
-	init?(string: String) {
+	public init?(string: String) {
 		let normalized = string
 			.trimmingCharacters(in: .whitespacesAndNewlines)
 			.uppercased()
@@ -52,17 +52,17 @@ enum CardinalDirection: String, CaseIterable {
 }
 
 /// An angle in degrees normalized to the [0, 360) range.
-struct Angle {
-	let value: Double
+public struct Angle {
+	public let value: Double
 
 	/// Creates a normalized angle from degrees.
-	init(degrees: Double) {
+	public init(degrees: Double) {
 		let normalized = degrees.truncatingRemainder(dividingBy: 360)
 		value = normalized >= 0 ? normalized : normalized + 360
 	}
 
 	/// Creates an angle from a cardinal direction string.
-	init?(cardinalDirection: String) {
+	public init?(cardinalDirection: String) {
 		guard let direction = CardinalDirection(string: cardinalDirection) else {
 			return nil
 		}
@@ -70,39 +70,39 @@ struct Angle {
 	}
 
 	/// The closest 8-point cardinal direction for this angle.
-	var cardinalDirection: CardinalDirection? {
+	public var cardinalDirection: CardinalDirection? {
 		CardinalDirection(degrees: value)
 	}
 
 	/// Angle formatted in degrees.
-	var formattedDegrees: (value: Double, unit: String) {
+	public var formattedDegrees: (value: Double, unit: String) {
 		DegreesFormat.format(self)
 	}
 
 	/// Angle formatted as a cardinal direction string.
-	var formattedCardinal: String? {
+	public var formattedCardinal: String? {
 		CardinalFormat.format(self)
 	}
 
-	protocol DirectionFormat {
+	public protocol DirectionFormat {
 		associatedtype Output
 		static func format(_ value: Angle) -> Output
 	}
 
-	struct DegreesFormat: DirectionFormat {
-		static func format(_ value: Angle) -> (Double, String) {
+	public struct DegreesFormat: DirectionFormat {
+		public static func format(_ value: Angle) -> (Double, String) {
 			(value.value, "°")
 		}
 	}
 
-	struct CardinalFormat: DirectionFormat {
-		static func format(_ value: Angle) -> String? {
+	public struct CardinalFormat: DirectionFormat {
+		public static func format(_ value: Angle) -> String? {
 			value.cardinalDirection?.rawValue
 		}
 	}
 
 	/// Formats the angle using a direction format type.
-	func formatted<F: DirectionFormat>(as _: F.Type) -> F.Output {
+	public func formatted<F: DirectionFormat>(as _: F.Type) -> F.Output {
 		F.format(self)
 	}
 }

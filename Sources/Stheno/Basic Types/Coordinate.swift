@@ -9,9 +9,9 @@ enum CardinalPoint: String {
 /// Structure representing geographical coordinates (latitude and longitude).
 public struct Coordinate {
     /// Latitude in decimal degrees. North is positive, south is negative.
-    var latitude: Double
+    public var latitude: Double
     /// Longitude in decimal degrees. East is positive, west is negative.
-    var longitude: Double
+    public var longitude: Double
 
     /// Initializes coordinates with given latitude and longitude (in decimal degrees).
     public init(latitude: Double, longitude: Double) {
@@ -61,7 +61,10 @@ public struct Coordinate {
 #if canImport(CoreLocation)
     import CoreLocation
 
+    /// Convenience interop for converting a ``Coordinate`` into CoreLocation coordinates.
     extension CLLocationCoordinate2D {
+        /// Creates a CoreLocation coordinate from a ``Coordinate`` value.
+        /// - Parameter fix: The source coordinate to convert.
         public init(_ fix: Coordinate) {
             self.init(
                 latitude: fix.latitude,

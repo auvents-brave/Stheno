@@ -3,32 +3,32 @@
     import SwiftDate
 
     /// Defines how a date should be displayed.
-    enum DateTimeType: String {
+    public enum DateTimeType: String {
         case utc = " UT"
         case local = " LT"
         case relative = ""
     }
 
     /// Represents a date with helpers for parsing and formatting.
-    struct DateTime {
-        let date: Date
-        let type: DateTimeType
+    public struct DateTime {
+        public let date: Date
+        public let type: DateTimeType
 
         /// Creates a date-time with the provided date and display type.
-        init(date: Date, type: DateTimeType) {
+        public init(date: Date, type: DateTimeType) {
             self.date = date
             self.type = type
         }
 
         /// Initializes from an ISO 8601 string, accepting fractional seconds and time zone indicators.
-        init?(iso8601String: String) {
-            // Normaliser la virgule en point pour les fractions de seconde
+        public init?(iso8601String: String) {
+            // Normalize comma to dot for fractional seconds.
             let normalized = iso8601String.replacingOccurrences(of: ",", with: ".")
 
-            // 1) Essai avec ISO8601DateFormatter (avec fractions)
+            // 1) Try ISO8601DateFormatter (with fractional seconds).
             let isoWithFraction = ISO8601DateFormatter()
             isoWithFraction.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            // Utiliser UTC comme valeur par défaut si la chaîne n'indique pas de fuseau
+            // Use UTC as default when the input string does not include a timezone.
             isoWithFraction.timeZone = TimeZone(secondsFromGMT: 0)
             if let date = isoWithFraction.date(from: normalized) {
                 self.date = date
@@ -36,7 +36,7 @@
                 return
             }
 
-            // 2) Essai avec ISO8601DateFormatter (sans fractions)
+            // 2) Try ISO8601DateFormatter (without fractional seconds).
             let isoNoFraction = ISO8601DateFormatter()
             isoNoFraction.formatOptions = [.withInternetDateTime]
             isoNoFraction.timeZone = TimeZone(secondsFromGMT: 0)
@@ -46,16 +46,16 @@
                 return
             }
 
-            // 3) Repli avec DateFormatter pour prendre en charge jusqu'à 9 chiffres de fraction
+            // 3) Fallback to DateFormatter to support up to 9 fractional digits.
             let posix = Locale(identifier: "en_US_POSIX")
             let df = DateFormatter()
             df.locale = posix
             df.timeZone = TimeZone(secondsFromGMT: 0)
             let patterns = [
-                "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSSXXXXX", // jusqu'à 9 chiffres
-                "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX", // 6 chiffres
-                "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX", // 3 chiffres
-                "yyyy-MM-dd'T'HH:mm:ssXXXXX", // sans fractions
+                "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSSXXXXX", // up to 9 fractional digits
+                "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX", // 6 fractional digits
+                "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX", // 3 fractional digits
+                "yyyy-MM-dd'T'HH:mm:ssXXXXX", // no fractional seconds
             ]
             for pattern in patterns {
                 df.dateFormat = pattern
@@ -72,7 +72,7 @@
         /// Alternate initializer that parses ISO8601 using SwiftDate
         /// - Parameter iso8601String: An ISO8601 date string (supports fractions and time zones as handled by SwiftDate)
         /// - Note: Requires the SwiftDate dependency to be available for this target.
-        init?(iso8601String: String, usingSwiftDate: Bool) {
+        public init?(iso8601String: String, usingSwiftDate: Bool) {
             guard usingSwiftDate else { return nil }
 
             // Normalize comma to dot for fractional seconds to mirror the Foundation-based initializer
@@ -110,12 +110,12 @@
         }
 
         /// Returns the stored date for the requested display type.
-        func converted(to targetType: DateTimeType) -> Date {
+        public func converted(to targetType: DateTimeType) -> Date {
             return date
         }
 
         /// Formats the date using the given format string and display type.
-        func formatted(in targetType: DateTimeType, format: String = "yyyy-MM-dd HH:mm:ss") -> (value: String, unit: String) {
+        public func formatted(in targetType: DateTimeType, format: String = "yyyy-MM-dd HH:mm:ss") -> (value: String, unit: String) {
             switch targetType {
             case .relative:
                 #if canImport(Darwin)
@@ -153,7 +153,7 @@
         ///   - targetType: `.utc` uses GMT, `.local`/`.relative` use the current region
         ///   - format: a custom date pattern understood by SwiftDate's `.custom` formatter
         /// - Returns: tuple of the formatted string and the unit tag
-        func formattedWithSwiftDate(in targetType: DateTimeType, format: String = "yyyy-MM-dd HH:mm:ss") -> (value: String, unit: String) {
+        public func formattedWithSwiftDate(in targetType: DateTimeType, format: String = "yyyy-MM-dd HH:mm:ss") -> (value: String, unit: String) {
             // Define UTC and pick local region dynamically
             let utcRegion = Region(calendar: Calendars.gregorian, zone: Zones.gmt, locale: Locales.english)
             let region: Region = (targetType == .utc) ? utcRegion : Region.current
@@ -165,7 +165,7 @@
         }
 
         /// Formats the date using ISO 8601 with optional fractional seconds.
-        func formattedISO(in targetType: DateTimeType) -> (value: String, unit: String) {
+        public func formattedISO(in targetType: DateTimeType) -> (value: String, unit: String) {
             let formatter = ISO8601DateFormatter()
             formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
 
@@ -184,7 +184,7 @@
         ///   - targetType: `.utc` uses GMT, `.local`/`.relative` use the current time zone
         ///   - includeFractionalSeconds: when true, emits milliseconds (3 digits). Adjust pattern if you need more precision.
         /// - Returns: tuple of the formatted string and the unit tag
-        func formattedISOWithSwiftDate(in targetType: DateTimeType, includeFractionalSeconds: Bool = true) -> (value: String, unit: String) {
+        public func formattedISOWithSwiftDate(in targetType: DateTimeType, includeFractionalSeconds: Bool = true) -> (value: String, unit: String) {
             // Define a stable UTC region
             let utcRegion = Region(calendar: Calendars.gregorian, zone: Zones.gmt, locale: Locales.english)
             // Build an ISO8601 pattern; use 3 fractional digits by default
@@ -212,37 +212,37 @@
         import Playgrounds
 
         #Playground {
-            // Distance courte (< 300m)
+            // Short distance (< 300m)
             let shortDistance = Distance(value: 150, unit: .meters)
             let shortDistanceType = shortDistance.type
             let shortInFeet = shortDistance.converted(to: .feet)
 
-            // Distance longue (>= 300m)
+            // Long distance (>= 300m)
             let longDistance = Distance(value: 5, unit: .kilometers)
             let longDistanceType = longDistance.type
             let longInMiles = longDistance.converted(to: .miles)
             let longInNM = longDistance.converted(to: .nauticalMiles)
 
-            // Vitesse
+            // Speed
             let speedKmh = Speed(value: 100, unit: .kilometersPerHour)
             let speedMph = speedKmh.converted(to: .milesPerHour)
             let speedKnots = Speed(value: 25, unit: .knots)
             let speedKnotsToKmh = speedKnots.converted(to: .kilometersPerHour)
 
-            // Date/Heure - depuis Date
+            // Date/time from Date
             let dateTime = DateTime(date: Date(), type: .utc)
             let utcFormatted = dateTime.formatted(in: .utc)
             let localFormatted = dateTime.formatted(in: .local)
             let isoUTC = dateTime.formattedISO(in: .utc)
             let isoLocal = dateTime.formattedISO(in: .local)
 
-            // Cas d'heure locale
-            // 1) Construction d'une DateTime en local et formatage local/ISO local
+            // Local time case
+            // 1) Build a local DateTime and format local/ISO local
             let nowLocal = DateTime(date: Date(), type: .local)
             let nowLocalFormatted = nowLocal.formatted(in: .local)
             let nowLocalISO = nowLocal.formattedISO(in: .local)
 
-            // 2) Analyse d'ISO avec décalage local et avec Z, puis formatage en local et UTC
+            // 2) Parse ISO with local offset and with Z, then format in local and UTC
             let localISOWithComma = "2025-02-16T12:03:17,646296349+01:00"
             let localISOWithDotZ = "2025-02-16T10:58:44.965071Z"
 
@@ -255,7 +255,7 @@
             let dtFromZLocalFmt = dtFromZ?.formatted(in: .local)
             let dtFromZUTC = dtFromZ?.formatted(in: .utc)
 
-            // Date/Heure - format relatif
+            // Date/time - relative format
             let fiveMinutesAgo = DateTime(date: Date().addingTimeInterval(-5 * 60), type: .local)
             let relativeFormatted = fiveMinutesAgo.formatted(in: .relative)
 

@@ -1,22 +1,22 @@
 /// Supported temperature units.
-enum TemperatureUnit: String, CaseIterable {
+public enum TemperatureUnit: String, CaseIterable {
     case celsius = "°C"
     case fahrenheit = "°F"
 }
 
 /// Represents a temperature value with conversion and formatting helpers.
-struct Temperature {
-    let value: Double
-    let unit: TemperatureUnit
+public struct Temperature {
+    public let value: Double
+    public let unit: TemperatureUnit
 
     /// Creates a temperature with a value and unit.
-    init(value: Double, unit: TemperatureUnit) {
+    public init(value: Double, unit: TemperatureUnit) {
         self.value = value
         self.unit = unit
     }
 
     /// Converts the temperature to the target unit.
-    func converted(to targetUnit: TemperatureUnit) -> Double {
+    public func converted(to targetUnit: TemperatureUnit) -> Double {
         switch (unit, targetUnit) {
         case (.celsius, .fahrenheit):
             return value * 9 / 5 + 32
@@ -28,7 +28,7 @@ struct Temperature {
     }
 
     /// Formats the temperature in the target unit.
-    func formatted(in targetUnit: TemperatureUnit) -> (value: Double, unit: String) {
+    public func formatted(in targetUnit: TemperatureUnit) -> (value: Double, unit: String) {
         return (converted(to: targetUnit), targetUnit.rawValue)
     }
 }
