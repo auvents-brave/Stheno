@@ -15,9 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # setup-swift@v2 currently has no usable Windows entry for Swift 6.1/6.2.
-      # Use SwiftyLab fallback to get a Windows toolchain compatible with tools-version 6.1.
-      - name: Setup Swift (Windows fallback)
+      - name: Setup Swift
         uses: SwiftyLab/setup-swift@v1
         with:
           swift-version: "6.2.3"

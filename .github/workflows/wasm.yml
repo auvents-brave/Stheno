@@ -16,9 +16,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup Swift (stable)
-        uses: swift-actions/setup-swift@v2
+        uses: SwiftyLab/setup-swift@v1
         with:
-          swift-version: "6.2"
+          swift-version: "6.2.3"
+          development: true
 
       - name: Install Wasm SDK (stable)
         shell: bash

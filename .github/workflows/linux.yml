@@ -14,8 +14,9 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
-      - uses: swift-actions/setup-swift@v2
+      - uses: SwiftyLab/setup-swift@v1
         with:
-          swift-version: "6.2"
+          swift-version: "6.2.3"
+          development: true
       - run: swift build -c release
       - run: swift test
