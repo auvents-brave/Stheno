@@ -29,7 +29,8 @@ jobs:
           xcodebuild docbuild \
             -scheme "Stheno" \
             -destination "generic/platform=macOS" \
-            -derivedDataPath "$PWD/.derivedData"
+            -derivedDataPath "$PWD/.derivedData" \
+            MACOSX_DEPLOYMENT_TARGET=10.15
 
       - name: Export DocC static site
         run: |
