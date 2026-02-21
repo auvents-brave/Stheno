@@ -62,7 +62,7 @@ jobs:
 
       - name: Build Swift package (manual)
         if: matrix.language == 'swift'
-        run: swift build
+        run: MACOSX_DEPLOYMENT_TARGET=10.15 swift build
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
