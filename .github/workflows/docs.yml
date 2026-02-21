@@ -41,7 +41,16 @@ jobs:
           fi
           xcrun docc process-archive transform-for-static-hosting "$ARCHIVE_PATH" \
             --output-path "$PWD/docs" \
-            --hosting-base-path "/Stheno"
+            --hosting-base-path "Stheno"
+
+      - name: Normalize base path for GitHub Pages
+        run: |
+          INDEX="$PWD/docs/index.html"
+          if grep -q 'var baseUrl = "/"' "$INDEX"; then
+            sed -i '' 's#var baseUrl = "/"#var baseUrl = "/Stheno/"#g' "$INDEX"
+            sed -i '' 's#href="/#href="/Stheno/#g' "$INDEX"
+            sed -i '' 's#src="/#src="/Stheno/#g' "$INDEX"
+          fi
 
       - name: Validate hosting base path
         run: |
