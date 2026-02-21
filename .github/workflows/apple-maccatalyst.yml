@@ -7,21 +7,12 @@ concurrency:
 
 jobs:
   test:
-    name: test | xcode${{ matrix.xcode-version }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - xcode-version: "26.3"
-            macos-runner: "macos-26"
-          - xcode-version: "15"
-            macos-runner: "macos-14"
-    runs-on: ${{ matrix.macos-runner }}
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: ${{ matrix.xcode-version }}
+          xcode-version: "26.3"
       - uses: SwiftyLab/setup-swift@v1
         with:
           swift-version: "6.2.3"

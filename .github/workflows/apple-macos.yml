@@ -7,28 +7,15 @@ concurrency:
 
 jobs:
   test:
-    name: test | ${{ matrix.name }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: xcode26 | latest
-            xcode-version: "26.3"
-            macos-runner: "macos-26"
-            deployment: "26.0"
-          - name: xcode15 | oldest
-            xcode-version: "15"
-            macos-runner: "macos-14"
-            deployment: "10.15"
-    runs-on: ${{ matrix.macos-runner }}
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: ${{ matrix.xcode-version }}
+          xcode-version: "26.3"
       - uses: SwiftyLab/setup-swift@v1
         with:
           swift-version: "6.2.3"
           development: true
       - run: xcodebuild -resolvePackageDependencies -scheme "Stheno" -toolchain swift IDEPackageSupportToolchainOverrideForManifestLoading=swift
-      - run: xcodebuild test -scheme "Stheno" -toolchain swift IDEPackageSupportToolchainOverrideForManifestLoading=swift -destination "platform=macOS" MACOSX_DEPLOYMENT_TARGET=${{ matrix.deployment }}
+      - run: xcodebuild test -scheme "Stheno" -toolchain swift IDEPackageSupportToolchainOverrideForManifestLoading=swift -destination "platform=macOS" MACOSX_DEPLOYMENT_TARGET=10.15

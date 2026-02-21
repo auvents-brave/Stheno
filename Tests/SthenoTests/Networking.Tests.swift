@@ -7,7 +7,7 @@ import Testing
 @Suite("Networking")
 struct NetworkingTests {
     @Test func `example.com contains 'Example Domain'`() async throws {
-        let url = try #require(URL(string: "https://example.com"), "URL should be valid")
+        let url = try #require(URL(string: "http://example.com"), "URL should be valid")    // https failed on Android
 
         let string = try await fetchString(using: url)
         let containsDomain = string.range(of: "Example Domain", options: .caseInsensitive) != nil

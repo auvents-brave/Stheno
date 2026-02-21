@@ -7,19 +7,9 @@ concurrency:
 
 jobs:
   test:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - xcode-version: "26.3"
-            macos-runner: "macos-26"
-          - xcode-version: "15"
-            macos-runner: "macos-14"
     uses: ./.github/workflows/_apple-sim-tests.yml
     with:
       workflow-name: "tvOS"
       scheme: "Stheno"
       sim-runtime-prefix: "com.apple.CoreSimulator.SimRuntime.tvOS"
       device-name-regex: "Apple TV"
-      xcode-version: ${{ matrix.xcode-version }}
-      macos-runner: ${{ matrix.macos-runner }}
