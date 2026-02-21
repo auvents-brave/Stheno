@@ -8,7 +8,11 @@ enum SpeedUnit: String, CaseIterable {
 
     /// Localized unit label.
     var localized: String {
+        #if os(WASI)
+        rawValue
+        #else
         NSLocalizedString("speed.\(rawValue)", comment: "")
+        #endif
     }
 }
 

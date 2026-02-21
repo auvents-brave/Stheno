@@ -168,6 +168,17 @@ struct DistanceTests {
 		let backToKm = Distance(value: miles, unit: .miles).converted(to: .kilometers)
 		#expect(abs(backToKm - 100) < 0.0001)
 	}
+
+	#if os(WASI)
+	@Test("Distance localized units use raw values on WASI")
+	func localizedUnitsFallbackOnWasi() {
+		#expect(DistanceUnit.meters.localized == "m")
+		#expect(DistanceUnit.feet.localized == "ft")
+		#expect(DistanceUnit.kilometers.localized == "km")
+		#expect(DistanceUnit.miles.localized == "mi")
+		#expect(DistanceUnit.nauticalMiles.localized == "nm")
+	}
+	#endif
 }
 
 @Suite("Distance Formatting Tests")
@@ -240,6 +251,15 @@ struct SpeedTests {
 		let speed = Speed(value: 75.5, unit: .knots)
 		#expect(speed.converted(to: .knots) == 75.5)
 	}
+
+	#if os(WASI)
+	@Test("Speed localized units use raw values on WASI")
+	func localizedUnitsFallbackOnWasi() {
+		#expect(SpeedUnit.kilometersPerHour.localized == "km/h")
+		#expect(SpeedUnit.milesPerHour.localized == "mph")
+		#expect(SpeedUnit.knots.localized == "kn")
+	}
+	#endif
 }
 
 @Suite("Speed Beaufort Tests")

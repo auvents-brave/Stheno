@@ -10,7 +10,11 @@ enum DistanceUnit: String, CaseIterable {
 
     /// Localized unit label.
     var localized: String {
+        #if os(WASI)
+        rawValue
+        #else
         NSLocalizedString("distance.\(rawValue)", comment: "")
+        #endif
     }
 }
 
