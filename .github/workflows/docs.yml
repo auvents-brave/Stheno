@@ -52,11 +52,28 @@ jobs:
             sed -i '' 's#src="/#src="/Stheno/#g' "$INDEX"
           fi
 
-      - name: Validate hosting base path
+      - name: Set root redirect to module docs
         run: |
-          if ! grep -q 'var baseUrl = "/Stheno/"' "$PWD/docs/index.html"; then
-            echo "DocC output baseUrl is not /Stheno/"
-            sed -n '1,40p' "$PWD/docs/index.html"
+          cat > "$PWD/docs/index.html" <<'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta http-equiv="refresh" content="0; url=/Stheno/documentation/stheno/">
+              <script>window.location.replace("/Stheno/documentation/stheno/")</script>
+              <title>Stheno Documentation</title>
+            </head>
+            <body>
+              Redirecting to <a href="/Stheno/documentation/stheno/">Stheno documentation</a>...
+            </body>
+          </html>
+          HTML
+
+      - name: Validate docs entrypoint
+        run: |
+          if [ ! -f "$PWD/docs/documentation/stheno.json" ]; then
+            echo "Missing docs/documentation/stheno.json"
+            find "$PWD/docs" -maxdepth 3 -type f | sed -n '1,120p'
             exit 1
           fi
 
