@@ -7,6 +7,7 @@
 
 #if canImport(SwiftUI)
     import SwiftUI
+    public typealias Color = SwiftUI.Color
 #else
     public struct Color {
         public init(red: Double, green: Double, blue: Double) {
