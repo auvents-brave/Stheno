@@ -14,6 +14,8 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/ensure-swift
-      - run: swift build -c release -v
-      - run: swift test -v
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.2.3"
+      - run: swift build -c release
+      - run: swift test

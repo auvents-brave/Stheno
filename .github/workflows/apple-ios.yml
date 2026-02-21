@@ -15,5 +15,3 @@ jobs:
       device-name-regex: "iPhone"
       oldest-os: "15.2"
       latest-os: "26.3"
-      xcode-version: "26.3"
-      macos-runner: "macos-26"

@@ -44,25 +44,24 @@ jobs:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
 
-      - name: Ensure Swift
+      - name: Setup Swift
         if: matrix.language == 'swift'
-        uses: ./.github/actions/ensure-swift
+        uses: swift-actions/setup-swift@v2
         with:
-          min-version: "6.1.2"
-          target-version: "6.1.2"
+          swift-version: "6.2.3"
 
       - name: Assert stable Swift toolchain
         if: matrix.language == 'swift'
         run: |
-          swift --version
-          if swift --version | grep -q 'DEVELOPMENT-SNAPSHOT'; then
+          SWIFT_VERSION="$(swift --version)"
+          if printf '%s\n' "$SWIFT_VERSION" | grep -q 'DEVELOPMENT-SNAPSHOT'; then
             echo 'Unexpected development snapshot toolchain'
             exit 1
           fi
 
       - name: Build Swift package (manual)
         if: matrix.language == 'swift'
-        run: swift build -v
+        run: swift build
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4

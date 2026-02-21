@@ -23,11 +23,13 @@ on:
         required: true
         type: string
       xcode-version:
-        required: true
+        required: false
         type: string
+        default: "26.3"
       macos-runner:
-        required: true
+        required: false
         type: string
+        default: "macos-26"
 
 jobs:
   test:
@@ -48,8 +50,6 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ${{ inputs.xcode-version }}
-
-      - uses: ./.github/actions/ensure-swift
 
       - name: Resolve simulator destination
         id: sim
@@ -127,6 +127,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo "Testing on simulator destination=${{ steps.sim.outputs.destination }} runtime=${{ steps.sim.outputs.runtime_key }}"
           xcodebuild -resolvePackageDependencies -scheme "${{ inputs.scheme }}" -toolchain swift IDEPackageSupportToolchainOverrideForManifestLoading=swift
           xcodebuild test \
             -scheme "${{ inputs.scheme }}" \

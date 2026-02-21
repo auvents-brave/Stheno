@@ -18,20 +18,20 @@ jobs:
       - name: Setup Swift (stable)
         uses: swift-actions/setup-swift@v2
         with:
-          swift-version: "6.2"
+          swift-version: "6.2.3"
 
       - name: Install Wasm SDK (stable)
         shell: bash
         run: |
           set -euo pipefail
-          swift sdk install https://download.swift.org/swift-6.2.1-release/wasm-sdk/swift-6.2.1-RELEASE/swift-6.2.1-RELEASE_wasm.artifactbundle.tar.gz --checksum 482b9f95462b87bedfafca94a092cf9ec4496671ca13b43745097122d20f18af
+          swift sdk install https://download.swift.org/swift-6.2.3-release/wasm-sdk/swift-6.2.3-RELEASE/swift-6.2.3-RELEASE_wasm.artifactbundle.tar.gz --checksum 394040ecd5260e68bb02f6c20aeede733b9b90702c2204e178f3e42413edad2a
 
       - name: Assert stable Swift toolchain
         shell: bash
         run: |
           set -euo pipefail
-          swift --version
-          if swift --version | grep -q "DEVELOPMENT-SNAPSHOT"; then
+          SWIFT_VERSION="$(swift --version)"
+          if printf '%s\n' "$SWIFT_VERSION" | grep -q "DEVELOPMENT-SNAPSHOT"; then
             echo "Unexpected development snapshot toolchain"
             exit 1
           fi
@@ -44,15 +44,12 @@ jobs:
           SDK_ID="$(swift sdk list | awk '$1 ~ /_wasm$/ { print $1; exit }')"
           if [ -z "${SDK_ID}" ]; then
             echo "No Wasm SDK found in 'swift sdk list'"
-            swift sdk list
             exit 1
           fi
           echo "sdk_id=${SDK_ID}" >> "$GITHUB_OUTPUT"
-          swift --version
-          swift sdk list
 
       - name: Build (Wasm)
-        run: swift build --swift-sdk "${{ steps.wasm.outputs.sdk_id }}" -v
+        run: swift build --swift-sdk "${{ steps.wasm.outputs.sdk_id }}"
 
       - name: Test (Wasm)
-        run: swift test --swift-sdk "${{ steps.wasm.outputs.sdk_id }}" -v
+        run: swift test --swift-sdk "${{ steps.wasm.outputs.sdk_id }}"

@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [windows-2022]
+        runner: [windows-2025]
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
@@ -20,14 +20,11 @@ jobs:
       - name: Setup Swift (Windows fallback)
         uses: SwiftyLab/setup-swift@v1
         with:
-          swift-version: "6.2"
+          swift-version: "6.2.3"
           development: true
 
       - shell: pwsh
-        run: swift --version
+        run: swift build -c release
 
       - shell: pwsh
-        run: swift build -c release -v
-
-      - shell: pwsh
-        run: swift test -v
+        run: swift test

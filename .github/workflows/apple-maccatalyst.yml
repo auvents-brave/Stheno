@@ -13,6 +13,5 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: "26.3"
-      - uses: ./.github/actions/ensure-swift
       - run: xcodebuild -resolvePackageDependencies -scheme "Stheno" -toolchain swift IDEPackageSupportToolchainOverrideForManifestLoading=swift
       - run: xcodebuild test -scheme "Stheno" -toolchain swift IDEPackageSupportToolchainOverrideForManifestLoading=swift -destination "platform=macOS,variant=Mac Catalyst"
