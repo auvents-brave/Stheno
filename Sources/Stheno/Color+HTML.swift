@@ -7,6 +7,7 @@
 
 #if canImport(SwiftUI)
     import SwiftUI
+    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     public typealias Color = SwiftUI.Color
 #else
     public struct Color {
