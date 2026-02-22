@@ -76,7 +76,7 @@ public struct Coordinate {
 
 // MARK: - Examples (Playground)
 
-#if canImport(Playgrounds)
+#if canImport(Playgrounds) && !NO_PLAYGROUND_EXAMPLES
     import Playgrounds
 
     #Playground {

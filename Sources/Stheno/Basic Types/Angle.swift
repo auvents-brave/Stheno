@@ -107,7 +107,7 @@ public struct Angle {
 	}
 }
 
-#if canImport(Playgrounds)
+#if canImport(Playgrounds) && !NO_PLAYGROUND_EXAMPLES
 import Playgrounds
 
 #Playground {
