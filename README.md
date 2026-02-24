@@ -6,11 +6,17 @@ Sthenô is a small, cross-platform Swift package that consolidates reusable, con
 
 Sthenô depends only on [swift-log](https://github.com/apple/swift-log) for structured logging, ensuring consistent and configurable diagnostics across platforms while keeping the overall dependency footprint minimal.
 
-Continuous Integration (CI) is handled through GitHub Actions, which automatically builds, tests, and analyzes the codebase using CodeQL to ensure quality, consistency, and cross-platform reliability.
+Continuous Integration (CI) is handled through GitHub Actions, which automatically builds, tests, generates documentation, and analyzes the codebase using CodeQL and SonarQube to ensure quality, consistency, and cross-platform reliability.
 
-![Swift](https://img.shields.io/badge/Swift-6.1-orange?logo=swift) [![CodeQL](https://github.com/auvents-brave/Stheno/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/codeql.yml)
+![Swift](https://img.shields.io/badge/Swift-6.1+-orange?logo=swift)
 
-Documentation is available directly in Xcode and VS Code, and online as DocC: [![DocC](https://img.shields.io/badge/docs-available-brightgreen)](https://auvents-brave.github.io/Stheno/).
+[![CodeQL](https://github.com/auvents-brave/Stheno/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/codeql.yml)
+
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=auvents-brave_Stheno)](https://sonarcloud.io/summary/new_code?id=auvents-brave_Stheno)
+
+[![DocC](https://img.shields.io/badge/DocC-available-brightgreen)](https://auvents-brave.github.io/Stheno/)
+
+Documentation is available directly in Xcode and VS Code, and [online](https://auvents-brave.github.io/Stheno/) as DocC.
 
 ## Platforms and CI
 
@@ -24,41 +30,58 @@ Documentation is available directly in Xcode and VS Code, and online as DocC: [!
 | ![watchOS](https://img.shields.io/badge/watchOS-111111?logo=apple&logoColor=white) ![min OS 5.0+](https://img.shields.io/badge/min%20OS-5.0%2B-444444) | [![watchOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-watchos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-watchos.yml) |
 | ![visionOS](https://img.shields.io/badge/visionOS-111111?logo=apple&logoColor=white) ![min OS 1.0+](https://img.shields.io/badge/min%20OS-1.0%2B-444444) | [![visionOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-visionos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-visionos.yml) |
 | ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black) | [![Linux](https://github.com/auvents-brave/Stheno/actions/workflows/linux.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/linux.yml) |
-| ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=microsoft&logoColor=white) | [![Windows](https://github.com/auvents-brave/Stheno/actions/workflows/windows.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/windows.yml) |
+| ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0id2hpdGUiPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMSIgaGVpZ2h0PSIxMSIvPjxyZWN0IHg9IjEzIiB5PSIwIiB3aWR0aD0iMTEiIGhlaWdodD0iMTEiLz48cmVjdCB4PSIwIiB5PSIxMyIgd2lkdGg9IjExIiBoZWlnaHQ9IjExIi8+PHJlY3QgeD0iMTMiIHk9IjEzIiB3aWR0aD0iMTEiIGhlaWdodD0iMTEiLz48L3N2Zz4=&logoColor=white) | [![Windows](https://github.com/auvents-brave/Stheno/actions/workflows/windows.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/windows.yml) |
 | ![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?logo=webassembly&logoColor=white) | [![WebAssembly](https://github.com/auvents-brave/Stheno/actions/workflows/wasm.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/wasm.yml) |
 | ![Android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white) | [![Android](https://github.com/auvents-brave/Stheno/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/android.yml) |
 
-## Public API Documentation
+## Public API
 
-### Core Domain Types (measurement, weather, time)
+### Core Domain Types (measurement, time, angle, speed...)
 
 These types support practical conversion workflows across common units (for example, `°C`/`°F` and kilometers/miles) and marine-oriented units and conventions, including nautical miles, knots, cardinal angles, and Beaufort wind scale mapping.
+
+Many ISO date parsers follow RFC 3339, which is a strict subset of ISO 8601.
+DateTime implementations are more permissive and accept additional ISO 8601 variants, such as the absence of a time zone or the use of a comma for fractional seconds.
+
 
 - [`Angle`](https://auvents-brave.github.io/Stheno/documentation/stheno/angle/) - An angle in degrees normalized to the [0, 360) range.
 - [`Coordinate`](https://auvents-brave.github.io/Stheno/documentation/stheno/coordinate/) - Represents geographical coordinates (latitude and longitude).
 - [`Distance`](https://auvents-brave.github.io/Stheno/documentation/stheno/distance/) - Represents a distance value with unit conversions and formatting helpers.
+- [`DateTime`](https://auvents-brave.github.io/Stheno/documentation/stheno/datetime/) - Represents a date with helpers for parsing and formatting helpers.
 - [`Speed`](https://auvents-brave.github.io/Stheno/documentation/stheno/speed/) - Represents a speed value with conversion and formatting helpers.
 - [`Temperature`](https://auvents-brave.github.io/Stheno/documentation/stheno/temperature/) - Represents a temperature value with conversion and formatting helpers.
-- [`DateTime`](https://auvents-brave.github.io/Stheno/documentation/stheno/datetime/) - Represents a date with helpers for parsing and formatting.
+
 
 ### Geolocation
 
-- [`Geo`](https://auvents-brave.github.io/Stheno/documentation/stheno/geo/) - Utility functions for geographic calculations (distance, bearings, etc.).
+- [`Geo`](https://auvents-brave.github.io/Stheno/documentation/stheno/geo/) - Utility functions for geographic calculations (great-circle distance, bearings, etc.).
 
-### Colors and UI Interop
+### Colors
 
 - [`Color`](https://auvents-brave.github.io/Stheno/documentation/stheno/color/) - Cross-platform color support with strict HTML hex parsing/formatting and native bridging (`Color`, `UIColor`, `NSColor`) when available.
 
-### Utility APIs
+### HTML
+
+- [`CleanHTML(from:)`](https://auvents-brave.github.io/Stheno/documentation/stheno/cleanhtml(from:))  - Removes all known HTML tags from a string and decodes common HTML character entities to their Unicode equivalents.
+
+Example:
+```swift
+let result = CleanHTML(from: "<body><h1>Un &oelig;il &eacute;veill&eacute;</h1>&amp; exemple &agrave;  &lt;10&euro;&gt;</body>")
+print(result)
+```
+Output:
+```
+Un œil éveillé & exemple à <10€>
+```
+
+### Misc Utilities
+
+- Extension to [`Bundle`](https://auvents-brave.github.io/Stheno/documentation/stheno/foundation/bundle) to access versioning information from the app’s Info.plist.
+
+- [`downloadURLasString`](https://auvents-brave.github.io/Stheno/documentation/stheno/downloadurlasstring(from:completion:)) - Downloads the contents of the given URL and decodes it as a UTF-8 `String`. (Not implemented on WASI)
+> Use only the pure Toolchain, not [SwiftNIO](hhttps://github.com/apple/swift-nio), even on Linux or Windows.
+
+- `isRunningInPreviews` - Indicates whether code is running under Xcode previews.
 
 - [`Throttled`](https://auvents-brave.github.io/Stheno/documentation/stheno/throttled/) - A property wrapper that throttles updates to its wrapped value.
-- `CleanHTML(from:)` - Removes all known HTML tags from a string and decodes common HTML entities to their Unicode equivalents.
-- `containsHTML(_:)` - Returns true when the input contains HTML tags/entities that `CleanHTML(from:)` would transform.
-- `downloadURLasString(from:completion:)` - Downloads the contents of the given URL and decodes it as a UTF-8 `String`.
-- `isRunningInPreviews` - Indicates whether code is running under Xcode previews .
 
-### Bundle Version APIs
-
-- `Bundle.releaseVersion` - The release version number of the app (from CFBundleShortVersionString in Info.plist).
-- `Bundle.buildNumber` - The build version number of the app (from CFBundleVersion in Info.plist).
-- `Bundle.displayedVersion` - A formatted version string for display purposes, combining the release version number and the build number.

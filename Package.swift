@@ -24,10 +24,6 @@ var deps: [Package.Dependency] = [
 		url: "https://github.com/neallester/swift-log-testing",
 		from: "0.0.1"
 	),
-	.package(
-		url: "https://github.com/malcommac/SwiftDate",
-		from: "6.3.1",
-	),
 ]
 
 var targs: [Target] = [
@@ -35,20 +31,6 @@ var targs: [Target] = [
 		name: "Stheno",
 		dependencies: [
 			.product(name: "Logging", package: "swift-log"),
-			.product(
-				name: "SwiftDate",
-				package: "SwiftDate",
-				condition: .when(
-					platforms: [
-						.macOS,
-						.iOS,
-						.tvOS,
-						.watchOS,
-						.macCatalyst,
-						.visionOS
-					]
-				)
-			)
 		],
 		resources: [
 			.process("Resources"),

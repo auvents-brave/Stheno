@@ -9,9 +9,9 @@ public enum SpeedUnit: String, CaseIterable {
     /// Localized unit label.
     public var localized: String {
         #if os(WASI)
-        rawValue
+            rawValue
         #else
-        NSLocalizedString("speed.\(rawValue)", comment: "")
+            NSLocalizedString("speed.\(rawValue)", comment: "")
         #endif
     }
 }
@@ -36,17 +36,17 @@ public enum BeaufortScale: Int, CaseIterable {
     public init(kilometersPerHour: Double) {
         switch kilometersPerHour {
         case ..<1: self = .calm
-        case 1..<6: self = .lightAir
-        case 6..<12: self = .lightBreeze
-        case 12..<20: self = .gentleBreeze
-        case 20..<29: self = .moderateBreeze
-        case 29..<39: self = .freshBreeze
-        case 39..<50: self = .strongBreeze
-        case 50..<62: self = .highWind
-        case 62..<75: self = .gale
-        case 75..<89: self = .strongGale
-        case 89..<103: self = .storm
-        case 103..<118: self = .violentStorm
+        case 1 ..< 6: self = .lightAir
+        case 6 ..< 12: self = .lightBreeze
+        case 12 ..< 20: self = .gentleBreeze
+        case 20 ..< 29: self = .moderateBreeze
+        case 29 ..< 39: self = .freshBreeze
+        case 39 ..< 50: self = .strongBreeze
+        case 50 ..< 62: self = .highWind
+        case 62 ..< 75: self = .gale
+        case 75 ..< 89: self = .strongGale
+        case 89 ..< 103: self = .storm
+        case 103 ..< 118: self = .violentStorm
         default: self = .hurricane
         }
     }
@@ -109,3 +109,19 @@ public struct Speed {
         return BeaufortScale(kilometersPerHour: kmh)
     }
 }
+
+// MARK: - Examples (Playground)
+
+#if canImport(Playgrounds) && !NO_PLAYGROUND_EXAMPLES
+    import Playgrounds
+
+    #Playground {
+        let speedKmh = Speed(value: 100, unit: .kilometersPerHour)
+        _ = speedKmh.converted(to: .milesPerHour)
+
+        let speedKnots = Speed(value: 25, unit: .knots)
+        _ = speedKnots.converted(to: .kilometersPerHour)
+        _ = speedKnots.beaufort
+        _ = speedKnots.beaufort.rawValue
+    }
+#endif

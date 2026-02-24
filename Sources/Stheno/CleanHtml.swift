@@ -14,7 +14,22 @@ import Foundation
  ```swift
  let html = "<p>Copyright &copy; 2025</p>"
  let plain = CleanHTML(from: html)
- // plain == "Copyright © 2025"
+ print(plain)
+
+ ```
+ Output:
+ ```
+Copyright © 2025
+ ```
+
+ Or:
+ ```swift
+ let result = CleanHTML(from: "<body><h1>Un &oelig;il &eacute;veill&eacute;</h1>&amp; exemple &agrave;  &lt;10&euro;&gt;</body>")
+ print(result)
+ ```
+ Output:
+ ```
+ Un œil éveillé & exemple à <10€>
  ```
  */
 public func CleanHTML(from text: String) -> String {
@@ -48,7 +63,7 @@ public func CleanHTML(from text: String) -> String {
     return decodeHTMLEntities(in: tagStripped)
 }
 
-@inlinable public func containsHTML(_ text: String) -> Bool {
+@inlinable internal func containsHTML(_ text: String) -> Bool {
     return text != CleanHTML(from: text)
 }
 

@@ -1,0 +1,76 @@
+name: SonarCloud
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sonarcloud:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "26.3"
+      - uses: SwiftyLab/setup-swift@v1
+        with:
+          swift-version: "6.2.3"
+          development: true
+      - name: Resolve packages
+        run: xcodebuild -resolvePackageDependencies -scheme "Stheno" -toolchain swift IDEPackageSupportToolchainOverrideForManifestLoading=swift
+      - name: Test with coverage
+        run: |
+          set -euo pipefail
+          DERIVED_DATA="$RUNNER_TEMP/DerivedData"
+          RESULT_BUNDLE="$RUNNER_TEMP/TestResults.xcresult"
+          xcodebuild test \
+            -scheme "Stheno" \
+            -toolchain swift IDEPackageSupportToolchainOverrideForManifestLoading=swift \
+            -destination "platform=macOS" \
+            -derivedDataPath "$DERIVED_DATA" \
+            -resultBundlePath "$RESULT_BUNDLE" \
+            -enableCodeCoverage YES \
+            MACOSX_DEPLOYMENT_TARGET=10.15
+          xcrun xccov view --report --json "$RESULT_BUNDLE" > "$RUNNER_TEMP/coverage.json"
+      - name: Convert coverage for SonarCloud
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import xml.etree.ElementTree as ET
+
+          report_path = os.path.join(os.environ["RUNNER_TEMP"], "coverage.json")
+          with open(report_path, "r", encoding="utf-8") as f:
+              data = json.load(f)
+
+          coverage = ET.Element("coverage", version="1")
+          for target in data.get("targets", []):
+              for file_entry in target.get("files", []):
+                  path = file_entry.get("path")
+                  if not path:
+                      continue
+                  lines = file_entry.get("lines", [])
+                  if not lines:
+                      continue
+                  file_el = ET.SubElement(coverage, "file", path=path)
+                  for line in lines:
+                      line_num = line.get("lineNumber")
+                      exec_count = line.get("executionCount")
+                      if line_num is None or exec_count is None:
+                          continue
+                      covered = "true" if exec_count > 0 else "false"
+                      ET.SubElement(file_el, "lineToCover", lineNumber=str(line_num), covered=covered)
+
+          tree = ET.ElementTree(coverage)
+          tree.write("coverage.xml", encoding="utf-8", xml_declaration=True)
+          PY
+      - uses: sonarsource/sonarcloud-github-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
