@@ -179,6 +179,11 @@ struct DistanceTests {
 		#expect(DistanceUnit.nauticalMiles.localized == "nm")
 	}
 	#endif
+
+	@Test func noName() {
+		Distance.noName()
+	}
+	
 }
 
 @Suite("Distance Formatting Tests")

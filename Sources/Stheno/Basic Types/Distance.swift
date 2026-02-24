@@ -30,7 +30,7 @@ public struct Distance {
     public let unit: DistanceUnit
 
     // Forces Xcode to include keys for Localizable.strings
-    private func noName() {
+    internal static func noName() {
         _ = NSLocalizedString("distance.m", value: "m", comment: "Meters")
         _ = NSLocalizedString("distance.ft", value: "ft", comment: "Feet")
         _ = NSLocalizedString("distance.km", value: "km", comment: "Kilometers")
@@ -99,7 +99,7 @@ public struct Distance {
                 cvt = converted(to: .feet)
                 adaptedUnit = .feet
             case .nauticalMiles, .kilometers:
-                cvt = converted(to: .meters)
+					cvt = converted(to: .meters)
                 adaptedUnit = .meters
             default:
                 break
