@@ -41,65 +41,44 @@ jobs:
           BIN_DIR="$(swift build --show-bin-path)"
           BUILD_DIR="${BIN_DIR%/debug}"
 
-          PROFDATA="$(find "$BUILD_DIR" -type f -name "default.profdata" | head -n 1)"
+          PROFDATA="$(find "$BUILD_DIR" -type f -name default.profdata | head -n 1)"
           TEST_BIN="$(find "$BUILD_DIR" -type f -perm -111 | grep -E '(PackageTests\.xctest|Tests\.xctest|Tests)$' | head -n 1)"
 
-          if [ -z "${PROFDATA:-}" ]; then
-            echo "default.profdata not found"
-            exit 1
-          fi
+          [ -n "${PROFDATA:-}" ] || { echo "default.profdata not found"; exit 1; }
+          [ -n "${TEST_BIN:-}" ] || { echo "test binary not found"; exit 1; }
 
-          if [ -z "${TEST_BIN:-}" ]; then
-            echo "test binary not found"
-            exit 1
-          fi
-
-          llvm-cov export \
-            -format=lcov \
-            -instr-profile "$PROFDATA" \
-            "$TEST_BIN" > coverage.lcov
+          llvm-cov export -format=lcov -instr-profile "$PROFDATA" "$TEST_BIN" > coverage.lcov
 
           python3 - <<'PY'
           import os
           import xml.etree.ElementTree as ET
           from collections import defaultdict
 
-          workspace = os.path.abspath(os.environ.get("GITHUB_WORKSPACE", "."))
+          ws = os.path.abspath(os.environ.get("GITHUB_WORKSPACE", "."))
           files = defaultdict(dict)
-          current = None
+          cur = None
 
-          with open("coverage.lcov", "r", encoding="utf-8") as f:
-              for raw in f:
-                  line = raw.strip()
-                  if line.startswith("SF:"):
-                      p = os.path.abspath(line[3:])
-                      if p.startswith(workspace + os.sep):
-                          current = os.path.relpath(p, workspace)
-                      else:
-                          current = None
-                  elif line.startswith("DA:") and current:
-                      ln, hits = line[3:].split(",")[:2]
-                      ln_i = int(ln)
-                      hits_i = int(hits)
-                      prev = files[current].get(ln_i, 0)
-                      files[current][ln_i] = max(prev, hits_i)
+          for raw in open("coverage.lcov", encoding="utf-8"):
+              line = raw.strip()
+              if line.startswith("SF:"):
+                  p = os.path.abspath(line[3:])
+                  cur = os.path.relpath(p, ws) if p.startswith(ws + os.sep) else None
+              elif line.startswith("DA:") and cur:
+                  ln, hits = line[3:].split(",")[:2]
+                  ln = int(ln); hits = int(hits)
+                  files[cur][ln] = max(files[cur].get(ln, 0), hits)
 
           root = ET.Element("coverage", version="1")
-          for path in sorted(files.keys()):
-              file_el = ET.SubElement(root, "file", path=path)
-              for ln in sorted(files[path].keys()):
-                  ET.SubElement(
-                      file_el,
-                      "lineToCover",
-                      lineNumber=str(ln),
-                      covered="true" if files[path][ln] > 0 else "false",
-                  )
+          for path in sorted(files):
+              f = ET.SubElement(root, "file", path=path)
+              for ln in sorted(files[path]):
+                  ET.SubElement(f, "lineToCover", lineNumber=str(ln), covered=("true" if files[path][ln] > 0 else "false"))
 
           ET.ElementTree(root).write("coverage.xml", encoding="utf-8", xml_declaration=True)
           PY
 
-- name: SonarCloud Scan
-  uses: sonarsource/sonarcloud-github-action@v3
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
