@@ -7,7 +7,7 @@ import Testing
 @Test("Bundle+Version")
 func BundleVersionTest() async throws {
     // Missing or bad CFBundle info in our app's Info.plist.
-    #expect(Versioning.GetDisplayedVersion(nil) == "Unknown version")
+    #expect(Versioning.getDisplayedVersion(nil) == "Unknown version")
 
     // Good Info.plist
     let bundle = Bundle.module
@@ -17,7 +17,7 @@ func BundleVersionTest() async throws {
         Issue.record("Could not load TestInfo.plist")
         return
     }
-    #expect(Versioning.GetDisplayedVersion(plist) == "1.0 (99)")
+    #expect(Versioning.getDisplayedVersion(plist) == "1.0 (99)")
 
     // Call our Bundle extensions to get correct code coverage
     _ = Bundle.module.releaseVersion

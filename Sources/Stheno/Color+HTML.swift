@@ -17,7 +17,9 @@
             self.blue = blue
         }
 
-        private var red: Double, green: Double, blue: Double
+        private var red: Double
+        private var green: Double
+        private var blue: Double
     }
 #endif
 
@@ -63,12 +65,17 @@ extension Color {
             #if canImport(UIKit)
                 // UIKit: Use sRGB color space
                 let uiColor = UIColor(self)
-                var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+                var red: CGFloat = 0
+                var green: CGFloat = 0
+                var blue: CGFloat = 0
+                var alpha: CGFloat = 0
                 guard uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return "" }
             #elseif canImport(AppKit)
                 let nsColor = NSColor(self).usingColorSpace(.sRGB) ?? NSColor(self)
                 guard let color = nsColor.usingColorSpace(.sRGB) else { return "" }
-                let red = color.redComponent, green = color.greenComponent, blue = color.blueComponent
+                let red = color.redComponent
+                let green = color.greenComponent
+                let blue = color.blueComponent
             #endif
         #endif
         return Stheno.toHTMLHex(
@@ -98,7 +105,10 @@ extension Color {
         ///
         /// - Returns: A string in the format "#RRGGBB" or "RRGGBB". Returns `nil` if the color components cannot be extracted.
         public func toHTMLHex(includeHash: Bool = true) -> String? {
-            var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+            var red: CGFloat = 0
+            var green: CGFloat = 0
+            var blue: CGFloat = 0
+            var alpha: CGFloat = 0
             guard getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return nil }
             return Stheno.toHTMLHex(
                 red: red,

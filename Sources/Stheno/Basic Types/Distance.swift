@@ -11,9 +11,9 @@ public enum DistanceUnit: String, CaseIterable {
     /// Localized unit label.
     public var localized: String {
         #if os(WASI)
-        rawValue
+            rawValue
         #else
-        NSLocalizedString("distance.\(rawValue)", comment: "")
+            NSLocalizedString("distance.\(rawValue)", comment: "")
         #endif
     }
 }
@@ -95,13 +95,10 @@ public struct Distance {
 
         if adaptForShortDistances && isShort && appropriateUnitsForLong.contains(targetUnit) {
             switch targetUnit {
-            case .kilometers:
-                cvt = converted(to: .meters)
-                adaptedUnit = .meters
             case .miles:
                 cvt = converted(to: .feet)
                 adaptedUnit = .feet
-            case .nauticalMiles:
+            case .nauticalMiles, .kilometers:
                 cvt = converted(to: .meters)
                 adaptedUnit = .meters
             default:

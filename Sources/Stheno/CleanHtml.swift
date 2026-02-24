@@ -32,7 +32,7 @@ Copyright © 2025
  Un œil éveillé & exemple à <10€>
  ```
  */
-public func CleanHTML(from text: String) -> String {
+public func cleanHTML(from text: String) -> String {
     // Exhaustive list of known HTML tags (can be expanded as needed)
     let htmlTags = [
         // Core and block tags
@@ -64,7 +64,7 @@ public func CleanHTML(from text: String) -> String {
 }
 
 @inlinable internal func containsHTML(_ text: String) -> Bool {
-    return text != CleanHTML(from: text)
+    return text != cleanHTML(from: text)
 }
 
 /// Decodes an expanded set of HTML entities (&amp;, &lt;, &gt;, &quot;, &apos;, &nbsp;, &copy;, &reg;, &euro;, etc.).

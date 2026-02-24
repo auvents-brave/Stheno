@@ -10,8 +10,8 @@ import Testing
   let d = Date(fromISO: "2025-08-26T09:29:23.321Z")
 	let londonTimeZone = TimeZone(identifier: "Europe/London")!
 
-  let universal = d.Display(display: .asUniversalTime)
-  let london = d.Display(display: .asLocalTime(londonTimeZone))
+	let universal = d.display(displayAs: .asUniversalTime)
+  let london = d.display(displayAs: .asLocalTime(londonTimeZone))
 
   let universalExpected: Set<String> = [
     "26/08/2025, 09:29",
@@ -36,11 +36,11 @@ import Testing
 
   let formatter = DateFormatter()
   formatter.dateFormat = "dd/MM/yy '-' HH:mm"
-  #expect("26/08/25 - 09:29" == d.Display(display: .asUniversalTime, formatter: formatter))
+  #expect("26/08/25 - 09:29" == d.display(displayAs: .asUniversalTime, formatter: formatter))
 #if canImport(Darwin)
-  #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime(londonTimeZone), formatter: formatter))
+  #expect("26/08/25 - 10:29" == d.display(displayAs: .asLocalTime(londonTimeZone), formatter: formatter))
 #else
-  #expect("26/08/25 - 10:29" == d.Display(display: .asLocalTime(londonTimeZone), formatter: formatter))
+  #expect("26/08/25 - 10:29" == d.Display(displayAs: .asLocalTime(londonTimeZone), formatter: formatter))
 #endif
 
     let withoutNano = Calendar.current.date(from: DateComponents(

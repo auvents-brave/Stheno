@@ -32,8 +32,8 @@ extension Date {
     ///   - display: Specifies whether to display as universal, device, or local time.
     ///   - formatter: The `DateFormatter` to use for formatting.
     /// - Returns: A formatted date string.
-    func Display(display: DisplayAs, formatter: DateFormatter) -> String {
-        formatter.timeZone = switch display {
+    func display(displayAs: DisplayAs, formatter: DateFormatter) -> String {
+        formatter.timeZone = switch displayAs {
         case .asUniversalTime:
             TimeZone(abbreviation: "UTC")
         case .asDeviceTime:
@@ -49,10 +49,10 @@ extension Date {
     /// - Parameter display: Specifies whether to display as universal, device, or local time.
     /// - Returns: The formatted date string.
     /// - SeeAlso: `Display(display:formatter:)`
-    func Display(display: DisplayAs) -> String {
+    func display(displayAs: DisplayAs) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .short
-        return Display(display: display, formatter: formatter)
+        return display(displayAs: displayAs, formatter: formatter)
     }
 }
