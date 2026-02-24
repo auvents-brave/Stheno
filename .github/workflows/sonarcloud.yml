@@ -77,6 +77,11 @@ jobs:
           ET.ElementTree(root).write("coverage.xml", encoding="utf-8", xml_declaration=True)
           PY
 
+      - name: Debug coverage.xml
+        run: |
+          grep -c "<file path=" coverage.xml || true
+          head -n 40 coverage.xml || true
+
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v3
         env:
