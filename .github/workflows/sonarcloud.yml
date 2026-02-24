@@ -1,5 +1,11 @@
 name: SonarCloud
-on: { push: { branches: [main] }, pull_request: {}, workflow_dispatch: {} }
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
@@ -7,29 +13,27 @@ concurrency:
 
 jobs:
   sonarcloud:
-    strategy:
-      fail-fast: false
-      matrix:
-        runner: [ubuntu-24.04]
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: SwiftyLab/setup-swift@v1
+      - name: Setup Swift
+        uses: SwiftyLab/setup-swift@v1
         with:
           swift-version: "6.2.3"
           development: true
 
-      - name: Build (same as linux.yml)
+      - name: Build
         run: swift build -c release
 
-      - name: Test with coverage (linux)
+      - name: Test with coverage
         run: swift test --enable-code-coverage
 
-       - name: Convert llvm-cov to Sonar generic coverage.xml
+      - name: Convert coverage to Sonar generic XML
         shell: bash
         run: |
           set -euo pipefail
@@ -38,10 +42,17 @@ jobs:
           BUILD_DIR="${BIN_DIR%/debug}"
 
           PROFDATA="$(find "$BUILD_DIR" -type f -name "default.profdata" | head -n 1)"
-          TEST_BIN="$(find "$BUILD_DIR" -type f -perm -111 \( -name "*PackageTests.xctest" -o -name "*Tests.xctest" -o -name "*Tests" \) | head -n 1)"
+          TEST_BIN="$(find "$BUILD_DIR" -type f -perm -111 | grep -E '(PackageTests\.xctest|Tests\.xctest|Tests)$' | head -n 1)"
 
-          [ -n "${PROFDATA:-}" ] || { echo "default.profdata not found"; exit 1; }
-          [ -n "${TEST_BIN:-}" ] || { echo "test binary not found"; exit 1; }
+          if [ -z "${PROFDATA:-}" ]; then
+            echo "default.profdata not found"
+            exit 1
+          fi
+
+          if [ -z "${TEST_BIN:-}" ]; then
+            echo "test binary not found"
+            exit 1
+          fi
 
           llvm-cov export \
             -format=lcov \
@@ -61,21 +72,28 @@ jobs:
               for raw in f:
                   line = raw.strip()
                   if line.startswith("SF:"):
-                      p = line[3:]
-                      ap = os.path.abspath(p)
-                      if ap.startswith(workspace + os.sep):
-                          current = os.path.relpath(ap, workspace)
+                      p = os.path.abspath(line[3:])
+                      if p.startswith(workspace + os.sep):
+                          current = os.path.relpath(p, workspace)
                       else:
                           current = None
                   elif line.startswith("DA:") and current:
                       ln, hits = line[3:].split(",")[:2]
-                      files[current][int(ln)] = max(files[current].get(int(ln), 0), int(hits))
+                      ln_i = int(ln)
+                      hits_i = int(hits)
+                      prev = files[current].get(ln_i, 0)
+                      files[current][ln_i] = max(prev, hits_i)
 
           root = ET.Element("coverage", version="1")
-          for path in sorted(files):
+          for path in sorted(files.keys()):
               file_el = ET.SubElement(root, "file", path=path)
-              for ln in sorted(files[path]):
-                  ET.SubElement(file_el, "lineToCover", lineNumber=str(ln), covered="true" if files[path][ln] > 0 else "false")
+              for ln in sorted(files[path].keys()):
+                  ET.SubElement(
+                      file_el,
+                      "lineToCover",
+                      lineNumber=str(ln),
+                      covered="true" if files[path][ln] > 0 else "false",
+                  )
 
           ET.ElementTree(root).write("coverage.xml", encoding="utf-8", xml_declaration=True)
           PY
@@ -86,5 +104,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          args: >
-            -Dsonar.coverageReportPaths=coverage.xml
+          args: -Dsonar.coverageReportPaths=coverage.xml
