@@ -28,6 +28,7 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: "26.3"
+
       - uses: SwiftyLab/setup-swift@v1
         with:
           swift-version: "6.2.3"
@@ -44,21 +45,17 @@ jobs:
           python3 <<'PY'
           import json, os, re, subprocess, sys
 
-          prefix = os.environ["RUNTIME_PREFIX"]  # ex: com.apple.CoreSimulator.SimRuntime.iOS
+          prefix = os.environ["RUNTIME_PREFIX"]
           pattern = re.compile(os.environ["DEVICE_REGEX"])
 
           data = json.loads(subprocess.check_output(
               ["xcrun", "simctl", "list", "devices", "available", "--json"], text=True))
 
           def runtime_ver(runtime_key):
-            # runtime key format: com.apple.CoreSimulator.SimRuntime.iOS-18-2
             m = re.search(r'-(\d+)(?:-(\d+))?(?:-(\d+))?$', runtime_key)
             if not m:
               return (0, 0, 0)
-            a = int(m.group(1))
-            b = int(m.group(2) or 0)
-            c = int(m.group(3) or 0)
-            return (a, b, c)
+            return (int(m.group(1)), int(m.group(2) or 0), int(m.group(3) or 0))
 
           candidates = []
           for runtime_key, devices in data.get("devices", {}).items():
@@ -78,31 +75,38 @@ jobs:
             sys.exit(1)
 
           candidates.sort(key=lambda x: x[0])
-          chosen = candidates[-1]
-          reason = "latest-available"
+          rv, runtime_key, udid, name = candidates[-1]
+          print(f"Using simulator: {name} | runtime={runtime_key} | udid={udid} | reason=latest-available")
 
-          rv, runtime_key, udid, name = chosen
-          print(
-              f"Using simulator: {name} | runtime={runtime_key} | udid={udid} "
-              f"| reason={reason}"
-          )
-
-          out = open(os.environ["GITHUB_OUTPUT"], "a")
-          out.write(f"destination=id={udid}\n")
-          out.write(f"runtime_key={runtime_key}\n")
-          out.close()
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+            out.write(f"destination=id={udid}\n")
+            out.write(f"runtime_key={runtime_key}\n")
           PY
 
       - name: Run tests
         shell: bash
+        env:
+          SCHEME: ${{ inputs.scheme }}
+          DESTINATION: ${{ steps.sim.outputs.destination }}
+          RUNTIME_KEY: ${{ steps.sim.outputs.runtime_key }}
         run: |
           set -euo pipefail
-          echo "Testing on simulator destination=${{ steps.sim.outputs.destination }} runtime=${{ steps.sim.outputs.runtime_key }}"
-          xcodebuild -resolvePackageDependencies -scheme "${{ inputs.scheme }}" -toolchain swift IDEPackageSupportToolchainOverrideForManifestLoading=swift
+
+          # Basic allowlist for scheme input
+          [[ "$SCHEME" =~ ^[A-Za-z0-9._ -]+$ ]] || { echo "Invalid scheme"; exit 1; }
+          [[ "$DESTINATION" =~ ^id=[A-Fa-f0-9-]+$ ]] || { echo "Invalid destination"; exit 1; }
+
+          echo "Testing on simulator destination=$DESTINATION runtime=$RUNTIME_KEY"
+
+          xcodebuild -resolvePackageDependencies \
+            -scheme "$SCHEME" \
+            -toolchain swift \
+            IDEPackageSupportToolchainOverrideForManifestLoading=swift
+
           xcodebuild test \
-            -scheme "${{ inputs.scheme }}" \
+            -scheme "$SCHEME" \
             -toolchain swift \
             IDEPackageSupportToolchainOverrideForManifestLoading=swift \
-            -destination "${{ steps.sim.outputs.destination }}" \
+            -destination "$DESTINATION" \
             -skipPackagePluginValidation \
             -skipMacroValidation
