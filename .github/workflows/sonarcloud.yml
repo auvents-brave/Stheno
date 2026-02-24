@@ -29,7 +29,7 @@ jobs:
       - name: Test with coverage (linux)
         run: swift test --enable-code-coverage
 
-      - name: Convert llvm-cov to Sonar generic coverage.xml
+       - name: Convert llvm-cov to Sonar generic coverage.xml
         shell: bash
         run: |
           set -euo pipefail
@@ -38,69 +38,44 @@ jobs:
           BUILD_DIR="${BIN_DIR%/debug}"
 
           PROFDATA="$(find "$BUILD_DIR" -type f -name "default.profdata" | head -n 1)"
-          if [ -z "${PROFDATA:-}" ]; then
-            echo "default.profdata not found under $BUILD_DIR"
-            find "$BUILD_DIR" -type f -name "*.profdata" -print || true
-            exit 1
-          fi
-
           TEST_BIN="$(find "$BUILD_DIR" -type f -perm -111 \( -name "*PackageTests.xctest" -o -name "*Tests.xctest" -o -name "*Tests" \) | head -n 1)"
-          if [ -z "${TEST_BIN:-}" ]; then
-            echo "Test binary not found under $BUILD_DIR"
-            find "$BUILD_DIR" -maxdepth 4 -type f -print | head -n 200 || true
-            exit 1
-          fi
+
+          [ -n "${PROFDATA:-}" ] || { echo "default.profdata not found"; exit 1; }
+          [ -n "${TEST_BIN:-}" ] || { echo "test binary not found"; exit 1; }
 
           llvm-cov export \
-            -format=json \
+            -format=lcov \
             -instr-profile "$PROFDATA" \
-            "$TEST_BIN" > coverage-llvm.json
+            "$TEST_BIN" > coverage.lcov
 
           python3 - <<'PY'
-          import json
           import os
           import xml.etree.ElementTree as ET
           from collections import defaultdict
 
-          workspace = os.environ.get("GITHUB_WORKSPACE", "")
-          with open("coverage-llvm.json", "r", encoding="utf-8") as f:
-              data = json.load(f)
+          workspace = os.path.abspath(os.environ.get("GITHUB_WORKSPACE", "."))
+          files = defaultdict(dict)
+          current = None
+
+          with open("coverage.lcov", "r", encoding="utf-8") as f:
+              for raw in f:
+                  line = raw.strip()
+                  if line.startswith("SF:"):
+                      p = line[3:]
+                      ap = os.path.abspath(p)
+                      if ap.startswith(workspace + os.sep):
+                          current = os.path.relpath(ap, workspace)
+                      else:
+                          current = None
+                  elif line.startswith("DA:") and current:
+                      ln, hits = line[3:].split(",")[:2]
+                      files[current][int(ln)] = max(files[current].get(int(ln), 0), int(hits))
 
           root = ET.Element("coverage", version="1")
-          files = (data.get("data") or [{}])[0].get("files", [])
-
-          for fobj in files:
-              path = fobj.get("filename")
-              segments = fobj.get("segments", [])
-              if not path or not segments:
-                  continue
-
-              if workspace:
-                  abs_path = os.path.abspath(path)
-                  ws = os.path.abspath(workspace)
-                  if not abs_path.startswith(ws + os.sep):
-                      continue
-                  path = os.path.relpath(abs_path, ws)
-
-              hits_by_line = defaultdict(int)
-              for seg in segments:
-                  line = seg[0]
-                  count = seg[2]
-                  has_count = seg[3]
-                  if has_count:
-                      hits_by_line[line] = max(hits_by_line[line], count)
-
-              if not hits_by_line:
-                  continue
-
+          for path in sorted(files):
               file_el = ET.SubElement(root, "file", path=path)
-              for line in sorted(hits_by_line.keys()):
-                  ET.SubElement(
-                      file_el,
-                      "lineToCover",
-                      lineNumber=str(line),
-                      covered="true" if hits_by_line[line] > 0 else "false",
-                  )
+              for ln in sorted(files[path]):
+                  ET.SubElement(file_el, "lineToCover", lineNumber=str(ln), covered="true" if files[path][ln] > 0 else "false")
 
           ET.ElementTree(root).write("coverage.xml", encoding="utf-8", xml_declaration=True)
           PY
