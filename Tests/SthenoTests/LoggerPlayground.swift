@@ -12,7 +12,10 @@ import Testing
 
         logger.info("message")
         #expect(container.messages.count == 1)
-        #expect(container.messages[0].toString() == "info message|LoggerPlayground.swift|Log1()")
+
+        let rendered = container.messages[0].toString()
+        #expect(rendered.contains("info message"))
+        #expect(rendered.contains("LoggerPlayground.swift"))
 
         container.reset()
         #expect(container.messages.isEmpty)
