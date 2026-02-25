@@ -8,8 +8,7 @@ import Testing
 @Suite("Color <-> HTML Hex Conversion")
 struct ColorHTMLHexTests {
 	@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
-    @Test("Round-trip .red <-> #FF0000")
-    func redHTMLHex() async throws {
+    @Test func `Round-trip .red <-> #FF0000`() async throws {
         let color = Color(red: 1, green: 0, blue: 0)
         let html = color.toHTMLHex()
         #expect(html == "#FF0000")
@@ -18,8 +17,7 @@ struct ColorHTMLHexTests {
     }
 
 	@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
-    @Test("Round-trip .green <-> #00FF00")
-    func greenHTMLHex() async throws {
+    @Test func `Round-trip .green <-> #00FF00`() async throws {
         let color = Color(red: 0, green: 1, blue: 0)
         let html = color.toHTMLHex()
         #expect(html == "#00FF00")
@@ -28,8 +26,7 @@ struct ColorHTMLHexTests {
     }
 
 	@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
-    @Test("Round-trip .blue <-> #0000FF")
-    func blueHTMLHex() async throws {
+    @Test func `Round-trip .blue <-> #0000FF`() async throws {
         let color = Color(red: 0, green: 0, blue: 1)
         let html = color.toHTMLHex()
         #expect(html == "#0000FF")
@@ -38,15 +35,13 @@ struct ColorHTMLHexTests {
     }
 
 	@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
-    @Test("Shorthand #F00")
-    func shorthandRed() async throws {
+    @Test func `Shorthand #F00`() async throws {
         let color = Color(htmlHex: "#F00")
         #expect(color != nil)
     }
 
 	@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
-    @Test("Invalid hex string returns nil")
-    func invalidHex() async throws {
+    @Test func `Invalid hex string returns nil`() async throws {
         let color = Color(htmlHex: "invalid")
         #expect(color == nil)
     }

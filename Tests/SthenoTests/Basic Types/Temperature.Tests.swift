@@ -5,8 +5,7 @@ import Testing
 
 @Suite("Temperature Tests")
 struct TemperatureTests {
-    @Test("Celsius to Fahrenheit conversion")
-    func celsiusToFahrenheit() {
+    @Test func `Celsius to Fahrenheit conversion`() {
         let temp = Temperature(value: 0, unit: .celsius)
         #expect(temp.converted(to: .fahrenheit) == 32.0)
 
@@ -17,8 +16,7 @@ struct TemperatureTests {
         #expect(temp3.converted(to: .fahrenheit) == -40.0)
     }
 
-    @Test("Fahrenheit to Celsius conversion")
-    func fahrenheitToCelsius() {
+    @Test func `Fahrenheit to Celsius conversion`() {
         let temp = Temperature(value: 32, unit: .fahrenheit)
         #expect(temp.converted(to: .celsius) == 0.0)
 
@@ -26,15 +24,13 @@ struct TemperatureTests {
         #expect(temp2.converted(to: .celsius) == 100.0)
     }
 
-    @Test("Temperature preserves original value and unit")
-    func preservesOriginal() {
+    @Test func `Temperature preserves original value and unit`() {
         let temp = Temperature(value: 25.5, unit: .celsius)
         #expect(temp.value == 25.5)
         #expect(temp.unit == .celsius)
     }
 
-    @Test("Temperature formatted output")
-    func formattedOutput() {
+    @Test func `Temperature formatted output`() {
         let temp = Temperature(value: 20, unit: .celsius)
         let formatted = temp.formatted(in: .fahrenheit)
         #expect(formatted.value == 68.0)
@@ -44,8 +40,7 @@ struct TemperatureTests {
 
 @Suite("Temperature Conversion Tests")
 struct TemperatureConversionTests {
-    @Test("Same unit returns original value")
-    func sameUnitConversion() {
+    @Test func `Same unit returns original value`() {
         let temp = Temperature(value: 21.5, unit: .celsius)
         #expect(temp.converted(to: .celsius) == 21.5)
     }

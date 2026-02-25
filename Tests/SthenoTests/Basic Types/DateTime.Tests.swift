@@ -6,33 +6,28 @@ import Testing
 #if canImport(Darwin)
 @Suite("DateTime Tests")
 struct DateTimeTests {
-    @Test("DateTime preserves original date")
-    func preservesOriginal() {
+    @Test func `DateTime preserves original date`() {
         let date = Date(timeIntervalSince1970: 1704067200)
         let dateTime = DateTime(date: date)
         #expect(dateTime.date == date)
     }
 
-    @Test("DateTime initialization from ISO8601 string (Z)")
-    func initFromISO8601UTC() {
+    @Test func `DateTime initialization from ISO8601 string (Z)`() {
         let dateTime = DateTime(iso8601String: "2024-01-23T15:30:00Z")
         #expect(dateTime != nil)
     }
 
-    @Test("DateTime initialization from ISO8601 string (offset)")
-    func initFromISO8601Local() {
+    @Test func `DateTime initialization from ISO8601 string (offset)`() {
         let dateTime = DateTime(iso8601String: "2024-01-23T15:30:00+01:00")
         #expect(dateTime != nil)
     }
 
-    @Test("DateTime initialization from invalid ISO8601 string returns nil")
-    func initFromInvalidISO8601() {
+    @Test func `DateTime initialization from invalid ISO8601 string returns nil`() {
         let dateTime = DateTime(iso8601String: "invalid-date")
         #expect(dateTime == nil)
     }
 
-    @Test("DateTime formatted output contains date, time, and unit")
-    func formattedOutput() {
+    @Test func `DateTime formatted output contains date, time, and unit`() {
         let date = Date(timeIntervalSince1970: 1704067200)
         let dateTime = DateTime(date: date)
         let formatted = dateTime.formatted(in: .utc)
@@ -41,8 +36,7 @@ struct DateTimeTests {
         #expect(formatted.unit == " UT")
     }
 
-    @Test("DateTime ISO formatted output UTC")
-    func isoFormattedOutputUTC() {
+    @Test func `DateTime ISO formatted output UTC`() {
         let date = Date(timeIntervalSince1970: 1704067200)
         let dateTime = DateTime(date: date)
         let isoFormatted = dateTime.formattedISO(in: .utc)
@@ -50,8 +44,7 @@ struct DateTimeTests {
         #expect(isoFormatted.contains("T"))
     }
 
-    @Test("DateTime custom format")
-    func customFormat() {
+    @Test func `DateTime custom format`() {
         let date = Date(timeIntervalSince1970: 1704067200)
         let dateTime = DateTime(date: date)
         let formatted = dateTime.formatted(in: .utc, format: "dd/MM/yyyy")
@@ -59,14 +52,12 @@ struct DateTimeTests {
         #expect(formatted.time.isEmpty)
     }
 
-    @Test("DateTime accepts comma fractional seconds")
-    func acceptsCommaFractionalSeconds() {
+    @Test func `DateTime accepts comma fractional seconds`() {
         let dateTime = DateTime(iso8601String: "2026-01-30T13:05:09,472Z")
         #expect(dateTime != nil)
     }
 
-    @Test("Round-trip ISO8601 parsing")
-    func roundTripISO8601() {
+    @Test func `Round-trip ISO8601 parsing`() {
         let originalDate = Date(timeIntervalSince1970: 1704067200)
         let dateTime = DateTime(date: originalDate)
         let isoString = dateTime.formattedISO(in: .utc)

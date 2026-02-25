@@ -2,7 +2,7 @@ import Testing
 
 @testable import Stheno
 
-@Test("Strip HTML tags, decode HTML entities", arguments: [
+@Test(arguments: [
 	("I told my computer I needed a break, and now it won’t stop sending me KitKat ads.", false, ""),
 	("I told my computer I needed a break, and now it won’t stop sending me KitKat ads.", true, "I told my computer I needed a break, and now it won’t stop sending me KitKat ads."),
     ("Temperature: 37&deg;C &plusmn;0.5&deg;", true, "Temperature: 37°C ±0.5°"),
@@ -13,7 +13,7 @@ import Testing
     ("Why did the <b>chicken</b> cross the <i>road</i>? To escape the <span style=\"color:red;\">CSS</span> police!", true, "Why did the chicken cross the road? To escape the CSS police!"),
 ])
 @MainActor
-func cleanHTML(_ value: (String, Bool, String)) {
+func `Strip HTML tags, decode HTML entities`(_ value: (String, Bool, String)) {
     if value.1 {
         #expect(cleanHtml(from: value.0) == value.2)
     }

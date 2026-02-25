@@ -63,10 +63,6 @@ public func cleanHtml(from text: String) -> String {
     return decodeHtmlEntities(in: tagStripped)
 }
 
-private func containsHtml(_ text: String) -> Bool {
-    return text != cleanHtml(from: text)
-}
-
 /// Decodes an expanded set of HTML entities (&amp;, &lt;, &gt;, &quot;, &apos;, &nbsp;, &copy;, &reg;, &euro;, etc.).
 private func decodeHtmlEntities(in text: String) -> String {
     var result = text

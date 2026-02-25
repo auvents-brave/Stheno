@@ -5,8 +5,7 @@ import Testing
 
 @Suite("Edge Cases")
 struct EdgeCaseTests {
-    @Test("Zero values")
-    func zeroValues() {
+    @Test func `Zero values`() {
         let temp = Temperature(value: 0, unit: .celsius)
         #expect(temp.value == 0)
 
@@ -18,30 +17,26 @@ struct EdgeCaseTests {
         #expect(speed.value == 0)
     }
 
-    @Test("Negative temperature")
-    func negativeTemperature() {
+    @Test func `Negative temperature`() {
         let temp = Temperature(value: -273.15, unit: .celsius)
         let fahrenheit = temp.converted(to: .fahrenheit)
         #expect(abs(fahrenheit - -459.67) < 0.01)
     }
 
-    @Test("Very large values")
-    func largeValues() {
+    @Test func `Very large values`() {
         let distance = Distance(value: 1_000_000, unit: .kilometers)
         let miles = distance.converted(to: .miles)
         #expect(miles > 0)
         #expect(distance.type == .long)
     }
 
-    @Test("Precision with small decimals")
-    func smallDecimals() {
+    @Test func `Precision with small decimals`() {
         let temp = Temperature(value: 0.1, unit: .celsius)
         let fahrenheit = temp.converted(to: .fahrenheit)
         #expect(abs(fahrenheit - 32.18) < 0.01)
     }
 
-    @Test("Distance exactly at 300m threshold")
-    func distanceAtThreshold() {
+    @Test func `Distance exactly at 300m threshold`() {
         let distance = Distance(value: 300, unit: .meters)
         #expect(distance.type == .long)
 
@@ -49,8 +44,7 @@ struct EdgeCaseTests {
         #expect(distance2.type == .short)
     }
 
-    @Test("Very small distances")
-    func verySmallDistances() {
+    @Test func `Very small distances`() {
         let distance = Distance(value: 0.5, unit: .meters)
         #expect(distance.type == .short)
         let feet = distance.converted(to: .feet)

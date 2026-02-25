@@ -5,34 +5,29 @@ import Testing
 
 @Suite("Angle Tests")
 struct AngleTests {
-    @Test("Angle normalizes negative degrees")
-    func normalizesNegativeDegrees() {
+    @Test func `Angle normalizes negative degrees`() {
         let angle = Angle(degrees: -45)
         #expect(angle.value == 315)
     }
 
-    @Test("Angle normalizes over-360 degrees")
-    func normalizesOver360() {
+    @Test func `Angle normalizes over-360 degrees`() {
         let angle = Angle(degrees: 450)
         #expect(angle.value == 90)
     }
 
-    @Test("Cardinal direction mapping")
-    func cardinalMapping() {
+    @Test func `Cardinal direction mapping`() {
         #expect(Angle(degrees: 0).cardinalDirection == .N)
         #expect(Angle(degrees: 45).cardinalDirection == .NE)
         #expect(Angle(degrees: 90).cardinalDirection == .E)
         #expect(Angle(degrees: 225).cardinalDirection == .SW)
     }
 
-    @Test("Cardinal direction from string")
-    func cardinalFromString() {
+    @Test func `Cardinal direction from string`() {
         let angle = Angle(cardinalDirection: " sW ")
         #expect(angle?.value == 225)
     }
 
-    @Test("Formatted angle outputs")
-    func formattedOutputs() {
+    @Test func `Formatted angle outputs`() {
         let angle = Angle(degrees: 30)
         let degrees = angle.formattedDegrees
         #expect(degrees.value == 30)

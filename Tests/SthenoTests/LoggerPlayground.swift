@@ -5,7 +5,7 @@ import SwiftLogTesting
 import Testing
 
 @Suite struct LoggerPlayground {
-    @Test("Playing with swift-log-testing") func Log1() async throws {
+    @Test func `Playing with swift-log-testing`() async throws {
         TestLogMessages.bootstrap()
         let container = TestLogMessages.container(forLabel: "Log1")
         let logger = Logger(label: "Log1")
@@ -18,7 +18,7 @@ import Testing
         #expect(container.messages.isEmpty)
     }
 
-    @Test("Playing with levels") func Log2() async throws {
+    @Test func `Playing with levels`() async throws {
         TestLogMessages.bootstrap()
         let container = TestLogMessages.container(forLabel: "Log2")
         let logger = Logger(label: "Log2")
@@ -36,7 +36,7 @@ import Testing
         #expect(container.messages.count == 5)
     }
 
-    @Test("Playing with metadatas") func Log3() async throws {
+    @Test func `Playing with metadatas`() async throws {
         var logger = Logger(label: "Log3")
         logger.logLevel = .trace
 

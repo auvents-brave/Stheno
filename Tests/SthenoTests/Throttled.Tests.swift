@@ -3,22 +3,19 @@ import Testing
 @testable import Stheno
 
 @Suite("Throttling Property Wrapper") struct ThrottledTests {
-    @Test("Value is throttled (does not update immediately)")
-    func DidNotUpdated() async throws {
+    @Test func `Value is throttled (does not update immediately)`() async throws {
         @Throttled(timeInterval: 99) var v = "Hello"
         v = "World!"
         #expect(v == "Hello")
     }
 
-    @Test("Value updates immediately with zero interval")
-    func DidUpdated() async throws {
+    @Test func `Value updates immediately with zero interval`() async throws {
         @Throttled(timeInterval: 0) var v = "Hello"
         v = "World!"
         #expect(v == "World!")
     }
 
-    @Test("Value remains unchanged after throttling interval (dropped updates)")
-    func UpdatesDroppedAfterInterval() async throws {
+    @Test func `Value remains unchanged after throttling interval (dropped updates)`() async throws {
         @Throttled(timeInterval: 0.05) var v = "Hello"
         // Update the value; current implementation drops the update during the throttling window.
         v = "World!"

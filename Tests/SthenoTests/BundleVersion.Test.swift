@@ -4,8 +4,7 @@ import Testing
 @testable import Stheno
 
 #if !os(WASI)
-@Test("Bundle+Version")
-func BundleVersionTest() async throws {
+@Test func `Bundle+Version`() async throws {
     // Missing or bad CFBundle info in our app's Info.plist.
     #expect(Versioning.getDisplayedVersion(nil) == "Unknown version")
 

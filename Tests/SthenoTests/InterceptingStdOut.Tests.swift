@@ -4,7 +4,7 @@
     @testable import Stheno
 
     @available(macOS 10.15, *)
-    @Test("Intercepting StdOut") func Log() async throws {
+    @Test func `Intercepting StdOut`() async throws {
         var output: any TextOutputStream = ""
         await interceptingStdOut(to: &output) {
             print("Hello World!")
