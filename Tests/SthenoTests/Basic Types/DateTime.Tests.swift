@@ -3,7 +3,6 @@ import Testing
 
 @testable import Stheno
 
-#if canImport(Darwin)
 @Suite("DateTime Tests")
 struct DateTimeTests {
     @Test func `DateTime preserves original date`() {
@@ -67,4 +66,3 @@ struct DateTimeTests {
         #expect(abs(parsedDateTime!.date.timeIntervalSince(originalDate)) < 1.0)
     }
 }
-#endif
