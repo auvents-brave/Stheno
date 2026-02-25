@@ -13,7 +13,7 @@ import Foundation
  ## Example
  ```swift
  let html = "<p>Copyright &copy; 2025</p>"
- let plain = CleanHTML(from: html)
+ let plain = cleanHtml(from: html)
  print(plain)
 
  ```
@@ -24,7 +24,7 @@ Copyright © 2025
 
  Or:
  ```swift
- let result = CleanHTML(from: "<body><h1>Un &oelig;il &eacute;veill&eacute;</h1>&amp; exemple &agrave;  &lt;10&euro;&gt;</body>")
+ let result = cleanHtml(from: "<body><h1>Un &oelig;il &eacute;veill&eacute;</h1>&amp; exemple &agrave;  &lt;10&euro;&gt;</body>")
  print(result)
  ```
  Output:
@@ -32,7 +32,7 @@ Copyright © 2025
  Un œil éveillé & exemple à <10€>
  ```
  */
-public func cleanHTML(from text: String) -> String {
+public func cleanHtml(from text: String) -> String {
     // Exhaustive list of known HTML tags (can be expanded as needed)
     let htmlTags = [
         // Core and block tags
@@ -60,15 +60,15 @@ public func cleanHTML(from text: String) -> String {
     let tagStripped = regex.stringByReplacingMatches(in: text, options: [], range: range, withTemplate: "")
 
     // Decode expanded set of HTML entities
-    return decodeHTMLEntities(in: tagStripped)
+    return decodeHtmlEntities(in: tagStripped)
 }
 
-@inlinable internal func containsHTML(_ text: String) -> Bool {
-    return text != cleanHTML(from: text)
+private func containsHtml(_ text: String) -> Bool {
+    return text != cleanHtml(from: text)
 }
 
 /// Decodes an expanded set of HTML entities (&amp;, &lt;, &gt;, &quot;, &apos;, &nbsp;, &copy;, &reg;, &euro;, etc.).
-private func decodeHTMLEntities(in text: String) -> String {
+private func decodeHtmlEntities(in text: String) -> String {
     var result = text
     let entities: [String: String] = [
         // Basic entities

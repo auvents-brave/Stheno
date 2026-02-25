@@ -19,17 +19,26 @@ struct GeoTests {
         #expect(abs(d - 343.5) < 1.0, "London to Paris distance should be about 343.5km")
     }
 
-    @Test("totalDistance with a linear path")
-    func linearTotalDistance() async throws {
-        let points = [
-            Coordinate(latitude: 0, longitude: 0),
-            Coordinate(latitude: 0, longitude: 1),
-            Coordinate(latitude: 0, longitude: 2),
-        ]
-        let dist = Geo.totalDistance(points: points)
-        // Each segment should be about 111.32 km at the equator
-        #expect(abs(dist - 222.64) < 1.0)
-    }
+	@Test("totalDistance with a linear path")
+	func linearTotalDistance() async throws {
+		let points = [
+			Coordinate(latitude: 0, longitude: 0),
+			Coordinate(latitude: 0, longitude: 1),
+			Coordinate(latitude: 0, longitude: 2),
+		]
+		let dist = Geo.totalDistance(points: points)
+			// Each segment should be about 111.32 km at the equator
+		#expect(abs(dist - 222.64) < 1.0)
+	}
+
+	@Test("totalDistance with one single fix")
+	func onePointTotalDistance() async throws {
+		let points = [
+			Coordinate(latitude: 0, longitude: 0),
+		]
+		let dist = Geo.totalDistance(points: points)
+		#expect(dist == 0)
+	}
 
     @Test("initialBearing returns North for due north")
     func northBearing() async throws {
