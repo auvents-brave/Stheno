@@ -31,11 +31,13 @@ public struct Distance {
 
     // Forces Xcode to include keys for Localizable.strings
     internal static func noName() {
+        #if !os(WASI)
         _ = NSLocalizedString("distance.m", value: "m", comment: "Meters")
         _ = NSLocalizedString("distance.ft", value: "ft", comment: "Feet")
         _ = NSLocalizedString("distance.km", value: "km", comment: "Kilometers")
         _ = NSLocalizedString("distance.mi", value: "mi", comment: "Miles")
         _ = NSLocalizedString("distance.nm", value: "nm", comment: "Nautical Miles")
+        #endif
     }
 
     /// Creates a distance with a value and unit.
