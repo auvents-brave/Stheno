@@ -91,22 +91,42 @@ jobs:
           RUNTIME_KEY: ${{ steps.sim.outputs.runtime_key }}
         run: |
           set -euo pipefail
+          python3 <<'PY'
+          import os
+          import re
+          import subprocess
+          import sys
 
-          # Basic allowlist for scheme input
-          [[ "$SCHEME" =~ ^[A-Za-z0-9._ -]+$ ]] || { echo "Invalid scheme"; exit 1; }
-          [[ "$DESTINATION" =~ ^id=[A-Fa-f0-9-]+$ ]] || { echo "Invalid destination"; exit 1; }
+          scheme = os.environ["SCHEME"]
+          destination = os.environ["DESTINATION"]
+          runtime_key = os.environ["RUNTIME_KEY"]
 
-          echo "Testing on simulator destination=$DESTINATION runtime=$RUNTIME_KEY"
+          if not re.fullmatch(r"[A-Za-z0-9._ -]+", scheme):
+              print(f"Invalid scheme: {scheme}", file=sys.stderr)
+              sys.exit(1)
 
-          xcodebuild -resolvePackageDependencies \
-            -scheme "$SCHEME" \
-            -toolchain swift \
-            IDEPackageSupportToolchainOverrideForManifestLoading=swift
+          if not re.fullmatch(r"id=[A-Fa-f0-9-]+", destination):
+              print(f"Invalid destination: {destination}", file=sys.stderr)
+              sys.exit(1)
 
-          xcodebuild test \
-            -scheme "$SCHEME" \
-            -toolchain swift \
-            IDEPackageSupportToolchainOverrideForManifestLoading=swift \
-            -destination "$DESTINATION" \
-            -skipPackagePluginValidation \
-            -skipMacroValidation
+          print(f"Testing on simulator destination={destination} runtime={runtime_key}")
+
+          subprocess.run([
+              "xcodebuild",
+              "-resolvePackageDependencies",
+              "-scheme", scheme,
+              "-toolchain", "swift",
+              "IDEPackageSupportToolchainOverrideForManifestLoading=swift",
+          ], check=True)
+
+          subprocess.run([
+              "xcodebuild",
+              "test",
+              "-scheme", scheme,
+              "-toolchain", "swift",
+              "IDEPackageSupportToolchainOverrideForManifestLoading=swift",
+              "-destination", destination,
+              "-skipPackagePluginValidation",
+              "-skipMacroValidation",
+          ], check=True)
+          PY

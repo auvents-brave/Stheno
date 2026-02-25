@@ -12,7 +12,7 @@ Continuous Integration (CI) is handled through GitHub Actions, which automatical
 
 [![CodeQL](https://github.com/auvents-brave/Stheno/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/codeql.yml)
 
-[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=auvents-brave_Stheno)](https://sonarcloud.io/summary/new_code?id=auvents-brave_Stheno)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=auvents-brave_Stheno&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=auvents-brave_Stheno)
 
 [![DocC](https://img.shields.io/badge/DocC-available-brightgreen)](https://auvents-brave.github.io/Stheno/)
 
