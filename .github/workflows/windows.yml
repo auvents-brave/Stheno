@@ -21,8 +21,8 @@ jobs:
       - name: Setup Swift
         uses: compnerd/gha-setup-swift@v0.4.0
         with:
-          swift-version: swift-6.2.3-release
-          swift-build: 6.2.3-RELEASE
+          swift-version: swift-6.2.4-release
+          swift-build: 6.2.4-RELEASE
 
       - shell: pwsh
         run: swift build -c release

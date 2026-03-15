@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SWIFT_VERSION: "6.2.3"
+  SWIFT_VERSION: "6.2.4"
 
 jobs:
   analyze:
