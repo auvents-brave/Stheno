@@ -37,9 +37,19 @@ jobs:
           Invoke-WebRequest -Uri $env:SWIFT_WINDOWS_INSTALLER_URL `
             -OutFile swift-installer.exe
           Start-Process -FilePath .\swift-installer.exe -ArgumentList "/quiet" -Wait
-          $installPath = "C:\Program Files\Swift\bin"
+          $swiftExe = Get-ChildItem `
+            -Path "C:\Program Files\Swift", "C:\Library\Developer\Toolchains" `
+            -Filter swift.exe `
+            -Recurse `
+            -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $swiftExe) {
+            throw "swift.exe not found after installation"
+          }
+          $installPath = Split-Path -Path $swiftExe -Parent
+          $installPath | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           $env:Path += ";$installPath"
           [System.Environment]::SetEnvironmentVariable("PATH", $env:Path, [System.EnvironmentVariableTarget]::Process)
+          swift --version
 
       - name: Check Swift Version
         shell: pwsh

@@ -40,7 +40,7 @@ jobs:
           echo "${SWIFTLY_BIN_DIR}" >> "$GITHUB_PATH"
           swiftly install "${{ env.SWIFT_VERSION }}" --post-install-file=post-install.sh
           if [ -f post-install.sh ]; then
-            . ./post-install.sh
+            sudo bash ./post-install.sh
           fi
           swiftly use "${{ env.SWIFT_VERSION }}"
 
