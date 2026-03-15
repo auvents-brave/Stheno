@@ -10,13 +10,11 @@ Continuous Integration (CI) is handled through GitHub Actions, which automatical
 
 ![Swift](https://img.shields.io/badge/Swift-6.1+-orange?logo=swift)
 
-[![CodeQL](https://github.com/auvents-brave/Stheno/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/codeql.yml)
-
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=auvents-brave_Stheno&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=auvents-brave_Stheno)
+[![CodeQL](https://github.com/auvents-brave/Stheno/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/codeql.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=auvents-brave_Stheno&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=auvents-brave_Stheno) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=auvents-brave_Stheno&metric=coverage)](https://sonarcloud.io/summary/new_code?id=auvents-brave_Stheno)
 
 [![DocC](https://img.shields.io/badge/DocC-available-brightgreen)](https://auvents-brave.github.io/Stheno/)
 
-Documentation is available directly in Xcode and VS Code, and [online](https://auvents-brave.github.io/Stheno/) as DocC.
+Documentation is available directly in Xcode and VS Code, and [online](https://auvents-brave.github.io/Stheno/).
 
 ## Platforms and CI
 
@@ -62,11 +60,11 @@ DateTime implementations are more permissive and accept additional ISO 8601 vari
 
 ### HTML
 
-- [`CleanHTML(from:)`](https://auvents-brave.github.io/Stheno/documentation/stheno/cleanhtml(from:))  - Removes all known HTML tags from a string and decodes common HTML character entities to their Unicode equivalents.
+- [`cleanHtml(from:)`](https://auvents-brave.github.io/Stheno/documentation/stheno/cleanhtml(from:))  - Removes all known HTML tags from a string and decodes common HTML character entities to their Unicode equivalents.
 
 Example:
 ```swift
-let result = CleanHTML(from: "<body><h1>Un &oelig;il &eacute;veill&eacute;</h1>&amp; exemple &agrave;  &lt;10&euro;&gt;</body>")
+let result = cleanHtml(from: "<body><h1>Un &oelig;il &eacute;veill&eacute;</h1>&amp; exemple &agrave;  &lt;10&euro;&gt;</body>")
 print(result)
 ```
 Output:
@@ -76,7 +74,7 @@ Un œil éveillé & exemple à <10€>
 
 ### Misc Utilities
 
-- Extension to [`Bundle`](https://auvents-brave.github.io/Stheno/documentation/stheno/foundation/bundle) to access versioning information from the app’s Info.plist.
+- Extension to [`Bundle`](https://auvents-brave.github.io/Stheno/documentation/stheno/foundation/bundle) to access versioning information and bundle name from the app’s Info.plist.
 
 - [`downloadURLasString`](https://auvents-brave.github.io/Stheno/documentation/stheno/downloadurlasstring(from:completion:)) - Downloads the contents of the given URL and decodes it as a UTF-8 `String`. (Not implemented on WASI)
 > Use only the pure Toolchain, not [SwiftNIO](hhttps://github.com/apple/swift-nio), even on Linux or Windows.

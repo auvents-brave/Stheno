@@ -21,9 +21,9 @@ struct DateTimeTests {
         #expect(dateTime != nil)
     }
 
-    @Test func `DateTime initialization from invalid ISO8601 string returns nil`() {
-        let dateTime = DateTime(iso8601String: "invalid-date")
-        #expect(dateTime == nil)
+    @Test func `DateTime initialization from ISO8601 string without timezone succeeds`() {
+        let dateTime = DateTime(iso8601String: "2024-01-23T15:30:00")
+        #expect(dateTime != nil)
     }
 
     @Test func `DateTime formatted output contains date, time, and unit`() {
