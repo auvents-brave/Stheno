@@ -16,7 +16,7 @@ jobs:
         runner: [windows-2025]
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6
 
       - name: Setup Swift
         uses: compnerd/gha-setup-swift@v0.4.0
