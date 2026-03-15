@@ -20,22 +20,45 @@ on:
 permissions:
   contents: read
 
+env:
+  SWIFT_VERSION: "6.2.3"
+
 jobs:
   test:
     name: "${{ inputs.workflow-name }}"
     runs-on: macos-26
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: "26.3"
 
-      - uses: SwiftyLab/setup-swift@v1
-        with:
-          swift-version: "6.2.3"
-          development: true
+      - name: Install Swiftly
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L "https://download.swift.org/swiftly/darwin/swiftly.pkg" -o swiftly.pkg
+          installer -pkg swiftly.pkg -target CurrentUserHomeDirectory
+          ~/.swiftly/bin/swiftly init --assume-yes --skip-install
+          . "${SWIFTLY_HOME_DIR:-$HOME/.swiftly}/env.sh"
+          hash -r
+          echo "${SWIFTLY_BIN_DIR}" >> "$GITHUB_PATH"
+          swiftly install "${{ env.SWIFT_VERSION }}" --post-install-file=post-install.sh
+          if [ -f post-install.sh ]; then
+            . ./post-install.sh
+          fi
+          swiftly use "${{ env.SWIFT_VERSION }}"
+          TOOLCHAIN_PATH="$(swiftly use --print-location)"
+          TOOLCHAIN_ID="$(plutil -extract CFBundleIdentifier raw "$TOOLCHAIN_PATH/Info.plist")"
+          echo "TOOLCHAINS=$TOOLCHAIN_ID" >> "$GITHUB_ENV"
+
+      - name: Check Swift Version
+        run: swift --version
+
+      - name: Check Xcode Swift Toolchain
+        run: xcrun --toolchain "$TOOLCHAINS" swift --version
 
       - name: Resolve simulator destination
         id: sim
@@ -92,6 +115,7 @@ jobs:
           SCHEME: ${{ inputs.scheme }}
           DESTINATION: ${{ steps.sim.outputs.destination }}
           RUNTIME_KEY: ${{ steps.sim.outputs.runtime_key }}
+          TOOLCHAINS: ${{ env.TOOLCHAINS }}
         run: |
           set -euo pipefail
           python3 <<'PY'
@@ -103,6 +127,7 @@ jobs:
           scheme = os.environ["SCHEME"]
           destination = os.environ["DESTINATION"]
           runtime_key = os.environ["RUNTIME_KEY"]
+          toolchain = os.environ["TOOLCHAINS"]
 
           if not re.fullmatch(r"[A-Za-z0-9._ -]+", scheme):
               print(f"Invalid scheme: {scheme}", file=sys.stderr)
@@ -112,22 +137,26 @@ jobs:
               print(f"Invalid destination: {destination}", file=sys.stderr)
               sys.exit(1)
 
+          if not toolchain or any(ch.isspace() for ch in toolchain):
+              print(f"Invalid toolchain: {toolchain!r}", file=sys.stderr)
+              sys.exit(1)
+
           print(f"Testing on simulator destination={destination} runtime={runtime_key}")
 
           subprocess.run([
               "xcodebuild",
               "-resolvePackageDependencies",
               "-scheme", scheme,
-              "-toolchain", "swift",
-              "IDEPackageSupportToolchainOverrideForManifestLoading=swift",
+              "-toolchain", toolchain,
+              f"IDEPackageSupportToolchainOverrideForManifestLoading={toolchain}",
           ], check=True)
 
           subprocess.run([
               "xcodebuild",
               "test",
               "-scheme", scheme,
-              "-toolchain", "swift",
-              "IDEPackageSupportToolchainOverrideForManifestLoading=swift",
+              "-toolchain", toolchain,
+              f"IDEPackageSupportToolchainOverrideForManifestLoading={toolchain}",
               "-destination", destination,
               "-skipPackagePluginValidation",
               "-skipMacroValidation",

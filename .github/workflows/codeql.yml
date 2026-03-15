@@ -13,6 +13,9 @@ concurrency:
   group: ci-${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  SWIFT_VERSION: "6.2.3"
+
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
@@ -36,7 +39,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
@@ -44,12 +47,26 @@ jobs:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
 
-      - name: Setup Swift
+      - name: Install Swiftly
         if: matrix.language == 'swift'
-        uses: SwiftyLab/setup-swift@v1
-        with:
-          swift-version: "6.2.3"
-          development: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L "https://download.swift.org/swiftly/darwin/swiftly.pkg" -o swiftly.pkg
+          installer -pkg swiftly.pkg -target CurrentUserHomeDirectory
+          ~/.swiftly/bin/swiftly init --assume-yes --skip-install
+          . "${SWIFTLY_HOME_DIR:-$HOME/.swiftly}/env.sh"
+          hash -r
+          echo "${SWIFTLY_BIN_DIR}" >> "$GITHUB_PATH"
+          swiftly install "${{ env.SWIFT_VERSION }}" --post-install-file=post-install.sh
+          if [ -f post-install.sh ]; then
+            . ./post-install.sh
+          fi
+          swiftly use "${{ env.SWIFT_VERSION }}"
+
+      - name: Check Swift Version
+        if: matrix.language == 'swift'
+        run: swift --version
 
       - name: Assert stable Swift toolchain
         if: matrix.language == 'swift'
