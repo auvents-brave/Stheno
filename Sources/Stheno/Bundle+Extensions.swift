@@ -56,6 +56,13 @@ extension Bundle {
     }
 }
 
+internal protocol BundleInfoProviding {
+    var infoDictionary: [String: Any]? { get }
+    var localizedInfoDictionary: [String: Any]? { get }
+}
+
+extension Bundle: BundleInfoProviding {}
+
 internal struct Versioning {
     static func getReleaseVersion(_ dict: [String: Any]?) -> String? {
         return dict?["CFBundleShortVersionString"] as? String
@@ -74,7 +81,7 @@ internal struct Versioning {
 }
 
 internal struct DisplayName {
-    static func getDisplayName(_ bundle: Bundle) -> String {
+    static func getDisplayName(_ bundle: any BundleInfoProviding) -> String {
         guard let localizedDisplayName = bundle.localizedInfoDictionary?["CFBundleDisplayName"] as? String else {
             guard let displayName = bundle.infoDictionary?["CFBundleDisplayName"] as? String else {
                 guard let localizedBundleName = bundle.localizedInfoDictionary?["CFBundleName"] as? String else {

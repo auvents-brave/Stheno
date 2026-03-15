@@ -66,16 +66,15 @@ import Testing
 }
 #endif
 
-private final class MockBundle: Bundle, @unchecked Sendable {
+private struct MockBundle: BundleInfoProviding, @unchecked Sendable {
 	private let base: [String: Any]?
 	private let localized: [String: Any]?
 
 	init(base: [String: Any]?, localized: [String: Any]?) {
 		self.base = base
 		self.localized = localized
-		super.init()
 	}
 
-	override var infoDictionary: [String : Any]? { base }
-	override var localizedInfoDictionary: [String : Any]? { localized }
+	var infoDictionary: [String : Any]? { base }
+	var localizedInfoDictionary: [String : Any]? { localized }
 }
