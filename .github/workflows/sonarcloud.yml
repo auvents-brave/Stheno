@@ -1,0 +1,109 @@
+name: SonarCloud
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SWIFT_VERSION: "6.2.4"
+
+jobs:
+  sonarcloud:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install Swiftly
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ca-certificates gpg
+          curl -L "https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz" -o swiftly.tar.gz
+          tar zxf swiftly.tar.gz
+          ./swiftly init --assume-yes --skip-install
+          . "${SWIFTLY_HOME_DIR:-$HOME/.local/share/swiftly}/env.sh"
+          echo "${SWIFTLY_BIN_DIR}" >> "$GITHUB_PATH"
+          swiftly install "${{ env.SWIFT_VERSION }}" --post-install-file=post-install.sh
+          if [ -f post-install.sh ]; then
+            sudo bash ./post-install.sh
+          fi
+          swiftly use "${{ env.SWIFT_VERSION }}"
+
+      - name: Check Swift Version
+        run: swift --version
+
+      - name: Build
+        run: swift build -c release
+
+      - name: Test with coverage
+        run: swift test --enable-code-coverage
+
+      - name: Convert coverage to Sonar generic XML
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BIN_DIR="$(swift build --show-bin-path)"
+          BUILD_DIR="${BIN_DIR%/debug}"
+
+          PROFDATA="$(find "$BUILD_DIR" -type f -name default.profdata | head -n 1)"
+          TEST_BIN="$(find "$BUILD_DIR" -type f -perm -111 | grep -E '(PackageTests\.xctest|Tests\.xctest|Tests)$' | head -n 1)"
+
+          [ -n "${PROFDATA:-}" ] || { echo "default.profdata not found"; exit 1; }
+          [ -n "${TEST_BIN:-}" ] || { echo "test binary not found"; exit 1; }
+
+          llvm-cov export -format=lcov -instr-profile "$PROFDATA" "$TEST_BIN" > coverage.lcov
+
+          python3 - <<'PY'
+          import os
+          import xml.etree.ElementTree as ET
+          from collections import defaultdict
+
+          ws = os.path.abspath(os.environ.get("GITHUB_WORKSPACE", "."))
+          files = defaultdict(dict)
+          cur = None
+
+          for raw in open("coverage.lcov", encoding="utf-8"):
+              line = raw.strip()
+              if line.startswith("SF:"):
+                  p = os.path.abspath(line[3:])
+                  cur = os.path.relpath(p, ws) if p.startswith(ws + os.sep) else None
+              elif line.startswith("DA:") and cur:
+                  ln, hits = line[3:].split(",")[:2]
+                  ln = int(ln); hits = int(hits)
+                  files[cur][ln] = max(files[cur].get(ln, 0), hits)
+
+          root = ET.Element("coverage", version="1")
+          for path in sorted(files):
+              f = ET.SubElement(root, "file", path=path)
+              for ln in sorted(files[path]):
+                  ET.SubElement(f, "lineToCover", lineNumber=str(ln), covered=("true" if files[path][ln] > 0 else "false"))
+
+          ET.ElementTree(root).write("coverage.xml", encoding="utf-8", xml_declaration=True)
+          PY
+
+      - name: Debug coverage.xml
+        run: |
+          grep -c "<file path=" coverage.xml || true
+          head -n 40 coverage.xml || true
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

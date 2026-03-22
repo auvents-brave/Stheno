@@ -1,0 +1,77 @@
+name: WebAssembly
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SWIFT_VERSION: "6.2.4"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Swiftly
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ca-certificates gpg
+          curl -L "https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz" -o swiftly.tar.gz
+          tar zxf swiftly.tar.gz
+          ./swiftly init --assume-yes --skip-install
+          . "${SWIFTLY_HOME_DIR:-$HOME/.local/share/swiftly}/env.sh"
+          echo "${SWIFTLY_BIN_DIR}" >> "$GITHUB_PATH"
+          swiftly install "${{ env.SWIFT_VERSION }}" --post-install-file=post-install.sh
+          if [ -f post-install.sh ]; then
+            sudo bash ./post-install.sh
+          fi
+          swiftly use "${{ env.SWIFT_VERSION }}"
+
+      - name: Check Swift Version
+        run: swift --version
+
+      - name: Install Wasm SDK (stable)
+        shell: bash
+        run: |
+          set -euo pipefail
+          swift sdk install https://download.swift.org/swift-6.2.4-release/wasm-sdk/swift-6.2.4-RELEASE/swift-6.2.4-RELEASE_wasm.artifactbundle.tar.gz --checksum 32fdb8772d73bb174f77b5c59bc88a0d55003d75712832129394d3465158fb43
+
+      - name: Assert stable Swift toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          SWIFT_VERSION="$(swift --version)"
+          if printf '%s\n' "$SWIFT_VERSION" | grep -q "DEVELOPMENT-SNAPSHOT"; then
+            echo "Unexpected development snapshot toolchain"
+            exit 1
+          fi
+
+      - name: Resolve Wasm SDK ID
+        id: wasm
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK_ID="$(swift sdk list | awk '$1 ~ /_wasm$/ { print $1; exit }')"
+          if [ -z "${SDK_ID}" ]; then
+            echo "No Wasm SDK found in 'swift sdk list'"
+            exit 1
+          fi
+          echo "sdk_id=${SDK_ID}" >> "$GITHUB_OUTPUT"
+
+      - name: Build (Wasm)
+        run: swift build --swift-sdk "${{ steps.wasm.outputs.sdk_id }}"
+
+      - name: Test (Wasm)
+        run: swift test --swift-sdk "${{ steps.wasm.outputs.sdk_id }}"

@@ -1,0 +1,31 @@
+name: Windows
+on: { push: { branches: [main] }, pull_request: {}, workflow_dispatch: {} }
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-2025]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Swift
+        uses: compnerd/gha-setup-swift@v0.4.0
+        with:
+          swift-version: swift-6.2.4-release
+          swift-build: 6.2.4-RELEASE
+
+      - shell: pwsh
+        run: swift build -c release
+
+      - shell: pwsh
+        run: swift test
