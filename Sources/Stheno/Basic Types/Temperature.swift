@@ -38,6 +38,7 @@ public struct Temperature {
 #if canImport(Playgrounds) && !NO_PLAYGROUND_EXAMPLES
     import Playgrounds
 
+    @available(iOS 13, tvOS 13, watchOS 6, *)
     #Playground {
         let temp = Temperature(value: 22.5, unit: .celsius)
         _ = temp.converted(to: .fahrenheit)
@@ -48,7 +49,7 @@ public struct Temperature {
 
         // Temperature
         let tempCelsius = Temperature(value: 20, unit: .celsius)
-        _  = tempCelsius.converted(to: .fahrenheit)
+        _ = tempCelsius.converted(to: .fahrenheit)
         _ = tempCelsius.formatted(in: .fahrenheit)
     }
 #endif

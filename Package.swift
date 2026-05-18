@@ -72,7 +72,7 @@ let package = Package(
 	name: "Stheno",
 	defaultLocalization: "en",
 	platforms: [
-		.macOS(.v10_13), .macCatalyst(.v13), .iOS(.v12), .tvOS(.v12), .watchOS(.v5), .visionOS(.v1)
+		.macOS(.v10_13), .macCatalyst(.v13), .iOS(.v12), .tvOS(.v12), .watchOS(.v6), .visionOS(.v1)
 	],
 
 	products: prods,
