@@ -30,7 +30,7 @@ jobs:
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "26.5"
+          xcode-version: latest-stable
 
       - name: Check Swift Version
         run: swift --version
