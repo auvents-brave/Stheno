@@ -257,8 +257,12 @@ struct BonjourDiscoveryLifecycleTests {
 
     @Test func `stream finishes after timeout`() async throws {
         guard #available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *) else { return }
-        let start = Date()
         let discovery = BonjourDiscovery()
+        // Warm-up: absorb any first-use NWBrowser initialisation overhead.
+        // On the watchOS simulator the very first browse call can take ~12 s to
+        // initialise the mDNS stack; subsequent calls are fast.
+        for try await _ in discovery.browse(serviceTypes: [], timeout: 0.05) {}
+        let start = Date()
         for try await _ in discovery.browse(serviceTypes: [], timeout: 0.1) {}
         let elapsed = Date().timeIntervalSince(start)
         // Should finish close to the 0.1 s timeout, well under 5 s
@@ -268,6 +272,10 @@ struct BonjourDiscoveryLifecycleTests {
     @Test func `longer timeout finishes later than shorter one`() async throws {
         guard #available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *) else { return }
         let discovery = BonjourDiscovery()
+        // Warm-up: absorb any first-use NWBrowser initialisation overhead.
+        // On the watchOS simulator the very first browse call can take ~12 s to
+        // initialise the mDNS stack; subsequent calls are fast.
+        for try await _ in discovery.browse(serviceTypes: [], timeout: 0.05) {}
 
         let t1 = Date()
         for try await _ in discovery.browse(serviceTypes: [], timeout: 0.05) {}

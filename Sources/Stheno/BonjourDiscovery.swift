@@ -423,7 +423,7 @@ public final class BonjourDiscovery: @unchecked Sendable {
 
 // MARK: - BonjourDiscovery — Linux (dns_sd C API via Avahi compat layer)
 
-#else
+#elseif os(Linux)
 
 import Cdns_sd
 internal import Foundation
@@ -608,4 +608,30 @@ public final class BonjourDiscovery: @unchecked Sendable {
     }
 }
 
-#endif // canImport(Network) / os(Windows) / Linux
+// MARK: - BonjourDiscovery — unsupported platforms (Android, WASM, …)
+// Platforms that reach this branch have no Bonjour/mDNS backend available.
+// browse() throws immediately so callers get a clear diagnostic rather than
+// a link error or a silent no-op.
+
+#else
+
+/// Discovers services on the local network via mDNS Bonjour.
+///
+/// > Note: This platform has no supported mDNS backend. ``browse(serviceTypes:timeout:)``
+/// > always throws ``BonjourDiscoveryError``.
+public final class BonjourDiscovery: @unchecked Sendable {
+    /// Creates a Bonjour discovery controller.
+    public init() {}
+
+    public func browse(
+        serviceTypes: [BonjourServiceEntry] = bonjourDefaultServiceTypes,
+        timeout: Double = 5
+    ) -> AsyncThrowingStream<DiscoveredEndpoint, any Error> {
+        AsyncThrowingStream { continuation in
+            continuation.finish(throwing: BonjourDiscoveryError(
+                "Bonjour discovery is not supported on this platform."))
+        }
+    }
+}
+
+#endif // canImport(Network) / os(Windows) / os(Linux) / other
