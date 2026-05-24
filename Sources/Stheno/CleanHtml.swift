@@ -1,4 +1,4 @@
-import Foundation
+internal import Foundation
 
 /**
  Removes all known HTML tags from a string and decodes common HTML entities to their Unicode equivalents.

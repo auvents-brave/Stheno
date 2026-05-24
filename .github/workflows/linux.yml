@@ -1,5 +1,5 @@
 name: Linux
-on: { push: { branches: [main] }, pull_request: {}, workflow_dispatch: {} }
+on: { push: { branches: [main, lab] }, pull_request: {}, workflow_dispatch: {} }
 
 permissions:
   contents: read
@@ -38,5 +38,7 @@ jobs:
           swiftly use "${{ env.SWIFT_VERSION }}"
       - name: Check Swift Version
         run: swift --version
+      - name: Install Avahi (Bonjour/mDNS compatibility layer)
+        run: sudo apt-get install -y libavahi-compat-libdnssd-dev
       - run: swift build -c release
       - run: swift test

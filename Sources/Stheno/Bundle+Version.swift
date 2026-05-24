@@ -1,4 +1,4 @@
-import Foundation
+public import Foundation
 
 /**
  Extension to Bundle to access versioning information from the app's Info.plist.

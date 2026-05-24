@@ -1,4 +1,4 @@
-import Foundation
+internal import Foundation
 
 /// Utility functions for geographic calculations (great-circle distance, bearings, etc.)
 public struct Geo {

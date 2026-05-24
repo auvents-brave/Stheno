@@ -1,5 +1,5 @@
 #if canImport(Darwin)
-    import Foundation
+    public import Foundation
     import Logging
 
     /// Additionally writes any data written to standard output into the given
@@ -20,7 +20,7 @@
     /// #expect((output as! String).contains("Whatever you expect to read in stdoutput"))
     /// ```
     @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-    public func interceptingStdOut<T>(to output: inout TextOutputStream,
+    public func interceptingStdOut<T>(to output: inout any TextOutputStream,
                                       encoding: String.Encoding = .utf8,
                                       body: () -> T) async -> T {
         var result: T?

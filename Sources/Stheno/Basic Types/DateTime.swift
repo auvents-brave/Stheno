@@ -1,4 +1,4 @@
-import Foundation
+public import Foundation
 
 /// Defines how a date should be displayed.
 public enum DateTimeType: String {

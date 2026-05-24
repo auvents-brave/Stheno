@@ -1,4 +1,4 @@
-import Foundation
+public import Foundation
 
 /// A property wrapper that throttles updates to its wrapped value.
 ///

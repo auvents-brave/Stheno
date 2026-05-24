@@ -59,7 +59,7 @@ public struct Coordinate {
 }
 
 #if canImport(CoreLocation)
-    import CoreLocation
+    public import CoreLocation
 
     /// Convenience interop for converting a ``Coordinate`` into CoreLocation coordinates.
     extension CLLocationCoordinate2D {

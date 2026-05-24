@@ -1,4 +1,4 @@
-import Foundation
+internal import Foundation
 import Logging
 
 /// Date utilities for parsing ISO 8601 strings and formatting for different time zones.

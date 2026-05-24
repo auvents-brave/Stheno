@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - lab
   pull_request:
   workflow_dispatch:
 
@@ -46,6 +47,9 @@ jobs:
 
       - name: Check Swift Version
         run: swift --version
+
+      - name: Install Avahi (Bonjour/mDNS compatibility layer)
+        run: sudo apt-get install -y libavahi-compat-libdnssd-dev
 
       - name: Build
         run: swift build -c release

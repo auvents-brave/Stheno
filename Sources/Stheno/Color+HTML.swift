@@ -1,12 +1,12 @@
 #if canImport(UIKit)
-    import UIKit
+    public import UIKit
 #endif
 #if canImport(AppKit)
-    import AppKit
+    public import AppKit
 #endif
 
 #if canImport(SwiftUI)
-    import SwiftUI
+    public import SwiftUI
     @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     public typealias Color = SwiftUI.Color
 #else

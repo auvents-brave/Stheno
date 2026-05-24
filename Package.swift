@@ -3,9 +3,15 @@
 import Foundation
 import PackageDescription
 
-let swiftSettings: [SwiftSetting] =
-	ProcessInfo.processInfo.environment["RUNNER"] == "VSCode" ? [.define("VSCode")] :
-	(ProcessInfo.processInfo.environment["XCODE_VERSION_ACTUAL"] != nil ? [.define("Xcode")] : [])
+var swiftSettings: [SwiftSetting] = [
+	.enableUpcomingFeature("InternalImportsByDefault"),
+	.enableUpcomingFeature("ExistentialAny"),
+]
+if ProcessInfo.processInfo.environment["RUNNER"] == "VSCode" {
+	swiftSettings.append(.define("VSCode"))
+} else if ProcessInfo.processInfo.environment["XCODE_VERSION_ACTUAL"] != nil {
+	swiftSettings.append(.define("Xcode"))
+}
 
 var prods: [Product] = [
 	.library(
@@ -26,16 +32,33 @@ var deps: [Package.Dependency] = [
 	),
 ]
 
+// Bonjour/mDNS discovery back-end by platform:
+//   - Apple (iOS/macOS/watchOS/tvOS/visionOS): Network.framework NWBrowser (no extra dep)
+//   - Windows: native DnsServiceBrowse from windns.h (links Dnsapi.dll, no install required)
+//   - Linux:   dns_sd C API via Avahi compatibility layer (Cdns_sd system library target)
+var sthenoDeps: [Target.Dependency] = [
+	.product(name: "Logging", package: "swift-log"),
+]
+
+#if os(Linux)
+sthenoDeps.append("Cdns_sd")
+#endif
+
 var targs: [Target] = [
 	.target(
 		name: "Stheno",
-		dependencies: [
-			.product(name: "Logging", package: "swift-log"),
-		],
+		dependencies: sthenoDeps,
 		resources: [
 			.process("Resources"),
 		],
 		swiftSettings: swiftSettings,
+		linkerSettings: [
+			// Windows: BonjourDiscovery uses DnsServiceBrowse/DnsServiceResolve from Dnsapi.dll.
+			.linkedLibrary("dnsapi", .when(platforms: [.windows])),
+			// Linux: --as-needed drops -ldns_sd from DT_NEEDED (loaded at runtime via dlopen).
+			// The binary launches even when libdns_sd.so is not installed.
+			.unsafeFlags(["-Xlinker", "--as-needed"], .when(platforms: [.linux])),
+		]
 	),
 
 	.testTarget(
@@ -67,6 +90,16 @@ var targs: [Target] = [
 		swiftSettings: swiftSettings,
 	),
 ]
+
+#if os(Linux)
+targs.append(
+	.systemLibrary(
+		name: "Cdns_sd",
+		pkgConfig: "avahi-compat-libdns_sd",
+		providers: [.apt(["libavahi-compat-libdnssd-dev"])]
+	)
+)
+#endif
 
 let package = Package(
 	name: "Stheno",

@@ -2,7 +2,7 @@
 /// Provides a helper to download the contents of a URL as a UTF-8 string.
 
 #if canImport(Darwin) || canImport(FoundationNetworking) // not for os(WASI)
-    import Foundation
+    public import Foundation
     import Logging
 
     #if canImport(FoundationNetworking)
@@ -32,7 +32,7 @@
 	///
     /// - Important: The response body is assumed to be UTF-8 encoded. If the server returns a different encoding,
     ///   decoding may fail.
-    public func downloadURLasString(from url: URL, completion: @escaping @Sendable (Result<String, Error>) -> Void) {
+    public func downloadURLasString(from url: URL, completion: @escaping @Sendable (Result<String, any Error>) -> Void) {
         let requestSession = session()
         let task = requestSession.dataTask(with: url) { data, response, error in
             #if canImport(FoundationNetworking) && !canImport(Darwin)

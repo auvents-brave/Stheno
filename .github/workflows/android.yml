@@ -1,5 +1,5 @@
 name: Android
-on: { push: { branches: [main] }, pull_request: {}, workflow_dispatch: {} }
+on: { push: { branches: [main, lab] }, pull_request: {}, workflow_dispatch: {} }
 
 permissions:
   contents: read

@@ -1,4 +1,4 @@
-import Foundation
+internal import Foundation
 
 /// Supported speed units.
 public enum SpeedUnit: String, CaseIterable {

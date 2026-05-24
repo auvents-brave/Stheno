@@ -1,4 +1,4 @@
-import Foundation
+internal import Foundation
 
 /// Supported distance units.
 public enum DistanceUnit: String, CaseIterable {
