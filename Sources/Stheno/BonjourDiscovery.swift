@@ -303,7 +303,9 @@ fileprivate let winBrowseCallback: @convention(c) (
         }
         cur = rec.pointee.pNext
     }
-    DnsRecordListFree(dnsRecord, DnsFreeRecordList)
+    // DnsRecordListFree is a C function-like macro and cannot be called from Swift;
+    // call the underlying function directly.
+    DnsFree(dnsRecord, DnsFreeRecordList)
 }
 
 fileprivate let winResolveCallback: @convention(c) (
@@ -351,7 +353,7 @@ fileprivate func startWinResolve(
     let ctxPtr = Unmanaged.passRetained(ctx).toOpaque()
     name.withCString(encodedAs: UTF16.self) { (namePtr: UnsafePointer<UInt16>) in
         var req = DNS_SERVICE_RESOLVE_REQUEST()
-        req.Version = DNS_QUERY_REQUEST_VERSION1
+        req.Version = ULONG(DNS_QUERY_REQUEST_VERSION1)
         req.InterfaceIndex = 0
         req.QueryName = UnsafeMutablePointer(mutating: namePtr)
         req.pResolveCompletionCallback = winResolveCallback
@@ -387,7 +389,7 @@ public final class BonjourDiscovery: @unchecked Sendable {
                 let unmanaged = Unmanaged.passRetained(ctx)
                 queryName.withCString(encodedAs: UTF16.self) { (namePtr: UnsafePointer<UInt16>) in
                     var req = DNS_SERVICE_BROWSE_REQUEST()
-                    req.Version = DNS_QUERY_REQUEST_VERSION1
+                    req.Version = ULONG(DNS_QUERY_REQUEST_VERSION1)
                     req.InterfaceIndex = 0
                     req.QueryName = UnsafeMutablePointer(mutating: namePtr)
                     req.pBrowseCallback = winBrowseCallback
