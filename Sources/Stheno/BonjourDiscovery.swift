@@ -431,6 +431,16 @@ internal import Foundation
     import Glibc
 #endif
 
+// swift-corelibs-libdispatch on Linux does not yet annotate DispatchSourceRead
+// as Sendable, even though DispatchSource objects are inherently thread-safe.
+// This thin wrapper lets us capture a read source in @Sendable closures without
+// silencing all Sendable checking across the whole Dispatch import.
+private final class SendableReadSource: @unchecked Sendable {
+    private let inner: any DispatchSourceRead
+    init(_ source: any DispatchSourceRead) { inner = source }
+    func cancel() { inner.cancel() }
+}
+
 // MARK: Runtime loader for libdns_sd.so
 
 fileprivate struct AvahiAPI {
@@ -602,8 +612,9 @@ public final class BonjourDiscovery: @unchecked Sendable {
                 continuation.finish()
             }
             source.activate()
-            queue.asyncAfter(deadline: .now() + timeout) { source.cancel() }
-            continuation.onTermination = { @Sendable _ in source.cancel() }
+            let sendableSource = SendableReadSource(source)
+            queue.asyncAfter(deadline: .now() + timeout) { sendableSource.cancel() }
+            continuation.onTermination = { @Sendable _ in sendableSource.cancel() }
         }
     }
 }
