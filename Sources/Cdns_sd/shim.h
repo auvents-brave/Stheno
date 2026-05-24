@@ -1,5 +1,12 @@
 #include <dns_sd.h>
 
+// kDNSServiceFlagsShareConnection is defined in Apple's dns_sd.h but is absent
+// from the Avahi compatibility header on Linux.  Define it here if needed so
+// the Swift sources compile unchanged on both platforms.
+#ifndef kDNSServiceFlagsShareConnection
+#define kDNSServiceFlagsShareConnection 0x4000U
+#endif
+
 // Function-pointer typedefs for runtime loading via dlopen/dlsym.
 //
 // We never call these symbols directly from Swift — instead we look them up
