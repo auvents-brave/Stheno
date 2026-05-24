@@ -355,7 +355,7 @@ fileprivate func startWinResolve(
         var req = DNS_SERVICE_RESOLVE_REQUEST()
         req.Version = ULONG(DNS_QUERY_REQUEST_VERSION1)
         req.InterfaceIndex = 0
-        req.QueryName = UnsafeMutablePointer(mutating: namePtr)
+        req.QueryName = namePtr
         req.pResolveCompletionCallback = winResolveCallback
         req.pQueryContext = ctxPtr
         let result = DnsServiceResolve(&req, &ctx.cancel)
@@ -391,7 +391,7 @@ public final class BonjourDiscovery: @unchecked Sendable {
                     var req = DNS_SERVICE_BROWSE_REQUEST()
                     req.Version = ULONG(DNS_QUERY_REQUEST_VERSION1)
                     req.InterfaceIndex = 0
-                    req.QueryName = UnsafeMutablePointer(mutating: namePtr)
+                    req.QueryName = namePtr
                     req.pBrowseCallback = winBrowseCallback
                     req.pQueryContext = unmanaged.toOpaque()
                     let result = DnsServiceBrowse(&req, &ctx.cancel)
