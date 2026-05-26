@@ -271,6 +271,10 @@ struct BonjourDiscoveryLifecycleTests {
 
     @Test func `longer timeout finishes later than shorter one`() async throws {
         let discovery = BonjourDiscovery()
+        // Warmup: pay the AsyncThrowingStream / NWBrowser cold-start once
+        // (~0.5 s on macOS native) so both timed calls below have comparable
+        // overhead and the timeout-ordering assertion is meaningful.
+        for try await _ in discovery.browse(timeout: 0.5) {}
 
         let t1 = Date()
         for try await _ in discovery.browse(serviceTypes: [], timeout: 0.05) {}
