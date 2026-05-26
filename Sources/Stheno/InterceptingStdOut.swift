@@ -19,7 +19,6 @@
     /// }
     /// #expect((output as! String).contains("Whatever you expect to read in stdoutput"))
     /// ```
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     public func interceptingStdOut<T>(to output: inout any TextOutputStream,
                                       encoding: String.Encoding = .utf8,
                                       body: () -> T) async -> T {

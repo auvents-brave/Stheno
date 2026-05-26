@@ -3,7 +3,6 @@
 
     @testable import Stheno
 
-    @available(macOS 10.15, *)
     @Test func `Intercepting StdOut`() async throws {
         var output: any TextOutputStream = ""
         await interceptingStdOut(to: &output) {

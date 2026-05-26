@@ -20,12 +20,12 @@ Documentation is available directly in Xcode and VS Code, and [online](https://a
 
 | Platform | CI Status |
 |---|---|
-| ![macOS](https://img.shields.io/badge/macOS-111111?logo=apple&logoColor=white) ![min OS 10.13+](https://img.shields.io/badge/min%20OS-10.13%2B-444444) | [![macOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-macos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-macos.yml) |
-| ![Mac Catalyst](https://img.shields.io/badge/Mac_Catalyst-111111?logo=apple&logoColor=white) ![min OS 13.0+](https://img.shields.io/badge/min%20OS-13.0%2B-444444) | [![Mac Catalyst](https://github.com/auvents-brave/Stheno/actions/workflows/apple-maccatalyst.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-maccatalyst.yml) |
-| ![iOS](https://img.shields.io/badge/iOS-111111?logo=apple&logoColor=white) ![min OS 12.0+](https://img.shields.io/badge/min%20OS-12.0%2B-444444) | [![iOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ios.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ios.yml) |
-| ![iPadOS](https://img.shields.io/badge/iPadOS-111111?logo=apple&logoColor=white) ![min OS 12.0+](https://img.shields.io/badge/min%20OS-12.0%2B-444444) | [![iPadOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ipados.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ipados.yml) |
-| ![tvOS](https://img.shields.io/badge/tvOS-111111?logo=apple&logoColor=white) ![min OS 12.0+](https://img.shields.io/badge/min%20OS-12.0%2B-444444) | [![tvOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-tvos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-tvos.yml) |
-| ![watchOS](https://img.shields.io/badge/watchOS-111111?logo=apple&logoColor=white) ![min OS 5.0+](https://img.shields.io/badge/min%20OS-5.0%2B-444444) | [![watchOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-watchos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-watchos.yml) |
+| ![macOS](https://img.shields.io/badge/macOS-111111?logo=apple&logoColor=white) ![min OS 13.0+](https://img.shields.io/badge/min%20OS-13.0%2B-444444) | [![macOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-macos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-macos.yml) |
+| ![Mac Catalyst](https://img.shields.io/badge/Mac_Catalyst-111111?logo=apple&logoColor=white) ![min OS 16.0+](https://img.shields.io/badge/min%20OS-16.0%2B-444444) | [![Mac Catalyst](https://github.com/auvents-brave/Stheno/actions/workflows/apple-maccatalyst.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-maccatalyst.yml) |
+| ![iOS](https://img.shields.io/badge/iOS-111111?logo=apple&logoColor=white) ![min OS 16.0+](https://img.shields.io/badge/min%20OS-16.0%2B-444444) | [![iOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ios.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ios.yml) |
+| ![iPadOS](https://img.shields.io/badge/iPadOS-111111?logo=apple&logoColor=white) ![min OS 16.0+](https://img.shields.io/badge/min%20OS-16.0%2B-444444) | [![iPadOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ipados.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-ipados.yml) |
+| ![tvOS](https://img.shields.io/badge/tvOS-111111?logo=apple&logoColor=white) ![min OS 16.0+](https://img.shields.io/badge/min%20OS-16.0%2B-444444) | [![tvOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-tvos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-tvos.yml) |
+| ![watchOS](https://img.shields.io/badge/watchOS-111111?logo=apple&logoColor=white) ![min OS 9.0+](https://img.shields.io/badge/min%20OS-9.0%2B-444444) | [![watchOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-watchos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-watchos.yml) |
 | ![visionOS](https://img.shields.io/badge/visionOS-111111?logo=apple&logoColor=white) ![min OS 1.0+](https://img.shields.io/badge/min%20OS-1.0%2B-444444) | [![visionOS](https://github.com/auvents-brave/Stheno/actions/workflows/apple-visionos.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/apple-visionos.yml) |
 | ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black) | [![Linux](https://github.com/auvents-brave/Stheno/actions/workflows/linux.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/linux.yml) |
 | ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0id2hpdGUiPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMSIgaGVpZ2h0PSIxMSIvPjxyZWN0IHg9IjEzIiB5PSIwIiB3aWR0aD0iMTEiIGhlaWdodD0iMTEiLz48cmVjdCB4PSIwIiB5PSIxMyIgd2lkdGg9IjExIiBoZWlnaHQ9IjExIi8+PHJlY3QgeD0iMTMiIHk9IjEzIiB3aWR0aD0iMTEiIGhlaWdodD0iMTEiLz48L3N2Zz4=&logoColor=white) | [![Windows](https://github.com/auvents-brave/Stheno/actions/workflows/windows.yml/badge.svg?branch=main)](https://github.com/auvents-brave/Stheno/actions/workflows/windows.yml) |
@@ -53,6 +53,36 @@ DateTime implementations are more permissive and accept additional ISO 8601 vari
 ### Geolocation
 
 - [`Geo`](https://auvents-brave.github.io/Stheno/documentation/stheno/geo/) - Utility functions for geographic calculations (great-circle distance, bearings, etc.).
+
+### Service Discovery (mDNS / Bonjour)
+
+[`BonjourDiscovery`](https://auvents-brave.github.io/Stheno/documentation/stheno/bonjourdiscovery/) browses the local network for mDNS/Bonjour services and yields fully resolved endpoints (host, port, path) as an `AsyncThrowingStream`. A single cross-platform API is implemented on top of the native back-end of each OS:
+
+| Platform | Back-end | Notes |
+|---|---|---|
+| iOS / macOS / tvOS / watchOS / visionOS / Mac Catalyst | `NWBrowser` (Network.framework) | No extra dependency. |
+| Linux | Avahi via the `dns_sd` compatibility C API | Requires `libavahi-compat-libdnssd-dev` at runtime; library probed via `dlopen` so binaries launch even when it is absent. |
+| Windows | `DnsServiceBrowse` / `DnsServiceResolve` (`windns.h`) | Windows 10 1709 and later — no third-party install. |
+
+- [`BonjourDiscovery`](https://auvents-brave.github.io/Stheno/documentation/stheno/bonjourdiscovery/) - Browses mDNS service types with a configurable timeout.
+- [`DiscoveredEndpoint`](https://auvents-brave.github.io/Stheno/documentation/stheno/discoveredendpoint/) - Resolved service: scheme, host, port, path, label and a ready-to-use connection `url`.
+- [`BonjourServiceEntry`](https://auvents-brave.github.io/Stheno/documentation/stheno/bonjourserviceentry/) - Declares a service type to look for (mDNS PTR string, URL scheme, default path, display label).
+- [`bonjourDefaultServiceTypes`](https://auvents-brave.github.io/Stheno/documentation/stheno/bonjourdefaultservicetypes) - Built-in marine service catalogue: Signal K (HTTP & WebSocket), NMEA 0183 over TCP, and a few common vendor types (Garmin, Navico, Raymarine, Furuno).
+- [`BonjourDiscoveryError`](https://auvents-brave.github.io/Stheno/documentation/stheno/bonjourdiscoveryerror/) - Surfaces back-end failures (e.g. Avahi missing on Linux).
+
+Example — browse the local network for 5 s and connect to the first Signal K server found:
+```swift
+let discovery = BonjourDiscovery()
+for try await endpoint in discovery.browse(timeout: 5) {
+    print(endpoint)                  // "[signalk-http] raspberrypi — http://192.168.1.20:3000/signalk"
+    if endpoint.label == "signalk-http" {
+        // Connect to endpoint.url …
+        break
+    }
+}
+```
+
+The stream finishes automatically at the timeout, can be discarded early (`break`), and cleans up its underlying browsers/resolvers via `onTermination`. Pass your own `serviceTypes:` array to browse non-default services.
 
 ### Colors
 

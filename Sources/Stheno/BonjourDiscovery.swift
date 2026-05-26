@@ -155,9 +155,6 @@ internal import Foundation
 ///   (Windows 10 1709 and later, no third-party install).
 /// - **Linux**: Avahi via the `dns_sd` C compat API (`libavahi-compat-libdnssd-dev`).
 ///
-/// > Note: On Apple platforms this type requires macOS 10.15 / iOS 13 / watchOS 6 / tvOS 13
-/// > because both `NWBrowser` and `AsyncThrowingStream` were introduced there.
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 public final class BonjourDiscovery: @unchecked Sendable {
     private let queue = DispatchQueue(label: "Stheno.BonjourDiscovery")
 
@@ -208,7 +205,6 @@ public final class BonjourDiscovery: @unchecked Sendable {
 
 /// Opens a transient `NWConnection` to resolve host/port for a Bonjour result,
 /// yields a ``DiscoveredEndpoint``, then cancels the connection immediately.
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
 fileprivate func resolveEndpoint(
     result: NWBrowser.Result,
     entry: BonjourServiceEntry,
@@ -287,12 +283,17 @@ fileprivate final class WinResolveCtx: @unchecked Sendable {
 
 // MARK: C callbacks
 
+// PDNS_SERVICE_BROWSE_CALLBACK's third argument is typed PDNS_RECORDA in the SDK
+// (PDNS_RECORD == PDNS_RECORDA), even though DnsServiceBrowse with a UTF-16 query
+// name returns wide-string records.  Take the parameter as DNS_RECORDA to satisfy
+// the type system, then rebind to DNS_RECORDW for correct string decoding.
 fileprivate let winBrowseCallback: @convention(c) (
-    DWORD, UnsafeMutableRawPointer?, UnsafeMutablePointer<DNS_RECORDW>?
-) -> Void = { status, context, dnsRecord in
-    guard status == ERROR_SUCCESS, let context, let dnsRecord else { return }
+    DWORD, UnsafeMutableRawPointer?, UnsafeMutablePointer<DNS_RECORDA>?
+) -> Void = { status, context, dnsRecordA in
+    guard status == ERROR_SUCCESS, let context, let dnsRecordA else { return }
     let browseCtx = Unmanaged<WinBrowseCtx>.fromOpaque(context).takeUnretainedValue()
-    var cur: UnsafeMutablePointer<DNS_RECORDW>? = dnsRecord
+    var cur: UnsafeMutablePointer<DNS_RECORDW>? = UnsafeMutableRawPointer(dnsRecordA)
+        .assumingMemoryBound(to: DNS_RECORDW.self)
     while let rec = cur {
         if rec.pointee.wType == DNS_TYPE_PTR,
            let nameHost = rec.pointee.Data.PTR.pNameHost {
@@ -305,7 +306,7 @@ fileprivate let winBrowseCallback: @convention(c) (
     }
     // DnsRecordListFree is a C function-like macro and cannot be called from Swift;
     // call the underlying function directly.
-    DnsFree(dnsRecord, DnsFreeRecordList)
+    DnsFree(dnsRecordA, DnsFreeRecordList)
 }
 
 fileprivate let winResolveCallback: @convention(c) (
@@ -355,7 +356,10 @@ fileprivate func startWinResolve(
         var req = DNS_SERVICE_RESOLVE_REQUEST()
         req.Version = ULONG(DNS_QUERY_REQUEST_VERSION1)
         req.InterfaceIndex = 0
-        req.QueryName = namePtr
+        // DNS_SERVICE_RESOLVE_REQUEST.QueryName is PWSTR (mutable wide string),
+        // unlike DNS_SERVICE_BROWSE_REQUEST.QueryName which is PCWSTR (const).
+        // DnsServiceResolve does not write through the pointer; mutating cast is safe.
+        req.QueryName = UnsafeMutablePointer(mutating: namePtr)
         req.pResolveCompletionCallback = winResolveCallback
         req.pQueryContext = ctxPtr
         let result = DnsServiceResolve(&req, &ctx.cancel)

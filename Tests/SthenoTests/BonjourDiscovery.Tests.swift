@@ -238,15 +238,10 @@ struct BonjourDefaultServiceTypesTests {
 
 #if canImport(Network)
 
-// Swift Testing macros (@Suite / @Test) cannot be applied to @available-annotated types.
-// Instead, each test guards at runtime with #available so the suite is always visible
-// to the test runner, but individual tests skip gracefully on older OS versions.
-
 @Suite("BonjourDiscovery — stream lifecycle")
 struct BonjourDiscoveryLifecycleTests {
 
     @Test func `empty serviceTypes yields nothing and finishes`() async throws {
-        guard #available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *) else { return }
         let discovery = BonjourDiscovery()
         var count = 0
         for try await _ in discovery.browse(serviceTypes: [], timeout: 0.05) {
@@ -256,26 +251,26 @@ struct BonjourDiscoveryLifecycleTests {
     }
 
     @Test func `stream finishes after timeout`() async throws {
-        guard #available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *) else { return }
         let discovery = BonjourDiscovery()
-        // Warm-up: absorb any first-use NWBrowser initialisation overhead.
-        // On the watchOS simulator the very first browse call can take ~12 s to
-        // initialise the mDNS stack; subsequent calls are fast.
-        for try await _ in discovery.browse(serviceTypes: [], timeout: 0.05) {}
+        // Warm-up: exercise the full NWBrowser path so the very first run absorbs
+        // any lazy mDNS-stack initialisation.  An empty serviceTypes list creates
+        // no NWBrowser and therefore does NOT warm up the cold path; we must pass
+        // the default service types here.  On the watchOS simulator that first
+        // initialisation can take ~6 s; subsequent calls are fast.
+        for try await _ in discovery.browse(timeout: 0.05) {}
         let start = Date()
         for try await _ in discovery.browse(serviceTypes: [], timeout: 0.1) {}
         let elapsed = Date().timeIntervalSince(start)
-        // Should finish close to the 0.1 s timeout, well under 5 s
+        // Should finish close to the 0.1 s timeout — generous bound for simulator jitter.
         #expect(elapsed < 5.0)
     }
 
     @Test func `longer timeout finishes later than shorter one`() async throws {
-        guard #available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *) else { return }
         let discovery = BonjourDiscovery()
-        // Warm-up: absorb any first-use NWBrowser initialisation overhead.
-        // On the watchOS simulator the very first browse call can take ~12 s to
-        // initialise the mDNS stack; subsequent calls are fast.
-        for try await _ in discovery.browse(serviceTypes: [], timeout: 0.05) {}
+        // Warm-up: exercise the full NWBrowser path so the cold-start cost is
+        // paid here, not on the first timed call below.  See `stream finishes
+        // after timeout` for the rationale (empty serviceTypes is NOT enough).
+        for try await _ in discovery.browse(timeout: 0.05) {}
 
         let t1 = Date()
         for try await _ in discovery.browse(serviceTypes: [], timeout: 0.05) {}
@@ -289,7 +284,6 @@ struct BonjourDiscoveryLifecycleTests {
     }
 
     @Test func `breaking out of stream does not hang`() async throws {
-        guard #available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *) else { return }
         let discovery = BonjourDiscovery()
         // Browse with a short timeout.  In a CI environment without real mDNS
         // services the loop body is never entered (no items arrive), but the
@@ -303,7 +297,6 @@ struct BonjourDiscoveryLifecycleTests {
     }
 
     @Test func `task cancellation stops the stream`() async throws {
-        guard #available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *) else { return }
         let discovery = BonjourDiscovery()
         let task = Task {
             // Use a long timeout so the stream won't self-terminate before we cancel.
@@ -311,9 +304,7 @@ struct BonjourDiscoveryLifecycleTests {
                 serviceTypes: bonjourDefaultServiceTypes, timeout: 300) {}
         }
         // Give the browsers a moment to start, then cancel.
-        // Task.sleep(nanoseconds:) is available from iOS 13 / macOS 10.15,
-        // unlike the Duration-based overload which requires iOS 16 / macOS 13.
-        try await Task.sleep(nanoseconds: 50_000_000)
+        try await Task.sleep(for: .milliseconds(50))
         task.cancel()
         // Await the task — should resolve quickly via cancellation, not sit for 300 s.
         _ = await task.result
@@ -321,7 +312,6 @@ struct BonjourDiscoveryLifecycleTests {
     }
 
     @Test func `multiple independent browse sessions do not interfere`() async throws {
-        guard #available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *) else { return }
         let d1 = BonjourDiscovery()
         let d2 = BonjourDiscovery()
         async let s1: Void = { for try await _ in d1.browse(serviceTypes: [], timeout: 0.05) {} }()
@@ -331,7 +321,6 @@ struct BonjourDiscoveryLifecycleTests {
     }
 
     @Test func `default timeout compiles without explicit argument`() {
-        guard #available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *) else { return }
         // Verify the API contract: browse() must accept a call with no timeout argument.
         // We don't run the stream — just confirm it compiles and is the right type.
         let discovery = BonjourDiscovery()
@@ -410,7 +399,9 @@ struct BonjourDiscoveryLinuxLifecycleTests {
             do { for try await _ in d2.browse(serviceTypes: [], timeout: 0.05) {} }
             catch is BonjourDiscoveryError {}
         }()
-        _ = await (s1, s2)
+        // The typed `catch is BonjourDiscoveryError` does not catch every error,
+        // so the async-let closures remain `() async throws -> Void` → `try` required.
+        _ = try await (s1, s2)
         #expect(Bool(true))
     }
 

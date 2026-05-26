@@ -4,12 +4,12 @@
     @DisplayName("Sthenô")
     @TitleHeading("Library")
     @PageColor(purple)
-    @Available(macOS, introduced: "10.13")
-    @Available(iOS, introduced: "12.0")
-    @Available(tvOS, introduced: "12.0")
-    @Available(watchOS, introduced: "4.0")
+    @Available(macOS, introduced: "13.0")
+    @Available(iOS, introduced: "16.0")
+    @Available(tvOS, introduced: "16.0")
+    @Available(watchOS, introduced: "9.0")
     @Available(visionOS, introduced: "1.0")
-    @Available(macCatalyst, introduced: "13.0")
+    @Available(macCatalyst, introduced: "16.0")
 	@SupportedLanguage(swift)
 	@CallToAction(
 		purpose: link,

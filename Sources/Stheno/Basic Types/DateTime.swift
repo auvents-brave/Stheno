@@ -17,12 +17,11 @@ public struct DateTime {
 
     public static var relativeAvailable: Bool {
         #if canImport(Darwin)
-            // RelativeDateTimeFormatter is available on Apple platforms via Foundation
-            if #available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *) {
-                return true
-            }
+            // RelativeDateTimeFormatter is available on Apple platforms via Foundation.
+            return true
+        #else
+            return false
         #endif
-        return false
     }
 
     /// Initializes from an ISO 8601 string, accepting fractional seconds and time zone indicators.
@@ -127,13 +126,12 @@ public struct DateTime {
     /// Formats to a relative string when available.
     public func formattedRelative() -> String {
         #if canImport(Darwin)
-            if #available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *) {
-                let rel = RelativeDateTimeFormatter()
-                rel.unitsStyle = .full
-                return (rel.localizedString(for: self.date, relativeTo: Date()))
-            }
+            let rel = RelativeDateTimeFormatter()
+            rel.unitsStyle = .full
+            return rel.localizedString(for: self.date, relativeTo: Date())
+        #else
+            return ""
         #endif
-        return ""
     }
 
     /// Formats the date using ISO 8601 with optional fractional seconds.
