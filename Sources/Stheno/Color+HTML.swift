@@ -57,10 +57,6 @@ extension Color {
     /// Extracts the sRGB components of the color and returns a hex string.
     /// The `includeHash` parameter controls whether the returned string includes a leading `#`.
     /// Returns `nil` if components cannot be extracted.
-    ///
-    /// Bridges through `UIColor(SwiftUI.Color)` / `NSColor(SwiftUI.Color)` which were
-    /// introduced in macOS 11 / iOS 14 / tvOS 14 / watchOS 7. 
-    @available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)
     public func toHTMLHex(includeHash: Bool = true) -> String {
         #if canImport(SwiftUI)
             #if canImport(UIKit)
@@ -94,8 +90,6 @@ extension Color {
 
 #if canImport(UIKit)
     /// Extensions to `UIColor` for convenient bridging to and from HTML hex strings.
-    /// `UIColor(SwiftUI.Color)` was introduced in iOS 14 / tvOS 14 / watchOS 7.
-    @available(iOS 14, watchOS 7, tvOS 14, *)
     extension UIColor {
         /// Initializes a `UIColor` from an HTML hex string.
         ///
@@ -127,8 +121,6 @@ extension Color {
 
 #elseif canImport(AppKit)
     /// Extensions to `NSColor` for convenient bridging to and from HTML hex strings.
-    /// `NSColor(SwiftUI.Color)` was introduced in macOS 11.
-    @available(macOS 11, *)
     extension NSColor {
         /// Initializes an `NSColor` from an HTML hex string.
         ///

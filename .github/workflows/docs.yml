@@ -19,15 +19,14 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "26.3"
+          xcode-version: "26.5"
 
       - name: Build DocC archive
         run: |
           xcodebuild docbuild \
             -scheme "Stheno" \
             -destination "generic/platform=macOS" \
-            -derivedDataPath "$PWD/.derivedData" \
-            MACOSX_DEPLOYMENT_TARGET=10.15
+            -derivedDataPath "$PWD/.derivedData"
 
       - name: Export DocC static site
         run: |
