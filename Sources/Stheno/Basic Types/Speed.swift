@@ -115,6 +115,7 @@ public struct Speed {
 #if canImport(Playgrounds) && !NO_PLAYGROUND_EXAMPLES
     import Playgrounds
 
+    @available(iOS 13, tvOS 13, watchOS 6, *)
     #Playground {
         let speedKmh = Speed(value: 100, unit: .kilometersPerHour)
         _ = speedKmh.converted(to: .milesPerHour)

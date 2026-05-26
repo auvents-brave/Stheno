@@ -155,6 +155,7 @@ public struct DateTime {
 #if canImport(Playgrounds) && !NO_PLAYGROUND_EXAMPLES
     import Playgrounds
 
+    @available(iOS 13, tvOS 13, watchOS 6, *)
     #Playground {
         let dateTime = DateTime(date: Date().addingTimeInterval(-5 * 60))
 

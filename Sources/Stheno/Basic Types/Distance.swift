@@ -32,11 +32,11 @@ public struct Distance {
     // Forces Xcode to include keys for Localizable.strings
     internal static func noName() {
         #if !os(WASI)
-        _ = NSLocalizedString("distance.m", value: "m", comment: "Meters")
-        _ = NSLocalizedString("distance.ft", value: "ft", comment: "Feet")
-        _ = NSLocalizedString("distance.km", value: "km", comment: "Kilometers")
-        _ = NSLocalizedString("distance.mi", value: "mi", comment: "Miles")
-        _ = NSLocalizedString("distance.nm", value: "nm", comment: "Nautical Miles")
+            _ = NSLocalizedString("distance.m", value: "m", comment: "Meters")
+            _ = NSLocalizedString("distance.ft", value: "ft", comment: "Feet")
+            _ = NSLocalizedString("distance.km", value: "km", comment: "Kilometers")
+            _ = NSLocalizedString("distance.mi", value: "mi", comment: "Miles")
+            _ = NSLocalizedString("distance.nm", value: "nm", comment: "Nautical Miles")
         #endif
     }
 
@@ -101,7 +101,7 @@ public struct Distance {
                 cvt = converted(to: .feet)
                 adaptedUnit = .feet
             case .nauticalMiles, .kilometers:
-					cvt = converted(to: .meters)
+                cvt = converted(to: .meters)
                 adaptedUnit = .meters
             default:
                 break
@@ -131,6 +131,7 @@ public struct Distance {
 #if canImport(Playgrounds) && !NO_PLAYGROUND_EXAMPLES
     import Playgrounds
 
+    @available(iOS 13, tvOS 13, watchOS 6, *)
     #Playground {
         let a = Distance(value: 18, unit: .kilometers).converted(to: .miles) // 11,18468146027201
         let b = Distance(value: a, unit: .miles).converted(to: .meters) // 18000
