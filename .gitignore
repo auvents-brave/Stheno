@@ -1,0 +1,8 @@
+.DS_Store
+Package.resolved
+xcode
+.build
+.build-cli
+.swiftpm
+.vscode
+.sonarlint

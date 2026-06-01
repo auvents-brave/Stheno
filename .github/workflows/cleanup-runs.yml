@@ -1,0 +1,45 @@
+name: Cleanup old workflow runs
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old runs (keep latest per workflow × branch)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Fetch up to 500 runs (newest first — gh run list default order).
+          # Group by (workflowName, headBranch); within each group skip the
+          # first entry (the newest) and collect the IDs of everything older.
+          # In-progress runs are never deleted even if they are not the newest.
+          RUNS=$(gh run list \
+            --repo "$REPO" \
+            --limit 500 \
+            --json databaseId,workflowName,headBranch,status)
+
+          TO_DELETE=$(echo "$RUNS" | jq -r '
+            group_by(.workflowName + "|" + .headBranch)[]
+            | .[1:][]
+            | select(.status != "in_progress")
+            | .databaseId
+          ')
+
+          if [ -z "$TO_DELETE" ]; then
+            echo "Nothing to delete."
+            exit 0
+          fi
+
+          COUNT=$(echo "$TO_DELETE" | wc -l | tr -d ' ')
+          echo "Deleting $COUNT run(s)…"
+          echo "$TO_DELETE" | xargs -r -I{} gh run delete --repo "$REPO" {}
+          echo "Done."
