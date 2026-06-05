@@ -88,7 +88,7 @@ The stream finishes automatically at the timeout, can be discarded early (`break
 
 #### DNS resolution
 
-- [`DomainResolver`](https://auvents-brave.github.io/Stheno/documentation/stheno/domainresolver/) - Resolves a hostname to its IP addresses using the system resolver (`getaddrinfo`).
+- [`DomainResolver`](https://auvents-brave.github.io/Stheno/documentation/stheno/domainresolver/) - Resolves a hostname to its IP addresses using the system resolver (`getaddrinfo`). `resolve(_:)` returns every address; `resolveIPv4(_:)` / `resolveIPv6(_:)` return the first match of a given family, and a `ResolveError` surfaces lookup failures. (Apple platforms, Linux and Windows; not available on Android or WASI.)
 
 ```swift
 let addresses = try await DomainResolver.resolve("example.com")
@@ -125,4 +125,6 @@ Un œil éveillé & exemple à <10€>
 - `isRunningInPreviews` - Indicates whether code is running under Xcode previews.
 
 - [`Throttled`](https://auvents-brave.github.io/Stheno/documentation/stheno/throttled/) - A property wrapper that throttles updates to its wrapped value.
+
+- [`interceptingStdOut(to:encoding:body:)`](https://auvents-brave.github.io/Stheno/documentation/stheno/interceptingstdout(to:encoding:body:)) - Captures text written to standard output into a `TextOutputStream` while a closure runs (Apple platforms only).
 
