@@ -1,11 +1,11 @@
 /// Supported temperature units.
-public enum TemperatureUnit: String, CaseIterable {
+public enum TemperatureUnit: String, CaseIterable, Sendable {
     case celsius = "°C"
     case fahrenheit = "°F"
 }
 
-/// Represents a temperature value with conversion and formatting helpers.
-public struct Temperature {
+/// A temperature, stored in the unit it was given, with conversion and formatting.
+public struct Temperature: Equatable, Sendable {
     public let value: Double
     public let unit: TemperatureUnit
 
@@ -15,41 +15,30 @@ public struct Temperature {
         self.unit = unit
     }
 
-    /// Converts the temperature to the target unit.
-    public func converted(to targetUnit: TemperatureUnit) -> Double {
-        switch (unit, targetUnit) {
-        case (.celsius, .fahrenheit):
-            return value * 9 / 5 + 32
-        case (.fahrenheit, .celsius):
-            return (value - 32) * 5 / 9
-        case (.fahrenheit, .fahrenheit), (.celsius, .celsius):
-            return value
+    /// Converts the temperature to a target unit (one conversion, full precision).
+    public func converted(to target: TemperatureUnit) -> Double {
+        switch (unit, target) {
+        case (.celsius, .fahrenheit): value * 9 / 5 + 32
+        case (.fahrenheit, .celsius): (value - 32) * 5 / 9
+        default: value
         }
     }
 
-    /// Formats the temperature in the target unit.
-    public func formatted(in targetUnit: TemperatureUnit) -> (value: Double, unit: String) {
-        return (converted(to: targetUnit), targetUnit.rawValue)
+    /// A display format: a target unit with its decimals.
+    public enum Format: Sendable {
+        case celsius(decimals: Int = 0)
+        case fahrenheit(decimals: Int = 0)
+    }
+
+    /// Formats the temperature, split into value and unit.
+    public func formatted(as format: Format) -> Formatted {
+        switch format {
+        case let .celsius(d): render(.celsius, d)
+        case let .fahrenheit(d): render(.fahrenheit, d)
+        }
+    }
+
+    private func render(_ target: TemperatureUnit, _ decimals: Int) -> Formatted {
+        Formatted(formattedNumber(converted(to: target), decimals: decimals), target.rawValue)
     }
 }
-
-// MARK: - Examples (Playground)
-
-#if canImport(Playgrounds) && !NO_PLAYGROUND_EXAMPLES
-    import Playgrounds
-
-    @available(iOS 13, tvOS 13, watchOS 6, *)
-    #Playground {
-        let temp = Temperature(value: 22.5, unit: .celsius)
-        _ = temp.converted(to: .fahrenheit)
-        _ = temp.formatted(in: .fahrenheit)
-        let another = Temperature(value: 72, unit: .fahrenheit)
-        _ = another.converted(to: .celsius)
-        _ = another.formatted(in: .celsius)
-
-        // Temperature
-        let tempCelsius = Temperature(value: 20, unit: .celsius)
-        _ = tempCelsius.converted(to: .fahrenheit)
-        _ = tempCelsius.formatted(in: .fahrenheit)
-    }
-#endif

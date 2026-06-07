@@ -5,26 +5,10 @@ import Testing
 
 @Suite("Distance Tests")
 struct DistanceTests {
-    @Test func `Short distance type (< 300m)`() {
-        let distance = Distance(value: 150, unit: .meters)
-        #expect(distance.type == .short)
-
-        let distance2 = Distance(value: 299, unit: .meters)
-        #expect(distance2.type == .short)
-
-        let distance3 = Distance(value: 900, unit: .feet)
-        #expect(distance3.type == .short)
-    }
-
-    @Test func `Long distance type (>= 300m)`() {
-        let distance = Distance(value: 300, unit: .meters)
-        #expect(distance.type == .long)
-
-        let distance2 = Distance(value: 1, unit: .kilometers)
-        #expect(distance2.type == .long)
-
-        let distance3 = Distance(value: 1, unit: .miles)
-        #expect(distance3.type == .long)
+    @Test func `Metres value reflects the source unit`() {
+        #expect(Distance(value: 150, unit: .meters).metres == 150)
+        #expect(Distance(value: 1, unit: .kilometers).metres == 1000)
+        #expect(abs(Distance(value: 900, unit: .feet).metres - 274.32) < 0.0001)
     }
 
     @Test func `Meters to Feet conversion`() {
@@ -83,26 +67,9 @@ struct DistanceTests {
 
     @Test func `Distance formatted output`() {
         let distance = Distance(value: 10, unit: .kilometers)
-        let formatted = distance.formatted(in: .miles)
-        #expect(abs(formatted.value - 6.21371) < 0.004)
-        #expect(formatted.unit == DistanceUnit.miles.localized)
-    }
-
-    @Test func `Appropriate units for short distances`() {
-        let distance = Distance(value: 100, unit: .meters)
-        let units = distance.appropriateUnitsForShort
-        #expect(units.contains(.meters))
-        #expect(units.contains(.feet))
-        #expect(units.count == 2)
-    }
-
-    @Test func `Appropriate units for long distances`() {
-        let distance = Distance(value: 5, unit: .kilometers)
-        let units = distance.appropriateUnitsForLong
-        #expect(units.contains(.kilometers))
-        #expect(units.contains(.miles))
-        #expect(units.contains(.nauticalMiles))
-        #expect(units.count == 3)
+        let formatted = distance.formatted(as: .miles(decimals: 2))
+        #expect(formatted.value == "6.21")
+        #expect(formatted.unit == "mi")
     }
 
     @Test func `Round-trip conversion preserves value`() {
@@ -112,18 +79,12 @@ struct DistanceTests {
         #expect(abs(backToKm - 100) < 0.0001)
     }
 
-    #if os(WASI)
-    @Test func `Distance localized units use raw values on WASI`() {
-        #expect(DistanceUnit.meters.localized == "m")
-        #expect(DistanceUnit.feet.localized == "ft")
-        #expect(DistanceUnit.kilometers.localized == "km")
-        #expect(DistanceUnit.miles.localized == "mi")
-        #expect(DistanceUnit.nauticalMiles.localized == "nm")
-    }
-    #endif
-
-    @Test func `Distance no name`() {
-        Distance.noName()
+    @Test func `Distance unit symbols`() {
+        #expect(Distance(value: 1, unit: .meters).formatted(as: .meters()).unit == "m")
+        #expect(Distance(value: 1, unit: .feet).formatted(as: .feet()).unit == "ft")
+        #expect(Distance(value: 1, unit: .kilometers).formatted(as: .kilometers()).unit == "km")
+        #expect(Distance(value: 1, unit: .miles).formatted(as: .miles()).unit == "mi")
+        #expect(Distance(value: 1, unit: .nauticalMiles).formatted(as: .nauticalMiles()).unit == "nm")
     }
 }
 
@@ -131,14 +92,21 @@ struct DistanceTests {
 struct DistanceFormattingTests {
     @Test func `Adapt long units for short distances`() {
         let distance = Distance(value: 0.2, unit: .kilometers)
-        let formatted = distance.formatted(in: .kilometers, adaptForShortDistances: true)
-        #expect(formatted.unit == DistanceUnit.meters.localized)
-        #expect(formatted.value == 200)
+        let formatted = distance.formatted(as: .adaptiveMetric)
+        #expect(formatted.unit == "m")
+        #expect(formatted.value == "200")
+    }
+
+    @Test func `Adapt metric units for long distances`() {
+        let distance = Distance(value: 5, unit: .kilometers)
+        let formatted = distance.formatted(as: .adaptiveMetric)
+        #expect(formatted.unit == "km")
+        #expect(formatted.value == "5.00")
     }
 
     @Test func `Rounding decimals`() {
         let distance = Distance(value: 1.234, unit: .kilometers)
-        let formatted = distance.formatted(in: .kilometers, decimals: 1)
-        #expect(formatted.value == 1.2)
+        let formatted = distance.formatted(as: .kilometers(decimals: 1))
+        #expect(formatted.value == "1.2")
     }
 }

@@ -32,8 +32,8 @@ struct TemperatureTests {
 
     @Test func `Temperature formatted output`() {
         let temp = Temperature(value: 20, unit: .celsius)
-        let formatted = temp.formatted(in: .fahrenheit)
-        #expect(formatted.value == 68.0)
+        let formatted = temp.formatted(as: .fahrenheit())
+        #expect(formatted.value == "68")
         #expect(formatted.unit == "°F")
     }
 }
