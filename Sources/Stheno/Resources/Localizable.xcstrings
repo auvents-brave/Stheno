@@ -3,7 +3,7 @@
   "strings" : {
     "distance.ft" : {
       "comment" : "Feet",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -27,7 +27,7 @@
     },
     "distance.km" : {
       "comment" : "Kilometres",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -51,7 +51,7 @@
     },
     "distance.m" : {
       "comment" : "Metres",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -75,7 +75,7 @@
     },
     "distance.mi" : {
       "comment" : "Miles",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -99,7 +99,7 @@
     },
     "distance.nm" : {
       "comment" : "Nautical miles",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -123,7 +123,7 @@
     },
     "speed.km/h" : {
       "comment" : "Kilometers per hour",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -147,7 +147,7 @@
     },
     "speed.kn" : {
       "comment" : "Knots",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -171,7 +171,7 @@
     },
     "speed.mph" : {
       "comment" : "Miles per hour",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

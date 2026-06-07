@@ -58,6 +58,46 @@ public struct Coordinate: Equatable {
     }
 }
 
+// MARK: - Formatting
+
+public extension Coordinate {
+    /// A coordinate display format.
+    enum Format: Sendable {
+        /// Decimal degrees — "43.74° N".
+        case decimal(decimals: Int = 2)
+        /// Degrees and decimal minutes — "43°44.3' N".
+        case degreesMinutes(decimals: Int = 1)
+        /// Degrees, minutes and seconds — "43°44'20" N".
+        case degreesMinutesSeconds
+    }
+
+    /// Formats latitude and longitude as separate strings, each ending in its
+    /// hemisphere letter — so the caller lays them out on one line or two.
+    func formatted(as format: Format) -> (latitude: String, longitude: String) {
+        (Coordinate.component(latitude, positive: "N", negative: "S", format),
+         Coordinate.component(longitude, positive: "E", negative: "W", format))
+    }
+
+    private static func component(_ value: Double, positive: String, negative: String, _ format: Format) -> String {
+        let hemisphere = value >= 0 ? positive : negative
+        let magnitude = abs(value)
+        switch format {
+        case let .decimal(d):
+            return "\(formattedNumber(magnitude, decimals: d))° \(hemisphere)"
+        case let .degreesMinutes(d):
+            let degrees = Int(magnitude)
+            let minutes = (magnitude - Double(degrees)) * 60
+            return "\(degrees)°\(formattedNumber(minutes, decimals: d))' \(hemisphere)"
+        case .degreesMinutesSeconds:
+            let degrees = Int(magnitude)
+            let minutesFull = (magnitude - Double(degrees)) * 60
+            let minutes = Int(minutesFull)
+            let seconds = (minutesFull - Double(minutes)) * 60
+            return "\(degrees)°\(minutes)'\(formattedNumber(seconds, decimals: 0))\" \(hemisphere)"
+        }
+    }
+}
+
 #if canImport(CoreLocation)
     public import CoreLocation
 

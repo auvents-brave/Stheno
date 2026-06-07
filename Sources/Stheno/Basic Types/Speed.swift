@@ -1,40 +1,27 @@
-internal import Foundation
-
 /// Supported speed units.
-public enum SpeedUnit: String, CaseIterable {
+public enum SpeedUnit: String, CaseIterable, Sendable {
     case kilometersPerHour = "km/h"
     case milesPerHour = "mph"
     case knots = "kn"
 
-    /// Localised unit label.
-    public var localized: String {
-        #if os(WASI)
-            rawValue
-        #else
-            NSLocalizedString("speed.\(rawValue)", comment: "")
-        #endif
+    /// Kilometres per hour for one unit.
+    var kmhPerUnit: Double {
+        switch self {
+        case .kilometersPerHour: 1
+        case .milesPerHour: 1.609344
+        case .knots: 1.852
+        }
     }
 }
 
-/// Beaufort wind force scale (0 to 12) based on km/h thresholds.
-public enum BeaufortScale: Int, CaseIterable {
-    case calm = 0
-    case lightAir = 1
-    case lightBreeze = 2
-    case gentleBreeze = 3
-    case moderateBreeze = 4
-    case freshBreeze = 5
-    case strongBreeze = 6
-    case highWind = 7
-    case gale = 8
-    case strongGale = 9
-    case storm = 10
-    case violentStorm = 11
-    case hurricane = 12
+/// Beaufort wind force scale (0 to 12), from km/h thresholds.
+public enum BeaufortScale: Int, CaseIterable, Sendable {
+    case calm = 0, lightAir, lightBreeze, gentleBreeze, moderateBreeze, freshBreeze
+    case strongBreeze, highWind, gale, strongGale, storm, violentStorm, hurricane
 
-    /// Creates a Beaufort scale value from a km/h speed.
-    public init(kilometersPerHour: Double) {
-        switch kilometersPerHour {
+    /// Creates a Beaufort force from a km/h speed.
+    public init(kilometersPerHour kmh: Double) {
+        switch kmh {
         case ..<1: self = .calm
         case 1 ..< 6: self = .lightAir
         case 6 ..< 12: self = .lightBreeze
@@ -52,17 +39,10 @@ public enum BeaufortScale: Int, CaseIterable {
     }
 }
 
-/// Represents a speed value with conversion and formatting helpers.
-public struct Speed {
+/// A speed, stored in the unit it was given, with conversion and formatting.
+public struct Speed: Equatable, Sendable {
     public let value: Double
     public let unit: SpeedUnit
-
-    // Forces Xcode to include keys for Localizable.strings
-    private func noName() {
-        _ = NSLocalizedString("speed.km/h", value: "km/h", comment: "Kilometers per hour")
-        _ = NSLocalizedString("speed.mph", value: "mph", comment: "Miles per hour")
-        _ = NSLocalizedString("speed.kn", value: "kn", comment: "Knots")
-    }
 
     /// Creates a speed with a value and unit.
     public init(value: Double, unit: SpeedUnit) {
@@ -70,59 +50,36 @@ public struct Speed {
         self.unit = unit
     }
 
-    /// Converts the speed to the target unit.
-    public func converted(to targetUnit: SpeedUnit) -> Double {
-        if unit == targetUnit {
-            return value
-        }
+    /// The speed in km/h.
+    public var kilometersPerHour: Double { value * unit.kmhPerUnit }
 
-        // Conversion vers km/h comme unite intermediaire
-        let kmh: Double
-        switch unit {
-        case .kilometersPerHour:
-            kmh = value
-        case .milesPerHour:
-            kmh = value * 1.609344
-        case .knots:
-            kmh = value * 1.852
-        }
+    /// Converts the speed to a target unit (one conversion, full precision).
+    public func converted(to target: SpeedUnit) -> Double {
+        unit == target ? value : kilometersPerHour / target.kmhPerUnit
+    }
 
-        // Conversion depuis km/h vers l'unite cible
-        switch targetUnit {
-        case .kilometersPerHour:
-            return kmh
-        case .milesPerHour:
-            return kmh / 1.609344
-        case .knots:
-            return kmh / 1.852
+    /// Beaufort wind force for this speed.
+    public var beaufort: BeaufortScale { BeaufortScale(kilometersPerHour: kilometersPerHour) }
+
+    /// A display format: a target unit with decimals, or the Beaufort force.
+    public enum Format: Sendable {
+        case kilometersPerHour(decimals: Int = 0)
+        case milesPerHour(decimals: Int = 0)
+        case knots(decimals: Int = 0)
+        case beaufort
+    }
+
+    /// Formats the speed, split into value and unit.
+    public func formatted(as format: Format) -> Formatted {
+        switch format {
+        case let .kilometersPerHour(d): render(.kilometersPerHour, d)
+        case let .milesPerHour(d): render(.milesPerHour, d)
+        case let .knots(d): render(.knots, d)
+        case .beaufort: Formatted(String(beaufort.rawValue), "Bft")
         }
     }
 
-    /// Formats the speed in the target unit.
-    public func formatted(in targetUnit: SpeedUnit) -> (value: Double, unit: String) {
-        return (converted(to: targetUnit), targetUnit.localized)
-    }
-
-    /// Beaufort wind force derived from the speed.
-    public var beaufort: BeaufortScale {
-        let kmh = converted(to: .kilometersPerHour)
-        return BeaufortScale(kilometersPerHour: kmh)
+    private func render(_ target: SpeedUnit, _ decimals: Int) -> Formatted {
+        Formatted(formattedNumber(converted(to: target), decimals: decimals), target.rawValue)
     }
 }
-
-// MARK: - Examples (Playground)
-
-#if canImport(Playgrounds) && !NO_PLAYGROUND_EXAMPLES
-    import Playgrounds
-
-    @available(iOS 13, tvOS 13, watchOS 6, *)
-    #Playground {
-        let speedKmh = Speed(value: 100, unit: .kilometersPerHour)
-        _ = speedKmh.converted(to: .milesPerHour)
-
-        let speedKnots = Speed(value: 25, unit: .knots)
-        _ = speedKnots.converted(to: .kilometersPerHour)
-        _ = speedKnots.beaufort
-        _ = speedKnots.beaufort.rawValue
-    }
-#endif
