@@ -37,9 +37,16 @@ struct SpeedTests {
 
     @Test func `Speed formatted output`() {
         let speed = Speed(value: 100, unit: .kilometersPerHour)
-        let formatted = speed.formatted(in: .knots)
-        #expect(abs(formatted.value - 53.9957) < 0.001)
-        #expect(formatted.unit == SpeedUnit.knots.localized)
+        let formatted = speed.formatted(as: .knots(decimals: 1))
+        #expect(formatted.value == "54.0")
+        #expect(formatted.unit == "kn")
+    }
+
+    @Test func `Speed Beaufort formatted output`() {
+        let speed = Speed(value: 10, unit: .knots)
+        let formatted = speed.formatted(as: .beaufort)
+        #expect(formatted.value == "3")
+        #expect(formatted.unit == "Bft")
     }
 
     @Test func `Same unit returns original value`() {
@@ -47,13 +54,11 @@ struct SpeedTests {
         #expect(speed.converted(to: .knots) == 75.5)
     }
 
-    #if os(WASI)
-    @Test func `Speed localized units use raw values on WASI`() {
-        #expect(SpeedUnit.kilometersPerHour.localized == "km/h")
-        #expect(SpeedUnit.milesPerHour.localized == "mph")
-        #expect(SpeedUnit.knots.localized == "kn")
+    @Test func `Speed unit symbols`() {
+        #expect(Speed(value: 1, unit: .kilometersPerHour).formatted(as: .kilometersPerHour()).unit == "km/h")
+        #expect(Speed(value: 1, unit: .milesPerHour).formatted(as: .milesPerHour()).unit == "mph")
+        #expect(Speed(value: 1, unit: .knots).formatted(as: .knots()).unit == "kn")
     }
-    #endif
 }
 
 @Suite("Speed Beaufort Tests")

@@ -11,7 +11,7 @@ struct EdgeCaseTests {
 
         let distance = Distance(value: 0, unit: .kilometers)
         #expect(distance.value == 0)
-        #expect(distance.type == .short)
+        #expect(distance.metres == 0)
 
         let speed = Speed(value: 0, unit: .knots)
         #expect(speed.value == 0)
@@ -27,7 +27,7 @@ struct EdgeCaseTests {
         let distance = Distance(value: 1_000_000, unit: .kilometers)
         let miles = distance.converted(to: .miles)
         #expect(miles > 0)
-        #expect(distance.type == .long)
+        #expect(distance.metres == 1_000_000_000)
     }
 
     @Test func `Precision with small decimals`() {
@@ -36,17 +36,17 @@ struct EdgeCaseTests {
         #expect(abs(fahrenheit - 32.18) < 0.01)
     }
 
-    @Test func `Distance exactly at 300m threshold`() {
-        let distance = Distance(value: 300, unit: .meters)
-        #expect(distance.type == .long)
+    @Test func `Adaptive metric switches at 1 km`() {
+        let belowKm = Distance(value: 999, unit: .meters)
+        #expect(belowKm.formatted(as: .adaptiveMetric).unit == "m")
 
-        let distance2 = Distance(value: 299.9, unit: .meters)
-        #expect(distance2.type == .short)
+        let atKm = Distance(value: 1000, unit: .meters)
+        #expect(atKm.formatted(as: .adaptiveMetric).unit == "km")
     }
 
     @Test func `Very small distances`() {
         let distance = Distance(value: 0.5, unit: .meters)
-        #expect(distance.type == .short)
+        #expect(distance.metres == 0.5)
         let feet = distance.converted(to: .feet)
         #expect(feet > 0)
     }

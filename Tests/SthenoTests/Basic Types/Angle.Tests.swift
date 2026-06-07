@@ -29,9 +29,12 @@ struct AngleTests {
 
     @Test func `Formatted angle outputs`() {
         let angle = Angle(degrees: 30)
-        let degrees = angle.formattedDegrees
-        #expect(degrees.value == 30)
+        let degrees = angle.formatted(as: .degrees())
+        #expect(degrees.value == "30")
         #expect(degrees.unit == "°")
-        #expect(angle.formattedCardinal == "NE")
+
+        let cardinal = angle.formatted(as: .cardinal)
+        #expect(cardinal.value == "NNE")
+        #expect(cardinal.unit == "")
     }
 }
