@@ -20,7 +20,9 @@ public enum DistanceUnit: String, CaseIterable, Sendable {
 
 /// A distance, stored in the unit it was given, with conversion and formatting.
 public struct Distance: Equatable, Sendable {
+    /// The distance value, expressed in `unit`.
     public let value: Double
+    /// The unit `value` is expressed in.
     public let unit: DistanceUnit
 
     /// Creates a distance with a value and unit.

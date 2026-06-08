@@ -6,7 +6,7 @@ Sthenô is a small, cross-platform Swift package that consolidates reusable, con
 
 Sthenô depends only on [swift-log](https://github.com/apple/swift-log) for structured logging, ensuring consistent and configurable diagnostics across platforms while keeping the overall dependency footprint minimal.
 
-Continuous Integration (CI) is handled through GitHub Actions, which automatically builds, tests, generates documentation, and analyzes the codebase using CodeQL and SonarQube to ensure quality, consistency, and cross-platform reliability.
+Continuous Integration (CI) is handled through GitHub Actions, which automatically builds, tests, generates documentation, and analyses the codebase using CodeQL and SonarQube to ensure quality, consistency, and cross-platform reliability.
 
 ![Swift](https://img.shields.io/badge/Swift-6.1+-orange?logo=swift)
 
@@ -36,16 +36,16 @@ Documentation is available directly in Xcode and VS Code, and [online](https://a
 
 ### Core Domain Types (measurement, time, angle, speed...)
 
-These types support practical conversion workflows across common units (for example, `°C`/`°F` and kilometers/miles) and marine-oriented units and conventions, including nautical miles, knots, cardinal angles, and Beaufort wind scale mapping.
+These types support practical conversion workflows across common units (for example, `°C`/`°F` and kilometres/miles) and marine-oriented units and conventions, including nautical miles, knots, cardinal angles, and Beaufort wind scale mapping.
 
 Many ISO date parsers follow RFC 3339, which is a strict subset of ISO 8601.
 DateTime implementations are more permissive and accept additional ISO 8601 variants, such as the absence of a time zone or the use of a comma for fractional seconds.
 
 
-- [`Angle`](https://auvents-brave.github.io/Stheno/documentation/stheno/angle/) - An angle in degrees normalized to the [0, 360) range.
+- [`Angle`](https://auvents-brave.github.io/Stheno/documentation/stheno/angle/) - An angle in degrees normalised to the [0, 360) range.
 - [`Coordinate`](https://auvents-brave.github.io/Stheno/documentation/stheno/coordinate/) - Represents geographical coordinates (latitude and longitude).
 - [`Distance`](https://auvents-brave.github.io/Stheno/documentation/stheno/distance/) - Represents a distance value with unit conversions and formatting helpers.
-- [`DateTime`](https://auvents-brave.github.io/Stheno/documentation/stheno/datetime/) - Represents a date with helpers for parsing and formatting helpers.
+- [`DateTime`](https://auvents-brave.github.io/Stheno/documentation/stheno/datetime/) - Represents a date with helpers for parsing and formatting.
 - [`Speed`](https://auvents-brave.github.io/Stheno/documentation/stheno/speed/) - Represents a speed value with conversion and formatting helpers.
 - [`Temperature`](https://auvents-brave.github.io/Stheno/documentation/stheno/temperature/) - Represents a temperature value with conversion and formatting helpers.
 
@@ -120,7 +120,7 @@ Un œil éveillé & exemple à <10€>
 
 ### Misc Utilities
 
-- Extension to [`Bundle`](https://auvents-brave.github.io/Stheno/documentation/stheno/foundation/bundle) to access versioning information and bundle name from the app’s Info.plist.
+- Extension to [`Bundle`](https://auvents-brave.github.io/Stheno/documentation/stheno/foundation/bundle) to access versioning information from the app’s Info.plist.
 
 - `isRunningInPreviews` - Indicates whether code is running under Xcode previews.
 
