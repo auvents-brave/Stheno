@@ -48,6 +48,9 @@ DateTime implementations are more permissive and accept additional ISO 8601 vari
 - [`DateTime`](https://auvents-brave.github.io/Stheno/documentation/stheno/datetime/) - Represents a date with helpers for parsing and formatting helpers.
 - [`Speed`](https://auvents-brave.github.io/Stheno/documentation/stheno/speed/) - Represents a speed value with conversion and formatting helpers.
 - [`Temperature`](https://auvents-brave.github.io/Stheno/documentation/stheno/temperature/) - Represents a temperature value with conversion and formatting helpers.
+- [`Formatted`](https://auvents-brave.github.io/Stheno/documentation/stheno/formatted/) - A display-ready value/unit pair (e.g. `"12"` / `"kn"`). Every measurement type above exposes a unified `formatted(as:)` taking its own `Format` enum and returning a `Formatted`, so UIs can render the value large and the unit small without re-parsing strings (`Coordinate.formatted(as:)` returns a latitude/longitude string pair instead). `unit` is empty for formats that carry none, such as a cardinal direction.
+- [`BeaufortScale`](https://auvents-brave.github.io/Stheno/documentation/stheno/beaufortscale/) and [`CardinalDirection`](https://auvents-brave.github.io/Stheno/documentation/stheno/cardinaldirection/) - Wind-speed force mapping and 16-point compass directions, used by the angle and speed formats.
+- [`DistanceUnit`](https://auvents-brave.github.io/Stheno/documentation/stheno/distanceunit/), [`SpeedUnit`](https://auvents-brave.github.io/Stheno/documentation/stheno/speedunit/), [`TemperatureUnit`](https://auvents-brave.github.io/Stheno/documentation/stheno/temperatureunit/) - The unit enumerations behind the conversions.
 
 
 ### Geolocation
