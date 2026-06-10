@@ -21,13 +21,13 @@ internal import Foundation
 ///
 /// Or:
 /// ```swift
-/// let html = "<body><h1>Un &oelig;il &eacute;veill&eacute;</h1>&amp; exemple &agrave;  &lt;10&euro;&gt;</body>"
+/// let html = "<body><h1>A caf&eacute; &agrave; la carte</h1>&amp; more &lt;10&euro;&gt;</body>"
 /// let result = cleanHtml(from: html)
 /// print(result)
 /// ```
 /// Output:
 /// ```
-/// Un œil éveillé & exemple à <10€>
+/// A café à la carte & more <10€>
 /// ```
 public func cleanHtml(from text: String) -> String {
 	// Exhaustive list of known HTML tags (can be expanded as needed)
