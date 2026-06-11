@@ -1,7 +1,36 @@
+public import Foundation
+
 /// Supported temperature units.
 public enum TemperatureUnit: String, CaseIterable, Sendable {
 	case celsius = "°C"
 	case fahrenheit = "°F"
+}
+
+extension TemperatureUnit {
+	/// The temperature unit the user expects for a locale.
+	///
+	/// Resolution order:
+	/// 1. An explicit unit override carried by the locale identifier — the
+	///    BCP-47 `mu` keyword (`fr_FR@mu=fahrenhe`, `fr-FR-u-mu-fahrenhe`).
+	///    Portable to every platform.
+	/// 2. On Apple platforms, `UnitTemperature(forLocale:)`, which also reads
+	///    the device-level temperature setting (Language & Region ▸
+	///    Temperature) when it is not encoded in the identifier, and knows
+	///    per-region data (e.g. Liberia: US measurement system, yet Celsius).
+	/// 3. Elsewhere, the locale's measurement system (`.us` ⇒ Fahrenheit).
+	///
+	/// - Parameter locale: The locale to resolve. Defaults to `Locale.current`.
+	/// - Returns: The preferred unit, `.celsius` or `.fahrenheit`.
+	public static func preferred(for locale: Locale = .current) -> TemperatureUnit {
+		let identifier = locale.identifier.lowercased()
+		if identifier.contains("mu=fahrenhe") || identifier.contains("-mu-fahrenhe") { return .fahrenheit }
+		if identifier.contains("mu=celsius") || identifier.contains("-mu-celsius") { return .celsius }
+		#if canImport(Darwin)
+			return UnitTemperature(forLocale: locale) == .fahrenheit ? .fahrenheit : .celsius
+		#else
+			return locale.measurementSystem == .us ? .fahrenheit : .celsius
+		#endif
+	}
 }
 
 /// A temperature, stored in the unit it was given, with conversion and formatting.

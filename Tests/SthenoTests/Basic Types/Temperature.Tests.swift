@@ -36,6 +36,45 @@ struct TemperatureTests {
 		#expect(formatted.value == "68")
 		#expect(formatted.unit == "°F")
 	}
+
+	@Test func `Preferred unit follows the locale's region`() {
+		#expect(TemperatureUnit.preferred(for: Locale(identifier: "fr_FR")) == .celsius)
+		#expect(TemperatureUnit.preferred(for: Locale(identifier: "en_US")) == .fahrenheit)
+		#expect(TemperatureUnit.preferred(for: Locale(identifier: "en_GB")) == .celsius)
+		#expect(TemperatureUnit.preferred(for: Locale(identifier: "ja_JP")) == .celsius)
+		#expect(TemperatureUnit.preferred(for: Locale(identifier: "es_MX")) == .celsius)
+	}
+
+	@Test func `Preferred unit honours an explicit unit override`() {
+		// The `mu` keyword is what Apple systems set when the user picks a
+		// temperature unit detached from their region.
+		#expect(TemperatureUnit.preferred(for: Locale(identifier: "fr_FR@mu=fahrenhe")) == .fahrenheit)
+		#expect(TemperatureUnit.preferred(for: Locale(identifier: "fr-FR-u-mu-fahrenhe")) == .fahrenheit)
+		#expect(TemperatureUnit.preferred(for: Locale(identifier: "en-US-u-mu-celsius")) == .celsius)
+	}
+
+	@Test func `Preferred unit is independent of the measurement system`() {
+		// A device can pair any measurement system with any temperature unit:
+		// the `mu` keyword always wins over the `ms` keyword.
+		#expect(TemperatureUnit.preferred(for: Locale(identifier: "en-US-u-ms-metric-mu-fahrenhe")) == .fahrenheit)  // km + °F
+		#expect(TemperatureUnit.preferred(for: Locale(identifier: "fr-FR-u-ms-ussystem-mu-celsius")) == .celsius)  // mi + °C
+		#expect(TemperatureUnit.preferred(for: Locale(identifier: "ja-JP-u-mu-fahrenhe")) == .fahrenheit)
+	}
+
+	@Test func `Preferred unit follows the measurement system when no unit is set`() {
+		// Without an explicit temperature choice, the unit derives from the
+		// measurement system the user selected, whatever the region.
+		#expect(TemperatureUnit.preferred(for: Locale(identifier: "fr-FR-u-ms-ussystem")) == .fahrenheit)
+		#expect(TemperatureUnit.preferred(for: Locale(identifier: "en-US-u-ms-metric")) == .celsius)
+	}
+
+	#if canImport(Darwin)
+		@Test func `Preferred unit knows regional exceptions (Apple platforms)`() {
+			// Liberia uses the US measurement system, yet reads Celsius — only
+			// `UnitTemperature(forLocale:)` carries that ICU data.
+			#expect(TemperatureUnit.preferred(for: Locale(identifier: "en_LR")) == .celsius)
+		}
+	#endif
 }
 
 @Suite("Temperature Conversion Tests")
