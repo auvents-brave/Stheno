@@ -13,36 +13,35 @@ public import Foundation
 /// ```
 /// - Parameter Value: The type of value being wrapped.
 @propertyWrapper public struct Throttled<Value> {
-    /// The current underlying value, updated only if the throttle interval has passed.
-    private var value: Value
-    /// The date when the value was last successfully set.
-    private var lastSet: Date
-    /// The minimum interval (in seconds) that must elapse between updates.
-    private let interval: TimeInterval
+	/// The current underlying value, updated only if the throttle interval has passed.
+	private var value: Value
+	/// The date when the value was last successfully set.
+	private var lastSet: Date
+	/// The minimum interval (in seconds) that must elapse between updates.
+	private let interval: TimeInterval
 
-    /// Creates the property wrapper with an initial value and throttle interval.
-    ///
-    /// - Parameters:
-    ///   - wrappedValue: The initial value to wrap.
-    ///   - timeInterval: The minimum interval between updates (default is 1 second).
-    public init(wrappedValue: Value, timeInterval: TimeInterval = 1) {
-        value = wrappedValue
-        interval = timeInterval
-		lastSet = Date() //.distantPast
-    }
+	/// Creates the property wrapper with an initial value and throttle interval.
+	///
+	/// - Parameters:
+	///   - wrappedValue: The initial value to wrap.
+	///   - timeInterval: The minimum interval between updates (default is 1 second).
+	public init(wrappedValue: Value, timeInterval: TimeInterval = 1) {
+		value = wrappedValue
+		interval = timeInterval
+		lastSet = Date()  //.distantPast
+	}
 
-    /// Accesses the wrapped value. Assignments only succeed if the minimum interval has elapsed since the last update.
-    public var wrappedValue: Value {
-        get { value }
-        set {
-            let now = Date()
+	/// Accesses the wrapped value. Assignments only succeed if the minimum interval has elapsed since the last update.
+	public var wrappedValue: Value {
+		get { value }
+		set {
+			let now = Date()
 
-            guard interval <= now.timeIntervalSince(lastSet) else {
-                return
-            }
-            value = newValue
-            lastSet = now
-        }
-    }
+			guard interval <= now.timeIntervalSince(lastSet) else {
+				return
+			}
+			value = newValue
+			lastSet = now
+		}
+	}
 }
-

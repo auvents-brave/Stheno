@@ -18,7 +18,7 @@ var prods: [Product] = [
 		name: "Stheno",
 		type: .static,
 		targets: ["Stheno"]
-	),
+	)
 ]
 
 var deps: [Package.Dependency] = [
@@ -37,11 +37,11 @@ var deps: [Package.Dependency] = [
 //   - Windows: native DnsServiceBrowse from windns.h (links Dnsapi.dll, no install required)
 //   - Linux:   dns_sd C API via Avahi compatibility layer (Cdns_sd system library target)
 var sthenoDeps: [Target.Dependency] = [
-	.product(name: "Logging", package: "swift-log"),
+	.product(name: "Logging", package: "swift-log")
 ]
 
 #if os(Linux)
-sthenoDeps.append("Cdns_sd")
+	sthenoDeps.append("Cdns_sd")
 #endif
 
 var targs: [Target] = [
@@ -49,7 +49,7 @@ var targs: [Target] = [
 		name: "Stheno",
 		dependencies: sthenoDeps,
 		resources: [
-			.process("Resources"),
+			.process("Resources")
 		],
 		swiftSettings: swiftSettings,
 		linkerSettings: [
@@ -79,33 +79,33 @@ var targs: [Target] = [
 						.visionOS,
 						.linux,
 						.windows,
-						.android
+						.android,
 					]
 				)
 			),
 		],
 		resources: [
-			.process("TestInfo.plist"),
+			.process("TestInfo.plist")
 		],
 		swiftSettings: swiftSettings,
 	),
 ]
 
 #if os(Linux)
-targs.append(
-	.systemLibrary(
-		name: "Cdns_sd",
-		pkgConfig: "avahi-compat-libdns_sd",
-		providers: [.apt(["libavahi-compat-libdnssd-dev"])]
+	targs.append(
+		.systemLibrary(
+			name: "Cdns_sd",
+			pkgConfig: "avahi-compat-libdns_sd",
+			providers: [.apt(["libavahi-compat-libdnssd-dev"])]
+		)
 	)
-)
 #endif
 
 let package = Package(
 	name: "Stheno",
 	defaultLocalization: "en",
 	platforms: [
-		.macOS(.v13), .macCatalyst(.v16), .iOS(.v16), .tvOS(.v16), .watchOS(.v9), .visionOS(.v1)
+		.macOS(.v13), .macCatalyst(.v16), .iOS(.v16), .tvOS(.v16), .watchOS(.v9), .visionOS(.v1),
 	],
 
 	products: prods,
