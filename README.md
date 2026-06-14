@@ -128,6 +128,8 @@ Un œil éveillé & exemple à <10€>
 
 - `isRunningInPreviews` - Indicates whether code is running under Xcode previews.
 
+- `isTestFlight` - Indicates whether the app is running a TestFlight build (a sandbox App Store receipt).
+
 - [`Throttled`](https://auvents-brave.github.io/Stheno/documentation/stheno/throttled/) - A property wrapper that throttles updates to its wrapped value.
 
 - [`interceptingStdOut(to:encoding:body:)`](https://auvents-brave.github.io/Stheno/documentation/stheno/interceptingstdout(to:encoding:body:)) - Captures text written to standard output into a `TextOutputStream` while a closure runs (Apple platforms only).

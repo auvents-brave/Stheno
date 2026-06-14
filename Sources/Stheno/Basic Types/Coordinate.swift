@@ -7,7 +7,7 @@ enum CardinalPoint: String {
 }
 
 /// Structure representing geographical coordinates (latitude and longitude).
-public struct Coordinate: Equatable {
+public struct Coordinate: Equatable, Sendable {
 	/// Latitude in decimal degrees. North is positive, south is negative.
 	public var latitude: Double
 	/// Longitude in decimal degrees. East is positive, west is negative.

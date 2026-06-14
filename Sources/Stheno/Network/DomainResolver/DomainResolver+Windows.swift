@@ -1,0 +1,65 @@
+// Windows (WinSDK) implementation of the `getaddrinfo` lookup. Excluded from the
+// SonarCloud coverage metric: it never compiles on the Linux runner, so its
+// lines would otherwise read as uncovered.
+#if canImport(WinSDK)
+
+	import WinSDK
+
+	extension DomainResolver {
+		/// Winsock must be initialised once before any `getaddrinfo` call on Windows.
+		private static let winsockReady: Bool = {
+			var data = WSADATA()
+			return WSAStartup(WORD(0x0202), &data) == 0  // request Winsock 2.2
+		}()
+
+		/// The blocking `getaddrinfo` lookup on Windows. Synchronous and throwing;
+		/// invoked from a detached task by ``resolve(_:)``.
+		static func blockingResolve(_ hostname: String) throws -> [String] {
+			guard winsockReady else {
+				throw ResolveError.failed("Winsock initialisation failed (WSAStartup).")
+			}
+
+			var hints = addrinfo()
+			hints.ai_family = AF_UNSPEC
+			hints.ai_socktype = SOCK_STREAM
+
+			var result: UnsafeMutablePointer<addrinfo>?
+			let status = getaddrinfo(hostname, nil, &hints, &result)
+			guard status == 0, let head = result else {
+				throw ResolveError.failed(message(for: status))
+			}
+			defer { freeaddrinfo(result) }
+
+			var addresses: [String] = []
+			var cursor: UnsafeMutablePointer<addrinfo>? = head
+			while let node = cursor {
+				var host = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+				// `getnameinfo`'s buffer-size parameter is `DWORD` on Windows and the
+				// address length must be cast to `socklen_t`.
+				let resolved =
+					getnameinfo(
+						node.pointee.ai_addr, socklen_t(node.pointee.ai_addrlen),
+						&host, DWORD(NI_MAXHOST), nil, 0, NI_NUMERICHOST
+					) == 0
+				if resolved {
+					let addr = String(
+						decoding: host.prefix(while: { $0 != 0 }).map(UInt8.init(bitPattern:)),
+						as: UTF8.self
+					)
+					if !addresses.contains(addr) { addresses.append(addr) }
+				}
+				cursor = node.pointee.ai_next
+			}
+			return addresses
+		}
+
+		/// Human-readable message for a `getaddrinfo` error code.
+		///
+		/// `gai_strerror` is a macro on Windows and cannot be called from Swift, so
+		/// we report the raw WSA error code instead.
+		private static func message(for status: Int32) -> String {
+			"getaddrinfo failed (code \(status))"
+		}
+	}
+
+#endif
