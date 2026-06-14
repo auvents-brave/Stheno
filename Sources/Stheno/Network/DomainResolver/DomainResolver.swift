@@ -2,13 +2,22 @@
 // Windows (WinSDK) only. On Android (Bionic) and WASI the C networking symbols
 // aren't in scope, so the whole type is excluded there.
 //
-// This file holds the cross-platform surface; each platform's `blockingResolve`
-// lives in its own `DomainResolver+<Platform>.swift`. That split lets the Mac
-// and Windows variants — which never compile on the SonarCloud Linux runner —
-// be dropped from the coverage metric without hiding the Linux path.
+// This file holds the cross-platform surface and the shared address-collection
+// loop; each platform's `blockingResolve` lives in its own
+// `DomainResolver+<Platform>.swift` (`+POSIX` for Darwin & Linux, `+Windows`).
+// The Windows variant never compiles on the SonarCloud Linux runner, so it is
+// dropped from the coverage metric without hiding the POSIX path.
 #if canImport(Darwin) || canImport(Glibc) || canImport(WinSDK)
 
 	public import Foundation
+
+	#if canImport(Darwin)
+		import Darwin
+	#elseif canImport(Glibc)
+		import Glibc
+	#elseif canImport(WinSDK)
+		import WinSDK
+	#endif
 
 	/// Resolves a hostname to its IP addresses using the system resolver (`getaddrinfo`).
 	///
@@ -53,6 +62,42 @@
 		/// Resolves `hostname` and returns only the first IPv6 address, if any.
 		public static func resolveIPv6(_ hostname: String) async throws -> String? {
 			try await resolve(hostname).first { $0.contains(":") }
+		}
+
+		/// Collects the unique numeric IP strings from a resolved `getaddrinfo`
+		/// list, shared by every platform's `blockingResolve`. Only the
+		/// `getnameinfo` argument types differ between Windows and the POSIX
+		/// platforms, so that one call is gated; the rest of the walk is common.
+		static func addresses(from head: UnsafeMutablePointer<addrinfo>) -> [String] {
+			var addresses: [String] = []
+			var cursor: UnsafeMutablePointer<addrinfo>? = head
+			while let node = cursor {
+				var host = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+				#if canImport(WinSDK)
+					// On Windows the buffer size is `DWORD` and the address length must
+					// be cast to `socklen_t`.
+					let resolved =
+						getnameinfo(
+							node.pointee.ai_addr, socklen_t(node.pointee.ai_addrlen),
+							&host, DWORD(NI_MAXHOST), nil, 0, NI_NUMERICHOST
+						) == 0
+				#else
+					let resolved =
+						getnameinfo(
+							node.pointee.ai_addr, node.pointee.ai_addrlen,
+							&host, socklen_t(NI_MAXHOST), nil, 0, NI_NUMERICHOST
+						) == 0
+				#endif
+				if resolved {
+					let addr = String(
+						decoding: host.prefix(while: { $0 != 0 }).map(UInt8.init(bitPattern:)),
+						as: UTF8.self
+					)
+					if !addresses.contains(addr) { addresses.append(addr) }
+				}
+				cursor = node.pointee.ai_next
+			}
+			return addresses
 		}
 	}
 
