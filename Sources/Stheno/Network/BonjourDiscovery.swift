@@ -2,7 +2,9 @@
 
 /// Error thrown by ``BonjourDiscovery`` when the platform back-end cannot be initialised.
 public struct BonjourDiscoveryError: Error, CustomStringConvertible {
+	/// A human-readable description of the failure.
 	public let description: String
+	/// Creates an error carrying the given message.
 	public init(_ message: String) { self.description = message }
 }
 
@@ -93,11 +95,14 @@ public struct DiscoveredEndpoint: Sendable, CustomStringConvertible {
 	/// - `"tcp://192.168.1.5:10110"`           — Raw NMEA 0183 stream
 	public var url: String { "\(scheme)://\(host):\(port)\(path)" }
 
+	/// A human-readable description combining the label, name and URL.
 	public var description: String { "[\(label)] \(name) — \(url)" }
 }
 
 // MARK: - Service type registry
 
+/// A Bonjour/mDNS service type to browse, with the URL parameters to apply once
+/// a matching instance is resolved.
 public struct BonjourServiceEntry: Sendable {
 	/// Bonjour/mDNS service type string, e.g. `"_signalk-http._tcp"`.
 	public let bonjourType: String
@@ -426,6 +431,13 @@ public let bonjourDefaultServiceTypes: [BonjourServiceEntry] = [
 		/// Creates a Bonjour discovery controller.
 		public init() {}
 
+		/// Browses mDNS service types and yields discovered endpoints.
+		///
+		/// The stream finishes after `timeout` seconds. Discard it early to stop browsing.
+		///
+		/// - Parameters:
+		///   - serviceTypes: Service types to browse. Defaults to ``bonjourDefaultServiceTypes``.
+		///   - timeout: Scan duration in seconds. Default is 5 s.
 		public func browse(
 			serviceTypes: [BonjourServiceEntry] = bonjourDefaultServiceTypes,
 			timeout: Double = 5
@@ -634,6 +646,13 @@ public let bonjourDefaultServiceTypes: [BonjourServiceEntry] = [
 		/// Creates a Bonjour discovery controller.
 		public init() {}
 
+		/// Browses mDNS service types and yields discovered endpoints.
+		///
+		/// The stream finishes after `timeout` seconds. Discard it early to stop browsing.
+		///
+		/// - Parameters:
+		///   - serviceTypes: Service types to browse. Defaults to ``bonjourDefaultServiceTypes``.
+		///   - timeout: Scan duration in seconds. Default is 5 s.
 		public func browse(
 			serviceTypes: [BonjourServiceEntry] = bonjourDefaultServiceTypes,
 			timeout: Double = 5
@@ -707,6 +726,13 @@ public let bonjourDefaultServiceTypes: [BonjourServiceEntry] = [
 		/// Creates a Bonjour discovery controller.
 		public init() {}
 
+		/// Browses mDNS service types and yields discovered endpoints.
+		///
+		/// The stream finishes after `timeout` seconds. Discard it early to stop browsing.
+		///
+		/// - Parameters:
+		///   - serviceTypes: Service types to browse. Defaults to ``bonjourDefaultServiceTypes``.
+		///   - timeout: Scan duration in seconds. Default is 5 s.
 		public func browse(
 			serviceTypes: [BonjourServiceEntry] = bonjourDefaultServiceTypes,
 			timeout: Double = 5

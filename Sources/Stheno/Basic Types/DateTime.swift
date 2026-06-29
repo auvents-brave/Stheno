@@ -8,6 +8,7 @@ public enum DateTimeType: String {
 
 /// Represents a date with helpers for parsing and formatting.
 public struct DateTime {
+	/// The wrapped date value.
 	public let date: Date
 
 	/// Creates a date-time with the provided date.
@@ -15,6 +16,7 @@ public struct DateTime {
 		self.date = date
 	}
 
+	/// Whether relative date formatting is available on the current platform.
 	public static var relativeAvailable: Bool {
 		#if canImport(Darwin)
 			// RelativeDateTimeFormatter is available on Apple platforms via Foundation.
