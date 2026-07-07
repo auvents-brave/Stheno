@@ -51,8 +51,8 @@ private func format(
 	metric: String, value: Double, knots: Bool, nautical: Bool, isMetric: Bool
 ) -> Formatted {
 	switch metric {
-	case "SOG", "STW", "AWS", "TWS", "windGust":
-		let decimals = metric == "SOG" || metric == "STW" ? 1 : 0
+	case "SOG", "STW", "AWS", "TWS", "TWS.gust", "windGust", "navigation.vmg":
+		let decimals = metric == "SOG" || metric == "STW" || metric == "navigation.vmg" ? 1 : 0
 		let target: Speed.Format =
 			knots
 			? .knots(decimals: decimals)
@@ -69,7 +69,7 @@ private func format(
 		// Coordinates keep their decimal-degree rendering here; the chart is
 		// the place for fancier styles.
 		return Formatted(formattedNumber(value, decimals: 5), "°")
-	case let name where name.hasSuffix("emperature") || name == "seaTemp":
+	case let name where name.hasSuffix("emperature") || name.hasPrefix("temperature.") || name == "seaTemp":
 		let temperature = Temperature(value: value, unit: .celsius)
 		return isMetric
 			? temperature.formatted(as: .celsius(decimals: 0))
@@ -78,6 +78,14 @@ private func format(
 		let distance = Distance(value: value, unit: .meters)
 		if nautical { return distance.formatted(as: .nauticalMiles(decimals: 1)) }
 		return distance.formatted(as: isMetric ? .kilometers(decimals: 1) : .miles(decimals: 1))
+	case "log.trip", "log.total", "navigation.distanceToWaypoint", "navigation.xte":
+		// BoatToolsKit's water-log and route distances are canonically in
+		// nautical miles (unlike the metre-canonical `log`/`tripLog` above).
+		let decimals = metric == "navigation.xte" ? 2 : 1
+		let distance = Distance(value: value, unit: .nauticalMiles)
+		if nautical { return distance.formatted(as: .nauticalMiles(decimals: decimals)) }
+		return distance.formatted(
+			as: isMetric ? .kilometers(decimals: decimals) : .miles(decimals: decimals))
 	default:
 		return Formatted(formattedNumber(value, decimals: 1))
 	}
