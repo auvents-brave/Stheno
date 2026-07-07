@@ -6,3 +6,4 @@ xcode
 .swiftpm
 .vscode
 .sonarlint
+.build-linux
