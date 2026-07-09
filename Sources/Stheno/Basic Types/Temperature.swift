@@ -35,7 +35,9 @@ extension TemperatureUnit {
 
 /// A temperature, stored in the unit it was given, with conversion and formatting.
 public struct Temperature: Equatable, Sendable {
+	/// The numeric temperature, expressed in ``unit``.
 	public let value: Double
+	/// The unit ``value`` is expressed in.
 	public let unit: TemperatureUnit
 
 	/// Creates a temperature with a value and unit.

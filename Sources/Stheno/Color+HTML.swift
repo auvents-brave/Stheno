@@ -7,9 +7,12 @@
 
 #if canImport(SwiftUI)
 	public import SwiftUI
+	/// The platform colour type — SwiftUI's `Color` where available.
 	public typealias Color = SwiftUI.Color
 #else
+	/// A minimal RGB colour used on platforms without SwiftUI.
 	public struct Color {
+		/// Creates a colour from its red, green and blue components (each in [0, 1]).
 		public init(red: Double, green: Double, blue: Double) {
 			self.red = red
 			self.green = green

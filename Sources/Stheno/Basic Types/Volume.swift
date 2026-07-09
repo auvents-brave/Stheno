@@ -46,7 +46,9 @@ extension VolumeUnit {
 
 /// A volume, stored in the unit it was given, with conversion and formatting.
 public struct Volume: Equatable, Sendable {
+	/// The numeric volume, expressed in ``unit``.
 	public let value: Double
+	/// The unit ``value`` is expressed in.
 	public let unit: VolumeUnit
 
 	/// Creates a volume with a value and unit.

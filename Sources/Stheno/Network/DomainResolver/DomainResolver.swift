@@ -34,6 +34,7 @@
 			/// The hostname could not be resolved.
 			case failed(String)
 
+			/// A localised description of the resolution failure.
 			public var errorDescription: String? {
 				switch self {
 				case .failed(let msg): "Domain resolution failed: \(msg)"

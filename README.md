@@ -16,6 +16,16 @@ Continuous Integration (CI) is handled through GitHub Actions, which automatical
 
 Documentation is available directly in Xcode and VS Code, and [online](https://auvents-brave.github.io/Stheno/).
 
+## Native bridge
+
+The nested [`Bridge/`](Bridge) package builds **libSthenoBridge**, a dynamic
+library exposing Sthenô's unit conversions and display formatting through a
+plain C ABI (`stheno_bridge_*`), so non-Swift hosts — C# via P/Invoke, Python
+via ctypes, anything that can load a shared library — reuse the same code
+instead of reimplementing it. Build it with `swift build -c release` from
+`Bridge/`; every returned string is a caller-owned UTF-8 buffer released with
+`stheno_bridge_string_free`.
+
 ## Platforms and CI
 
 | Platform | CI Status |

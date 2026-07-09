@@ -23,6 +23,7 @@ public enum CardinalDirection: String, CaseIterable, Sendable {
 
 /// An angle in degrees, normalised to [0, 360).
 public struct Angle: Equatable, Sendable {
+	/// The angle in degrees, within [0, 360).
 	public let value: Double
 
 	/// Creates a normalised angle from degrees.

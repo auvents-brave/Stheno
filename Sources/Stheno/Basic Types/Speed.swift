@@ -42,7 +42,9 @@ public enum BeaufortScale: Int, CaseIterable, Sendable {
 
 /// A speed, stored in the unit it was given, with conversion and formatting.
 public struct Speed: Equatable, Sendable {
+	/// The numeric speed, expressed in ``unit``.
 	public let value: Double
+	/// The unit ``value`` is expressed in.
 	public let unit: SpeedUnit
 
 	/// Creates a speed with a value and unit.
