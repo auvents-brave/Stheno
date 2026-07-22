@@ -19,12 +19,20 @@ Documentation is available directly in Xcode and VS Code, and [online](https://a
 ## Native bridge
 
 The nested [`Bridge/`](Bridge) package builds **libSthenoBridge**, a dynamic
-library exposing Sthenô's unit conversions and display formatting through a
-plain C ABI (`stheno_bridge_*`), so non-Swift hosts — C# via P/Invoke, Python
-via ctypes, anything that can load a shared library — reuse the same code
-instead of reimplementing it. Build it with `swift build -c release` from
-`Bridge/`; every returned string is a caller-owned UTF-8 buffer released with
-`stheno_bridge_string_free`.
+library exposing Sthenô's unit conversions, display formatting and mDNS
+Bonjour discovery through a plain C ABI (`stheno_bridge_*`), so non-Swift
+hosts — C# via P/Invoke, Python via ctypes, anything that can load a shared
+library — reuse the same code instead of reimplementing it. Build it with
+`swift build -c release` from `Bridge/`; every returned string is a
+caller-owned UTF-8 buffer released with `stheno_bridge_string_free`.
+
+`stheno_bridge_discover` browses the marine service types by default (Signal
+K over HTTP and WebSocket, NMEA 0183, and the Garmin / Navico / Raymarine /
+Furuno vendor types) and returns each endpoint with a ready-to-open URL. It
+carries the back-end's own limits: Windows needs Apple's Bonjour service and
+Linux needs Avahi, and where no back-end exists — Android — the call reports
+`ok:false` with the reason rather than pretending the network is empty, so
+the host can browse with its own platform API instead.
 
 ## Platforms and CI
 

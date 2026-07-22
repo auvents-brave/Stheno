@@ -24,6 +24,15 @@ let package = Package(
 				.enableUpcomingFeature("ExistentialAny"),
 				.swiftLanguageMode(.v6),
 			]
-		)
+		),
+		.testTarget(
+			name: "SthenoBridgeTests",
+			dependencies: ["SthenoBridge"],
+			swiftSettings: [
+				.enableUpcomingFeature("InternalImportsByDefault"),
+				.enableUpcomingFeature("ExistentialAny"),
+				.swiftLanguageMode(.v6),
+			]
+		),
 	]
 )
