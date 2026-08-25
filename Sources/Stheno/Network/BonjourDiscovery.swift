@@ -144,6 +144,16 @@ public let bonjourDefaultServiceTypes: [BonjourServiceEntry] = [
 	.init(bonjourType: "_navico-mfd._tcp", scheme: "tcp", label: "navico-mfd"),
 	.init(bonjourType: "_raymarine-net._tcp", scheme: "tcp", label: "raymarine-net"),
 	.init(bonjourType: "_furuno-navnet._tcp", scheme: "tcp", label: "furuno-navnet"),
+	// Marine — UDP transports (NMEA 0183 / N2K-encapsulated streams over UDP).
+	// The resolved unicast host is ignored downstream: a UDP stream is received
+	// by listening on the advertised port, so consumers treat these as broadcast.
+	.init(bonjourType: "_nmea-0183._udp", scheme: "udp", label: "nmea-0183-udp"),
+	.init(bonjourType: "_signalk-tcp._tcp", scheme: "tcp", label: "signalk-tcp"),
+	.init(bonjourType: "_signalk-tcp._udp", scheme: "udp", label: "signalk-tcp-udp"),
+	.init(bonjourType: "_garmin-marine._udp", scheme: "udp", label: "garmin-marine-udp"),
+	.init(bonjourType: "_navico-mfd._udp", scheme: "udp", label: "navico-mfd-udp"),
+	.init(bonjourType: "_raymarine-net._udp", scheme: "udp", label: "raymarine-net-udp"),
+	.init(bonjourType: "_furuno-navnet._udp", scheme: "udp", label: "furuno-navnet-udp"),
 
 	// File sharing
 	.init(bonjourType: "_smb._tcp", scheme: "smb", label: "smb"),
@@ -229,7 +239,11 @@ public let bonjourDefaultServiceTypes: [BonjourServiceEntry] = [
 			continuation: AsyncThrowingStream<DiscoveredEndpoint, any Error>.Continuation
 		) -> NWBrowser {
 			let descriptor = NWBrowser.Descriptor.bonjourWithTXTRecord(type: entry.bonjourType, domain: nil)
-			let browser = NWBrowser(for: descriptor, using: .tcp)
+			// Match the resolving transport to the advertised service so a `._udp`
+			// type is browsed and resolved over UDP (a UDP service has no TCP
+			// listener, so a `.tcp` probe would never reach `.ready`).
+			let params: NWParameters = entry.bonjourType.hasSuffix("._udp") ? .udp : .tcp
+			let browser = NWBrowser(for: descriptor, using: params)
 			browser.browseResultsChangedHandler = { _, changes in
 				for change in changes {
 					guard case .added(let result) = change else { continue }
@@ -259,7 +273,8 @@ public let bonjourDefaultServiceTypes: [BonjourServiceEntry] = [
 			return entry.defaultPath
 		}()
 
-		let connection = NWConnection(to: result.endpoint, using: .tcp)
+		let params: NWParameters = entry.bonjourType.hasSuffix("._udp") ? .udp : .tcp
+		let connection = NWConnection(to: result.endpoint, using: params)
 		connection.stateUpdateHandler = { state in
 			switch state {
 			case .ready:
