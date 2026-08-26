@@ -141,7 +141,7 @@ struct BonjourServiceEntryTests {
 struct BonjourDefaultServiceTypesTests {
 
 	@Test func `entries are unique and complete`() {
-		#expect(bonjourDefaultServiceTypes.count == 28)
+		#expect(bonjourDefaultServiceTypes.count == 35)
 		// No duplicate labels slipped in as the list grew.
 		let labels = Set(bonjourDefaultServiceTypes.map(\.label))
 		#expect(labels.count == bonjourDefaultServiceTypes.count)
@@ -186,12 +186,20 @@ struct BonjourDefaultServiceTypesTests {
 		#expect(labels.contains("furuno-navnet"))
 	}
 
-	@Test func `all bonjourTypes end with _tcp`() {
+	@Test func `all bonjourTypes end with _tcp or _udp`() {
 		for entry in bonjourDefaultServiceTypes {
 			#expect(
-				entry.bonjourType.hasSuffix("._tcp"),
-				"Expected ._tcp suffix, got: \(entry.bonjourType)")
+				entry.bonjourType.hasSuffix("._tcp") || entry.bonjourType.hasSuffix("._udp"),
+				"Expected ._tcp or ._udp suffix, got: \(entry.bonjourType)")
 		}
+	}
+
+	@Test func `NMEA 0183 over UDP entry is present`() throws {
+		let entry = bonjourDefaultServiceTypes.first { $0.label == "nmea-0183-udp" }
+		let e = try #require(entry)
+		#expect(e.bonjourType == "_nmea-0183._udp")
+		#expect(e.scheme == "udp")
+		#expect(e.defaultPath == "")
 	}
 
 	@Test func `all bonjourTypes start with underscore`() {
