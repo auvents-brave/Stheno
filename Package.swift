@@ -55,8 +55,9 @@ var targs: [Target] = [
 		linkerSettings: [
 			// Windows: BonjourDiscovery uses DnsServiceBrowse/DnsServiceResolve from Dnsapi.dll.
 			.linkedLibrary("dnsapi", .when(platforms: [.windows])),
-			// Linux: --as-needed drops -ldns_sd from DT_NEEDED (loaded at runtime via dlopen).
-			// The binary launches even when libdns_sd.so is not installed.
+			// Linux: --as-needed, belt to the braces of the Cdns_sd target carrying
+			// no pkgConfig — nothing must put dns_sd in DT_NEEDED, since the
+			// library is loaded at run time via dlopen.
 			.unsafeFlags(["-Xlinker", "--as-needed"], .when(platforms: [.linux])),
 		]
 	),
@@ -93,9 +94,12 @@ var targs: [Target] = [
 
 #if os(Linux)
 	targs.append(
+		// No `pkgConfig:`: it would add `-ldns_sd` to the link, and the resulting
+		// DT_NEEDED made the whole library refuse to load where Avahi is not
+		// installed — not just discovery. The header alone is enough, since
+		// BonjourDiscovery resolves every function through dlopen at run time.
 		.systemLibrary(
 			name: "Cdns_sd",
-			pkgConfig: "avahi-compat-libdns_sd",
 			providers: [.apt(["libavahi-compat-libdnssd-dev"])]
 		)
 	)
