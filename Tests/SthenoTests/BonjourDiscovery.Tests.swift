@@ -277,21 +277,33 @@ struct BonjourDefaultServiceTypesTests {
 				#expect(elapsed < 5.0)
 			}
 
-			@Test func `longer timeout finishes later than shorter one`() async throws {
+			@Test func `a browse runs for as long as its timeout asks`() async throws {
 				let discovery = BonjourDiscovery()
-				// Warmup: pay the AsyncThrowingStream / NWBrowser cold-start once
-				// (~0.5 s on macOS native) so both timed calls below have comparable
-				// overhead and the timeout-ordering assertion is meaningful.
+				// Warmup: pay the AsyncThrowingStream / NWBrowser cold start once
+				// (~0.5 s on macOS native) so the timed calls below are not the
+				// ones carrying it.
 				for try await _ in discovery.browse(timeout: 0.5) {}
 
+				let short = 0.05
+				let long = 1.0
+
 				let t1 = Date()
-				for try await _ in discovery.browse(serviceTypes: [], timeout: 0.05) {}
+				for try await _ in discovery.browse(serviceTypes: [], timeout: short) {}
 				let elapsed1 = Date().timeIntervalSince(t1)
 
 				let t2 = Date()
-				for try await _ in discovery.browse(serviceTypes: [], timeout: 0.15) {}
+				for try await _ in discovery.browse(serviceTypes: [], timeout: long) {}
 				let elapsed2 = Date().timeIntervalSince(t2)
 
+				// A browse cannot finish before its own timeout however loaded the
+				// machine is, so the lower bound is the part worth asserting; the
+				// upper bound is not ours to promise.
+				#expect(elapsed1 >= short * 0.9)
+				#expect(elapsed2 >= long * 0.9)
+				// Ordering still holds, but only because the two are now far enough
+				// apart that start-up jitter cannot invert them. At 0.05 against
+				// 0.15 it did: the short browse took 0.371 s on a loaded runner
+				// while the long one took 0.155 s, and the test failed.
 				#expect(elapsed2 > elapsed1)
 			}
 		#endif
