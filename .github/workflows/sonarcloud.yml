@@ -62,14 +62,32 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Search from above the configuration directory: Swift 6.4's default
+          # build system puts products in `.build/out/Products/Debug` (so the
+          # old `${BIN_DIR%/debug}` stripped nothing — the suffix is `Debug`),
+          # while the previous engine used `.build/<triple>/debug`. Going up one
+          # level covers both, and the profile data sits under either.
           BIN_DIR="$(swift build --show-bin-path)"
-          BUILD_DIR="${BIN_DIR%/debug}"
+          BUILD_DIR="$(dirname "$BIN_DIR")"
 
-          PROFDATA="$(find "$BUILD_DIR" -type f -name default.profdata | head -n 1)"
-          TEST_BIN="$(find "$BUILD_DIR" -type f -perm -111 | grep -E '(PackageTests\.xctest|Tests\.xctest|Tests)$' | head -n 1)"
+          # `|| true` matters: a grep that matches nothing exits 1, and under
+          # `set -o pipefail` that aborted this step with no message at all —
+          # the guards below never ran. They can speak now.
+          PROFDATA="$(find "$BUILD_DIR" -type f -name default.profdata | head -n 1 || true)"
+          # The test binary has been renamed with every build layout:
+          # `…PackageTests.xctest`, then `…Tests`, and under the Swift Build
+          # engine `<Module>-test-runner` on Linux and
+          # `<Module>.xctest/Contents/MacOS/<Module>` on macOS.
+          TEST_BIN="$(find "$BUILD_DIR" -type f -perm -111 \
+            | grep -E '(-test-runner|PackageTests\.xctest|Tests\.xctest|Tests)$' \
+            | head -n 1 || true)"
 
-          [ -n "${PROFDATA:-}" ] || { echo "default.profdata not found"; exit 1; }
-          [ -n "${TEST_BIN:-}" ] || { echo "test binary not found"; exit 1; }
+          [ -n "${PROFDATA:-}" ] || { echo "default.profdata not found under $BUILD_DIR"; exit 1; }
+          [ -n "${TEST_BIN:-}" ] || {
+            echo "test binary not found under $BUILD_DIR; executables there:"
+            find "$BUILD_DIR" -type f -perm -111 | head -n 20
+            exit 1
+          }
 
           llvm-cov export -format=lcov -instr-profile "$PROFDATA" "$TEST_BIN" > coverage.lcov
 
