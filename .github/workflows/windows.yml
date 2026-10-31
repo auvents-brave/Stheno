@@ -21,11 +21,16 @@ jobs:
       - name: Setup Swift
         uses: compnerd/gha-setup-swift@v0.4.0
         with:
-          swift-version: swift-6.3.2-release
-          swift-build: 6.3.2-RELEASE
+          swift-version: swift-6.4.2-release
+          swift-build: 6.4.2-RELEASE
+
+      # Swift 6.4 made `swiftbuild` the default build system. On Windows it
+      # cannot produce the test target's resource bundle — the build dies on
+      # `Touch …\Stheno_SthenoTests.bundle failed with a nonzero exit code` —
+      # so this leg stays on the previous engine. It is deprecated, and the
+      # warning it prints says so; drop the flag once the bundle task works.
+      - shell: pwsh
+        run: swift build -c release --build-system native
 
       - shell: pwsh
-        run: swift build -c release
-
-      - shell: pwsh
-        run: swift test
+        run: swift test --build-system native
