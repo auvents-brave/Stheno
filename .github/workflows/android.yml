@@ -18,3 +18,10 @@ jobs:
         with:
           swift-version: "6.4.1"
           run-tests: true
+          # The action only packs `*.resources` into the emulator, the name
+          # SwiftPM gave resource bundles under the old build layout.  Swift
+          # 6.4 builds into `.build/out/Products`, where they are `*.bundle`,
+          # so the glob matched nothing and `Bundle.module` trapped with
+          # "unable to find bundle named Stheno_SthenoTests".  Copy them
+          # across ourselves; the arch is left loose for aarch64 runners.
+          copy-files: .build/out/Products/Debug-android-*/*.bundle
