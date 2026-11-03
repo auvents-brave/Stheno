@@ -79,4 +79,17 @@ struct FormattedTests {
 		// A negative value that rounds to zero carries no sign.
 		#expect(formattedNumber(-0.04, decimals: 1) == "0.0")
 	}
+
+	@Test func `Hashable: equal coordinates collapse, different ones do not`() {
+		let monaco = Coordinate(latitude: 43.7384, longitude: 7.4246)
+		let same = Coordinate(latitude: 43.7384, longitude: 7.4246)
+		let maddalena = Coordinate(latitude: 41.2167, longitude: 9.4000)
+
+		#expect(monaco.hashValue == same.hashValue)
+		#expect(Set([monaco, same, maddalena]).count == 2)
+		// Latitude and longitude must not be interchangeable in the hash.
+		#expect(
+			Coordinate(latitude: 1, longitude: 2).hashValue
+				!= Coordinate(latitude: 2, longitude: 1).hashValue)
+	}
 }
